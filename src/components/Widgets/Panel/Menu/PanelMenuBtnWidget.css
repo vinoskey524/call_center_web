@@ -1,0 +1,38 @@
+.pmb_scaffold {
+    width: 95%;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    border-width: 0;
+    padding-inline: 14px;
+    background-color: transparent;
+    margin: auto;
+    margin-bottom: 2px;
+}
+
+.pmb_scaffold:hover {
+    background-color: rgb(100, 100, 100, 0.2);
+}
+
+.pmb_scaffold:active {
+    background-color: #4F586A;
+}
+
+.pmb_scaffold:active .pmb_title {
+    color: white;
+}
+
+.pmb_icon {
+    width: 20px;
+    height: 20px;
+}
+
+.pmb_title {
+    width: auto;
+    height: auto;
+    color: #99A1B3;
+    margin-left: 14px;
+    font-size: 13.5px;
+    font-weight: bold;
+}

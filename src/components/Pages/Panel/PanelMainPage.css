@@ -1,0 +1,45 @@
+#pm_scaffold {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #23272F;
+}
+
+#pm_menu {
+    width: 250px;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #333A45;
+}
+
+#pm_scroll_area {
+    width: 100%;
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    display: block;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+
+#pm_container {
+    flex: 1;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #23272F;
+}

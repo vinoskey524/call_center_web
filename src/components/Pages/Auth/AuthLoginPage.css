@@ -1,0 +1,56 @@
+#al_scaffold {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #23272F;
+}
+
+#al_container {
+    width: 'auto';
+    height: 'auto';
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: -10vh;
+}
+
+#al_title {
+    width: auto;
+    height: auto;
+    color: white;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.al_input {
+    width: 260px;
+    height: 40px;
+    overflow: hidden;
+    position: relative;
+    display: block;
+    border-radius: 8px;
+    border-width: 0;
+    background-color: #333A45;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.al_btn {
+    width: 260px;
+    height: 40px;
+    overflow: hidden;
+    position: relative;
+    display: block;
+    border-radius: 8px;
+    border-width: 0;
+    margin-bottom: 8px;
+    color: white;
+}

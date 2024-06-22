@@ -1,0 +1,19 @@
+#ph_scaffold {
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    flex-direction: row;
+    background-color: #23272F;
+    padding-inline: 20px;
+}
+
+#ph_enterprise_name {
+    width: auto;
+    height: auto;
+    color: white;
+    font-weight: bold;
+}
