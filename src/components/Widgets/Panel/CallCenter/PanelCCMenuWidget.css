@@ -1,0 +1,33 @@
+#pccmw_scaffold {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+#pccmw_input_container {
+    width: 90%;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(192, 192, 192, 0.2);
+    border-radius: 6px;
+}
+
+#pccmw_icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+}
+
+#pccmw_input {
+    flex: 1;
+    color: white;
+    margin-right: 2px;
+    background-color: transparent;
+}

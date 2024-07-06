@@ -11,6 +11,10 @@ export const language: any = {
         't0008': 'Administrators',
         't0009': 'Call center',
         't0010': 'Customers',
+        't0011': 'Add account',
+        't0012': 'Active/Disactive', //
+        't0013': 'Edit',
+        't0014': 'Delete',
     },
     fr: {
         't0000': '',
@@ -24,5 +28,9 @@ export const language: any = {
         't0008': 'Administrateurs',
         't0009': "Centre d'appel",
         't0010': 'Clients',
+        't0011': 'Ajouter un compte',
+        't0012': 'Activer/Désactiver',
+        't0013': 'Modifier',
+        't0014': 'Supprimer',
     }
 }

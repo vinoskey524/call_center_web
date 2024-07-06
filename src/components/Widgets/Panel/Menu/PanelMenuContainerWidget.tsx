@@ -37,8 +37,6 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const render = useRef(!false);
 
-    const zIndex = useRef(0);
-
     const lang = useRef('fr');
 
     const traduction = language[lang.current];
@@ -73,10 +71,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     /* - */
 
-    // const childrenRefTab = Array(childrenData.length).fill(undefined).map(() => useRef(undefined));
-    const childrenRefTab = [useRef(undefined), useRef(undefined), useRef(undefined)]
-
-    const childrenComp = [];
+    const childrenRefTab = Array(childrenData.length).fill(undefined).map(() => React.createRef());
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -117,10 +112,11 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
 
     /* Create Children components */
+    const childrenComp = [];
     if (childrenComp.length === 0) for (let i = 0; i < childrenData.length; i++) childrenComp.push(<PanelMenuBtnWidget key={i} ref={childrenRefTab[i]} $data={{ refId: childrenRefTab[i], controllerRef: controllerRef, rootControllers: rootControllers, btnData: childrenData[i] }} />);
     /* - */
     const component = <>
-        <div className='pmc_scaffold prevent_select' style={{ zIndex: zIndex.current }}>
+        <div className='pmc_scaffold prevent_select'>
             <button className='pmc_main_btn'>
                 <p className='pmc_main_title'>{containerData.title}</p>
                 <img className='pmc_main_icon' src={white_arrow_icon} />

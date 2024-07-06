@@ -1,0 +1,10 @@
+.pccpmw_scaffold {
+    width: 90%;
+    height: 30px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    background-color: red;
+    border-radius: 8px;
+}

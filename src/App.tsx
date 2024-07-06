@@ -6,7 +6,7 @@ import MainPage from "./components/Pages/MainPage";
 /* App */
 function App() {
   const mainPageRef = useRef(undefined);
-  return (<MainPage ref={mainPageRef} $data={{ wid: 'mainPageRef', refId: { current: mainPageRef } }} />)
+  return (<MainPage ref={mainPageRef} $data={{ wid: 'mainPageRef', refId: mainPageRef }} />)
 }
 
 export default App;

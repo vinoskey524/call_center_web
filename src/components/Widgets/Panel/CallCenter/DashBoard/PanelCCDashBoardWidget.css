@@ -1,0 +1,117 @@
+.pccdbw_scaffold {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Header */
+
+.pccdbw_header {
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-inline: 10px;
+    z-index: 2;
+}
+
+.pccdbw_enterprise_title {
+    width: auto;
+    height: auto;
+    color: #D3E4FD;
+    margin-right: 12px;
+}
+
+/* btn */
+
+.pccdbw_h_btn_container {
+    width: auto;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    padding-inline: 14px;
+    margin-inline: 4px;
+    margin-top: 4px;
+}
+
+.pccdbw_h_btn_container:hover {
+    background-color: rgba(51, 58, 69, 0.7);
+}
+
+.pccdbw_h_btn_title {
+    width: auto;
+    height: auto;
+    color: #95A6BD;
+    font-size: 14px;
+}
+
+/* - */
+
+.pccdbw_hv_separator {
+    width: 1px;
+    height: 13px;
+    margin-inline: 8px;
+    margin-top: 6px;
+    background-color: rgba(51, 58, 69, 1);
+}
+
+.pccdbw_h_search_container {
+    width: 260px;
+    height: 25px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 6px;
+    background-color: #333A45;
+    color: white;
+    margin-left: 3px;
+    margin-top: 4px;
+    padding-inline: 6px;
+}
+
+.pccdbw_h_search_icon {
+    width: 18px;
+    height: 18px;
+}
+
+.pccdbw_h_search_bar {
+    flex: 1;
+    overflow: hidden;
+    background-color: transparent;
+    color: white;
+}
+
+/* Body */
+
+.pccdbw_body {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    z-index: 0;
+}
+
+.pccdbw_body_left {
+    width: 380px;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    position: relative;
+    background-color: red
+}
+
+.pccdbw_body_right {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: visible;
+    position: relative;
+}

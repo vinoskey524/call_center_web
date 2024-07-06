@@ -32,8 +32,6 @@ const PanelMenuBtnWidget = (props: propsType, ref: any) => {
 
     const render = useRef(!false);
 
-    const zIndex = useRef(0);
-
     const lang = useRef('en');
 
     const traduction = language[lang.current];
@@ -122,7 +120,7 @@ const PanelMenuBtnWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <button id={scaffoldId} className='pmb_scaffold' style={{ zIndex: zIndex.current }} onClick={onClickFunc}>
+        <button id={scaffoldId} className='pmb_scaffold' onClick={onClickFunc}>
             <img className='pmb_icon' src={btnData.iconUri} />
             <p id={titlId} className='pmb_title'>{btnData.title}</p>
         </button>

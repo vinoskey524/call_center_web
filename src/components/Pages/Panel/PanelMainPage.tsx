@@ -8,10 +8,14 @@ import account_icon from '../../Assets/png/account.png';
 import call_center_icon from '../../Assets/png/call_center.png';
 import { language } from '../../Tools/language';
 import { refIdType } from '../../Tools/type';
+import { _defaultLanguage_ } from '../../Tools/constants';
 import PanelLogoWidget from '../../Widgets/Panel/PanelLogoWidget';
 import PanelHeaderWidget from '../../Widgets/Panel/PanelHeaderWidget';
 import PanelMenuContainerWidget from '../../Widgets/Panel/Menu/PanelMenuContainerWidget';
 import PanelMainControllerWidget from '../../Widgets/Panel/PanelMainControllerWidget';
+import AccountMainPage from '../Account/AccountMainPage';
+import PanelCCMenuWidget from '../../Widgets/Panel/CallCenter/PanelCCMenuWidget';
+import PanelCCContainerWidget from '../../Widgets/Panel/CallCenter/PanelCCContainerWidget';
 
 /* Widget */
 type propsType = {
@@ -19,6 +23,7 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
+        controllerRef?: refIdType,
         rootControllers: any
     }
 };
@@ -37,9 +42,7 @@ const PanelMainPage = (props: propsType, ref: any) => {
 
     const render = useRef(true);
 
-    const zIndex = useRef(2);
-
-    const lang = useRef('en');
+    const lang = useRef(_defaultLanguage_);
 
     const traduction = language[lang.current];
 
@@ -50,6 +53,8 @@ const PanelMainPage = (props: propsType, ref: any) => {
     const wid = data.wid;
 
     const refId = data.refId;
+
+    const controllerRef = data.controllerRef;
 
     const rootControllers = data.rootControllers;
 
@@ -71,11 +76,21 @@ const PanelMainPage = (props: propsType, ref: any) => {
 
     const panelMainControllerRef = useRef(undefined);
 
+    const accountMainRef = useRef(undefined);
+
+    const panelCCMenuRef = useRef(undefined);
+
+    const panelCCContainerRef = useRef(undefined);
+
+    /* - */
+
+    const accountType: refIdType = dataStoreControllerRef.current.accountType;
+
     const accountMenuData = {
         container: { id: 'account', title: traduction['t0007'] },
         children: [
             { id: 'admin_menu', iconUri: admin_icon, title: traduction['t0008'] },
-            { id: 'call_canter_menu', iconUri: call_center_icon, title: traduction['t0009'] },
+            { id: 'call_center_menu', iconUri: call_center_icon, title: traduction['t0009'] },
             { id: 'customer_menu', iconUri: account_icon, title: traduction['t0010'] },
         ]
     };
@@ -105,6 +120,7 @@ const PanelMainPage = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
@@ -119,16 +135,24 @@ const PanelMainPage = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div id='pm_scaffold' style={{ zIndex: zIndex.current }}>
+        <div id='pm_scaffold'>
             <div id='pm_menu'>
                 <PanelLogoWidget ref={panelLogoRef} $data={{ wid: 'panelLogoRef', refId: panelLogoRef }} />
                 <div id='pm_scroll_area'>
-                    <PanelMenuContainerWidget ref={panelMenuContainerRef} $data={{ wid: 'panelMenuContainerRef', refId: panelMenuContainerRef, controllerRef: panelMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />
+                    {accountType.current === 'admin' && < PanelMenuContainerWidget ref={panelMenuContainerRef} $data={{ wid: 'panelMenuContainerRef', refId: panelMenuContainerRef, controllerRef: panelMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />}
+                    {accountType.current === 'callCenter' && <PanelCCMenuWidget ref={panelCCMenuRef} $data={{ wid: 'panelCCMenuRef', refId: panelCCMenuRef, controllerRef: panelMainControllerRef, rootControllers: rootControllers }} />}
                 </div>
             </div>
 
             <div id='pm_container'>
-                <PanelHeaderWidget ref={panelHeaderRef} $data={{ wid: 'panelHeaderRef', refId: panelHeaderRef, controllerRef: panelMainControllerRef, rootControllers: rootControllers }} />
+                {accountType.current === 'admin' && <>
+                    <PanelHeaderWidget ref={panelHeaderRef} $data={{ wid: 'panelHeaderRef', refId: panelHeaderRef, controllerRef: panelMainControllerRef, rootControllers: rootControllers }} />
+                    <AccountMainPage ref={accountMainRef} $data={{ wid: 'accountMainRef', refId: accountMainRef, controllerRef: panelMainControllerRef, rootControllers: rootControllers }} />
+                </>}
+
+                {accountType.current === 'callCenter' && <>
+                    <PanelCCContainerWidget ref={panelCCContainerRef} $data={{ wid: 'panelCCContainerRef', refId: panelCCContainerRef, controllerRef: panelMainControllerRef, rootControllers: rootControllers }} />
+                </>}
             </div>
         </div>
         <PanelMainControllerWidget ref={panelMainControllerRef} $data={{ wid: 'panelMainControllerRef', refId: panelMainControllerRef, rootControllers: rootControllers }} />

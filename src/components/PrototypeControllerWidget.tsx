@@ -19,9 +19,9 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
 
     const parentProps = props;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const windowWidth = useRef(window.innerWidth);
 
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const windowHeight = useRef(window.innerHeight);
 
     const [refresh, setRefresh] = useState(false);
 
@@ -75,7 +75,10 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -90,6 +93,7 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 

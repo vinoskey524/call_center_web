@@ -19,9 +19,9 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
 
     const parentProps = props;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const windowWidth = useRef(window.innerWidth);
 
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const windowHeight = useRef(window.innerHeight);
 
     const [refresh, setRefresh] = useState(false);
 
@@ -45,6 +45,8 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const timer = useRef<any>(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -67,13 +69,23 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
     };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
+
+    /* Check refs :: start_up_check_0 */
+    const checkRefs = () => {
+        if (mainControllerRef.current !== undefined && dataStoreControllerRef !== undefined) mainControllerRef.current.startUpCheckDoneFunc()
+        else setTimeout(() => { refId.current.checkRefs() }, 100);
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        checkRefs() { checkRefs() },
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) }
     }), [refresh]);
@@ -82,6 +94,7 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            checkRefs();
         }
     }, []);
 

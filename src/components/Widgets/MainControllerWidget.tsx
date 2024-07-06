@@ -1,5 +1,6 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../Tools/type';
@@ -10,6 +11,7 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
+        parentRef: refIdType,
         requestControllerRef: refIdType,
         dataStoreControllerRef: refIdType
     }
@@ -19,9 +21,9 @@ const MainControllerWidget = (props: propsType, ref: any) => {
 
     const parentProps = props;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const windowWidth = useRef(window.innerWidth);
 
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const windowHeight = useRef(window.innerHeight);
 
     const [refresh, setRefresh] = useState(false);
 
@@ -37,9 +39,19 @@ const MainControllerWidget = (props: propsType, ref: any) => {
 
     const refId = data.refId;
 
+    const parentRef = data.parentRef;
+
     const requestControllerRef = data.requestControllerRef;
 
     const dataStoreControllerRef = data.dataStoreControllerRef;
+
+    /* - */
+
+    const authLoginRef = useRef<any>(undefined);
+
+    const panelMainRef = useRef<any>(undefined)
+
+    const accountCreationRef = useRef<any>(undefined);
 
     /* - */
 
@@ -52,7 +64,9 @@ const MainControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
-            case 'emptyRef': { emptyRef.current = refId.current } break;
+            case 'authLoginRef': { authLoginRef.current = refId.current } break;
+            case 'panelMainRef': { panelMainRef.current = refId.current } break;
+            case 'accountCreationRef': { accountCreationRef.current = refId.current } break;
             default: { };
         };
     };
@@ -67,15 +81,25 @@ const MainControllerWidget = (props: propsType, ref: any) => {
     };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
+
+    /* Start up check done */
+    const startUpCheckDoneFunc = () => { parentRef.current.renderFunc({ render: true }) };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        authLoginRef: authLoginRef,
+        panelMainRef: panelMainRef,
+        accountCreationRef: accountCreationRef,
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        startUpCheckDoneFunc() { startUpCheckDoneFunc() }
     }), [refresh]);
 
     /* On mount */
@@ -95,7 +119,7 @@ const MainControllerWidget = (props: propsType, ref: any) => {
     /* Return */
 
 
-    return (<div></div>);
+    return (<></>);
 };
 
 export default forwardRef(MainControllerWidget);

@@ -1,4 +1,4 @@
-#ph_scaffold {
+#phw_scaffold {
     width: 100%;
     height: 50px;
     overflow: hidden;
@@ -7,11 +7,12 @@
     left: 0px;
     display: flex;
     flex-direction: row;
-    background-color: #23272F;
+    align-items: center;
     padding-inline: 20px;
+    z-index: 2;
 }
 
-#ph_enterprise_name {
+#phw_enterprise_name {
     width: auto;
     height: auto;
     color: white;

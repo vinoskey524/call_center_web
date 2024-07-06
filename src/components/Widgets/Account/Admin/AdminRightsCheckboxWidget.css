@@ -1,0 +1,42 @@
+.arcw_scaffold {
+    overflow: hidden;
+    position: relative;
+    display: flex !important;
+    flex-direction: column !important;
+    cursor: default;
+}
+
+/* .arcw_scaffold:hover .arcw_title {
+    opacity: 0.8;
+} */
+
+/* Main option  */
+
+.arcw_main_option {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    padding-left: 2px;
+}
+
+.arcw_title {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    margin-left: 6px;
+}
+
+/* Sub option */
+
+.arcw_sub_option {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+}

@@ -1,0 +1,16 @@
+.sw_scaffold {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 30px;
+    padding-inline: 2px;
+    border-width: 1px;
+    border-color: #fff;
+}
+
+.sw_slider {
+    position: relative;
+    border-radius: 100px;
+    background-color: #9e9e9e;
+}

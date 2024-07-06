@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 
 /* Custom packages */
+import './Base.css';
 import './MainPage.css';
 import { refIdType } from '../Tools/type';
 import MainControllerWidget from '../Widgets/MainControllerWidget';
@@ -9,6 +10,7 @@ import RequestControllerWidget from '../Widgets/RequestControllerWidget';
 import DataStoreControllerWidget from '../Widgets/DataStoreControllerWidget';
 import AuthLoginPage from './Auth/AuthLoginPage';
 import PanelMainPage from './Panel/PanelMainPage';
+import AccountCreationPage from './Account/AccountCreationPage';
 
 /* Widget */
 type propsType = {
@@ -31,7 +33,7 @@ const MainPage = (props: propsType, ref: any) => {
 
     const isMounted = useRef(false);
 
-    const render = useRef(true);
+    const render = useRef(false);
 
     /* $data */
 
@@ -40,6 +42,7 @@ const MainPage = (props: propsType, ref: any) => {
     const wid = data.wid;
 
     const refId = data.refId;
+    console.log(refId);
 
     /* - */
 
@@ -57,8 +60,17 @@ const MainPage = (props: propsType, ref: any) => {
 
     const panelMainRef = useRef(undefined);
 
+    const accountCreationRef = useRef(undefined);
+
+    const timer = useRef<any>(undefined);
+
+    const rootControllersReady = useRef(false);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
+
+    /* Render */
+    const renderFunc = (x: { render: boolean }) => { render.current = x.render; setRefresh(!refresh) };
 
     /* Refresh component */
     const refreshFunc = () => { setRefresh(!refresh) };
@@ -71,6 +83,7 @@ const MainPage = (props: propsType, ref: any) => {
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        renderFunc(x: any) { renderFunc(x) },
         refreshFunc() { refreshFunc() }
     }), [refresh]);
 
@@ -93,15 +106,18 @@ const MainPage = (props: propsType, ref: any) => {
 
     const component = <>
         <div id='mp_scaffold'>
-            <AuthLoginPage ref={authLoginRef} $data={{ wid: 'authLoginRef', refId: authLoginRef, rootControllers: rootControllers }} />
-            <PanelMainPage ref={panelMainRef} $data={{ wid: 'panelMainRef', refId: panelMainRef, rootControllers: rootControllers }} />
+            {render.current && <>
+                <AuthLoginPage ref={authLoginRef} $data={{ wid: 'authLoginRef', refId: authLoginRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <PanelMainPage ref={panelMainRef} $data={{ wid: 'panelMainRef', refId: panelMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <AccountCreationPage ref={accountCreationRef} $data={{ wid: 'accountCreationRef', refId: accountCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+            </>}
         </div>
 
-        <MainControllerWidget ref={mainControllerRef} $data={{ wid: 'mainControllerRef', refId: mainControllerRef, requestControllerRef: requestControllerRef, dataStoreControllerRef: dataStoreControllerRef }} />
+        <MainControllerWidget ref={mainControllerRef} $data={{ wid: 'mainControllerRef', refId: mainControllerRef, parentRef: refId, requestControllerRef: requestControllerRef, dataStoreControllerRef: dataStoreControllerRef }} />
         <RequestControllerWidget ref={requestControllerRef} $data={{ wid: 'requestControllerRef', refId: requestControllerRef, mainControllerRef: mainControllerRef, dataStoreControllerRef: dataStoreControllerRef }} />
         <DataStoreControllerWidget ref={dataStoreControllerRef} $data={{ wid: 'dataStoreControllerRef', refId: dataStoreControllerRef, mainControllerRef: mainControllerRef, requestControllerRef: requestControllerRef }} />
     </>;
-    return (render.current ? component : <></>);
+    return (component);
 };
 
 export default forwardRef(MainPage);

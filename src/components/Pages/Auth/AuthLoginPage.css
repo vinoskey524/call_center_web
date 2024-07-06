@@ -10,6 +10,11 @@
     justify-content: center;
     align-items: center;
     background-color: #23272F;
+    z-index: 1;
+}
+
+.kevin {
+    width: 100px;
 }
 
 #al_container {

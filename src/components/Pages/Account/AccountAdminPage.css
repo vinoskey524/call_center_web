@@ -1,0 +1,108 @@
+#aap_scaffold {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    top: 0px;
+    left: 0px;
+    background-color: var(--panel_container_background_color);
+    z-index: 2;
+}
+
+/* Header */
+
+#aap_header {
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    flex-direction: row;
+    z-index: 2;
+}
+
+#aap_title {
+    color: #D3E4FD;
+    margin-top: 4px;
+    margin-bottom: 6px;
+}
+
+/* Add account */
+
+#aap_add_account_btn_container {
+    width: auto;
+    height: 25px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #008000;
+    margin-left: 15px;
+    margin-top: 2px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+#aap_add_account_btn_title {
+    width: auto;
+    height: auto;
+    color: white;
+    margin-inline: 4px;
+}
+
+/* Table header */
+
+#aap_table_header {
+    width: var(--aafw_scaffold_width);
+    height: 30px;
+    overflow: hidden;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    top: 100px;
+    left: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #007aff;
+    /* background-color: yellow; */
+    z-index: 2;
+}
+
+#aap_checkbox {
+    width: 18px;
+    height: 18px;
+}
+
+/* Glass */
+
+#background_glass_wall {
+    width: 100%;
+    height: 130px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+}
+
+/* Container */
+
+#aap_container {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    position: relative;
+    display: block;
+    flex-direction: column;
+    z-index: 0;
+}

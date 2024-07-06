@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import './PanelHeaderWidget.css';
 import { language } from '../../Tools/language';
 import { refIdType } from '../../Tools/type';
+import { _defaultLanguage_ } from '../../Tools/constants';
 
 /* Widget */
 type propsType = {
@@ -31,9 +32,7 @@ const PanelHeaderWidget = (props: propsType, ref: any) => {
 
     const render = useRef(!false);
 
-    const zIndex = useRef(100);
-
-    const lang = useRef('fr');
+    const lang = useRef(_defaultLanguage_);
 
     const traduction = language[lang.current];
 
@@ -98,8 +97,8 @@ const PanelHeaderWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div id='ph_scaffold prevent_select' style={{ zIndex: zIndex.current }}>
-            <p id='ph_enterprise_name'>Data links</p>
+        <div id='phw_scaffold' className='prevent_select'>
+            <p id='phw_enterprise_name'>Data links</p>
         </div>
     </>;
     return (render.current ? component : <></>);

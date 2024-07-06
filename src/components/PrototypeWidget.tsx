@@ -6,6 +6,7 @@ import $ from 'jquery';
 import { generateIdFunc } from './Tools/methodForest';
 import { language } from './Tools/language';
 import { refIdType } from './Tools/type';
+import { _defaultLanguage_ } from './Tools/constants';
 
 /* Widget */
 type propsType = {
@@ -22,9 +23,9 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const parentProps = props;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const windowWidth = useRef(window.innerWidth);
 
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const windowHeight = useRef(window.innerHeight);
 
     const [refresh, setRefresh] = useState(false);
 
@@ -32,9 +33,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const render = useRef(!false);
 
-    const zIndex = useRef(0);
-
-    const lang = useRef('fr');
+    const lang = useRef(_defaultLanguage_);
 
     const traduction = language[lang.current];
 
@@ -70,7 +69,10 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -85,6 +87,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
@@ -99,7 +102,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div style={{ zIndex: zIndex.current }}></div>
+        <div></div>
     </>;
     return (render.current ? component : <></>);
 };

@@ -49,9 +49,11 @@ const PanelMainControllerWidget = (props: propsType, ref: any) => {
 
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
 
-    /* - */
+    /* Refs */
 
-    const emptyRef = useRef(undefined);
+    const accountMainControllerRef = useRef<any>(undefined);
+
+    /* - */
 
     const currentMenuData = useRef<{ id: string, refId: refIdType } | undefined>();
 
@@ -62,7 +64,7 @@ const PanelMainControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
-            case 'emptyRef': { emptyRef.current = refId.current } break;
+            case 'accountMainControllerRef': { accountMainControllerRef.current = refId.current } break;
             default: { };
         };
     };
@@ -84,6 +86,7 @@ const PanelMainControllerWidget = (props: propsType, ref: any) => {
         (currentMenuData.current !== undefined) && (currentMenuData.current.refId).current.selectFunc({ select: false });
         (x.refId).current.selectFunc({ select: true });
         currentMenuData.current = x;
+        accountMainControllerRef.current.showMenuPageFunc({ id: x.id });
     };
 
 

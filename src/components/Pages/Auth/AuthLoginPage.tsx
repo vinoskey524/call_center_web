@@ -12,6 +12,7 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
+        controllerRef?: refIdType,
         rootControllers: any
     }
 };
@@ -30,8 +31,6 @@ const AuthLoginPage = (props: propsType, ref: any) => {
 
     const render = useRef(true);
 
-    const zIndex = useRef(1);
-
     const lang = useRef('fr');
 
     const traduction = language[lang.current];
@@ -43,6 +42,8 @@ const AuthLoginPage = (props: propsType, ref: any) => {
     const wid = data.wid;
 
     const refId = data.refId;
+
+    const controllerRef = data.controllerRef;
 
     const rootControllers = data.rootControllers;
 
@@ -81,6 +82,7 @@ const AuthLoginPage = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
@@ -95,12 +97,12 @@ const AuthLoginPage = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div id='al_scaffold' style={{ zIndex: zIndex.current }}>
+        <div id='al_scaffold'>
             <div id='al_container'>
                 <p id='al_title'>{traduction['t0001']}</p>
-                <input className='al_input' type='text' placeholder={traduction['t0005']} />
-                <input className='al_input' type='text' placeholder={traduction['t0002']} />
-                <input className='al_input' type='password' placeholder={traduction['t0003']} />
+                <input id='al_domain_input' name='domain_input' className='al_input' type='text' placeholder={traduction['t0005']} />
+                <input id='al_username_input' name='username_input' className='al_input' type='text' placeholder={traduction['t0002']} />
+                <input id='al_password_input' name='password_input' className='al_input' type='password' placeholder={traduction['t0003']} />
                 <button style={{ backgroundColor: '#007aff' }} className='al_btn btn_opacity' type='button'>{traduction['t0001']}</button>
             </div>
         </div>

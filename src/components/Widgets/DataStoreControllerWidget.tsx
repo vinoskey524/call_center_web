@@ -19,9 +19,9 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
 
     const parentProps = props;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const windowWidth = useRef(window.innerWidth);
 
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const windowHeight = useRef(window.innerHeight);
 
     const [refresh, setRefresh] = useState(false);
 
@@ -42,6 +42,8 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     const requestControllerRef = data.requestControllerRef;
 
     /* - */
+
+    const accountType = useRef<'admin' | 'callCenter' | 'customer'>('callCenter');
 
     const emptyRef = useRef(undefined);
 
@@ -67,13 +69,17 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        accountType: accountType,
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) }
     }), [refresh]);

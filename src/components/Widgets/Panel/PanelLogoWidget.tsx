@@ -3,9 +3,10 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 
 /* Custom packages */
 import './PanelLogoWidget.css';
-import logo from '../../Assets/png/google.png';
+import logo_f from '../../Assets/png/logo_f.png';
 import { language } from '../../Tools/language';
 import { refIdType } from '../../Tools/type';
+import { _defaultLanguage_ } from '../../Tools/constants';
 
 /* Widget */
 type propsType = {
@@ -30,9 +31,7 @@ const PanelLogoWidget = (props: propsType, ref: any) => {
 
     const render = useRef(true);
 
-    const zIndex = useRef(0);
-
-    const lang = useRef('fr');
+    const lang = useRef(_defaultLanguage_);
 
     const traduction = language[lang.current];
 
@@ -85,9 +84,9 @@ const PanelLogoWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div id='pl_scaffold' className='prevent_select' style={{ zIndex: zIndex.current }}>
-            <img id='pl_logo_icon' src={logo} />
-            <p id='pl_app_name'>Google</p>
+        <div id='pl_scaffold' className='prevent_select'>
+            <img id='pl_logo_icon' src={logo_f} />
+            <p id='pl_app_name'>Call Center</p>
         </div>
     </>;
     return (render.current ? component : <></>);
