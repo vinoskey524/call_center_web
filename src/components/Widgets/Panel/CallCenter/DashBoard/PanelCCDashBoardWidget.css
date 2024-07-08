@@ -26,7 +26,7 @@
     margin-right: 12px;
 }
 
-/* btn */
+/* header btn */
 
 .pccdbw_h_btn_container {
     width: auto;
@@ -56,13 +56,13 @@
 .pccdbw_hv_separator {
     width: 1px;
     height: 13px;
-    margin-inline: 8px;
+    margin-inline: 10px;
     margin-top: 6px;
     background-color: rgba(51, 58, 69, 1);
 }
 
 .pccdbw_h_search_container {
-    width: 260px;
+    width: 250px;
     height: 25px;
     overflow: hidden;
     display: flex;
@@ -73,12 +73,12 @@
     color: white;
     margin-left: 3px;
     margin-top: 4px;
-    padding-inline: 6px;
+    padding-inline: 10px;
 }
 
 .pccdbw_h_search_icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
 }
 
 .pccdbw_h_search_bar {
@@ -86,6 +86,34 @@
     overflow: hidden;
     background-color: transparent;
     color: white;
+    margin-left: 3px;
+}
+
+/* Add btn */
+
+.pccdbw_add_btn_container {
+    width: auto;
+    height: 23px;
+    overflow: visible;
+    position: relative;
+    margin-top: 4px;
+}
+
+.pccdbw_add_btn_title {
+    width: 80px;
+    height: 23px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 12px;
+    background-color: #0067FF;
+    border-radius: 6px;
+    font-size: 13px;
+    color: white;
+    margin-top: -1.2px;
 }
 
 /* Body */
@@ -100,14 +128,21 @@
     z-index: 0;
 }
 
+/* left */
+
 .pccdbw_body_left {
     width: 380px;
     height: 100%;
     overflow-x: hidden;
     overflow-y: visible;
     position: relative;
-    background-color: red
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* background-color: white; */
 }
+
+/* right */
 
 .pccdbw_body_right {
     flex: 1;

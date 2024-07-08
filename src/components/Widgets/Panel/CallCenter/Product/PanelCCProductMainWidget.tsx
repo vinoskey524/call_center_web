@@ -28,7 +28,8 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const windowHeight = useRef(window.innerHeight);
 
-    const [refresh, setRefresh] = useState(false);
+    const refresher = useRef(false);
+    const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
 
@@ -64,7 +65,10 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => { setRefresh(!refresh) };
+    const refreshFunc = () => {
+        refresher.current = refresher.current ? false : true;
+        setRefresh(refresher.current);
+    };
 
     /* Set language */
     const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
@@ -103,7 +107,13 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div className='pccpmw_scaffold'></div>
+        <div className='pccpmw_scaffold'>
+            <div className='pccpmw_img_container'>
+                <img className='pccpmw_img' src='logo192.png' />
+            </div>
+
+            <div className='pccpmw_'></div>
+        </div>
     </>;
     return (render.current ? component : <></>);
 };

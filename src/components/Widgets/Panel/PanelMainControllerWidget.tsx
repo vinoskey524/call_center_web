@@ -23,8 +23,6 @@ const PanelMainControllerWidget = (props: propsType, ref: any) => {
 
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
-    const [refresh, setRefresh] = useState(false);
-
     const isMounted = useRef(false);
 
     const render = useRef(false);
@@ -97,7 +95,7 @@ const PanelMainControllerWidget = (props: propsType, ref: any) => {
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
         selectMenuFunc(x: any) { selectMenuFunc(x) }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {

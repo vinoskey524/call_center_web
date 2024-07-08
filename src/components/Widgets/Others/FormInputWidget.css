@@ -1,0 +1,164 @@
+.formiw_input_container {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+/* state */
+
+.formiw_input_state {
+    width: 6px;
+    height: 6px;
+    background-color: #333A45;
+    border-radius: 100%;
+}
+
+/* title */
+
+.formiw_input_title {
+    flex: 1;
+    height: 25px;
+    overflow: hidden;
+    position: rela;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+    padding-right: 6px;
+    color: #007aff;
+    font-size: 13px;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+/* content */
+
+.formiw_input_content {
+    width: 65%;
+    min-width: 65%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.formiw_input_box {
+    width: 100%;
+    height: 25px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    background-color: #333A45;
+}
+
+/* textarea */
+
+.formiw_textarea_input_box {
+    width: 100%;
+    height: 100px;
+    min-height: 100px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    background-color: #333A45;
+    margin-top: 6px
+}
+
+.formiw_input_import_desc {
+    width: 100%;
+    height: 22px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #007aff;
+    margin-top: 4px;
+    border-radius: 6px;
+}
+
+.formiw_input_import_desc_icon {
+    width: 15px;
+    height: 15px;
+    position: relative;
+}
+
+.formiw_input_import_desc_title {
+    width: auto;
+    height: auto;
+    color: white;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+/* - */
+
+.formiw_input_desc {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    font-size: 11px;
+    color: #9e9e9e;
+    margin-top: 4px;
+}
+
+/* Desc preview */
+
+.formiw_input_desc_preview_container {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    border-radius: 6px;
+    background-color: #333A45;
+    margin-top: 6px;
+}
+
+.formiw_input_desc_preview_icon {
+    width: 45px;
+    height: 45px;
+}
+
+.formiw_input_desc_preview_info_container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-left: 3px;
+    padding-right: 4px;
+}
+
+.formiw_input_desc_preview_info_title {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding-block: 3px;
+}
+
+.formiw_input_desc_preview_info_size {
+    width: auto;
+    height: auto;
+    color: #9e9e9e;
+    font-size: 11px;
+}

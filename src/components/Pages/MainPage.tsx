@@ -11,6 +11,7 @@ import DataStoreControllerWidget from '../Widgets/DataStoreControllerWidget';
 import AuthLoginPage from './Auth/AuthLoginPage';
 import PanelMainPage from './Panel/PanelMainPage';
 import AccountCreationPage from './Account/AccountCreationPage';
+import ProductCreationMainPage from './Creation/Product/ProductCreationMainPage';
 
 /* Widget */
 type propsType = {
@@ -29,7 +30,8 @@ const MainPage = (props: propsType, ref: any) => {
 
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
-    const [refresh, setRefresh] = useState(false);
+    const refresher = useRef(false);
+    const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
 
@@ -42,7 +44,6 @@ const MainPage = (props: propsType, ref: any) => {
     const wid = data.wid;
 
     const refId = data.refId;
-    console.log(refId);
 
     /* - */
 
@@ -62,6 +63,8 @@ const MainPage = (props: propsType, ref: any) => {
 
     const accountCreationRef = useRef(undefined);
 
+    const productCreationMainRef = useRef(undefined);
+
     const timer = useRef<any>(undefined);
 
     const rootControllersReady = useRef(false);
@@ -69,11 +72,17 @@ const MainPage = (props: propsType, ref: any) => {
 
     /* ------------------------------------ Methods ------------------------------------- */
 
-    /* Render */
-    const renderFunc = (x: { render: boolean }) => { render.current = x.render; setRefresh(!refresh) };
-
     /* Refresh component */
-    const refreshFunc = () => { setRefresh(!refresh) };
+    const refreshFunc = () => {
+        refresher.current = refresher.current ? false : true;
+        setRefresh(refresher.current);
+    };
+
+    /* Render */
+    const renderFunc = (x: { render: boolean }) => {
+        render.current = x.render;
+        refreshFunc();
+    };
 
     /* On window size change */
     const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
@@ -85,7 +94,7 @@ const MainPage = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         renderFunc(x: any) { renderFunc(x) },
         refreshFunc() { refreshFunc() }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {
@@ -110,6 +119,7 @@ const MainPage = (props: propsType, ref: any) => {
                 <AuthLoginPage ref={authLoginRef} $data={{ wid: 'authLoginRef', refId: authLoginRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
                 <PanelMainPage ref={panelMainRef} $data={{ wid: 'panelMainRef', refId: panelMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
                 <AccountCreationPage ref={accountCreationRef} $data={{ wid: 'accountCreationRef', refId: accountCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <ProductCreationMainPage ref={productCreationMainRef} $data={{ wid: 'productCreationMainRef', refId: productCreationMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
             </>}
         </div>
 

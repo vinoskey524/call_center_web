@@ -1,5 +1,6 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from './Tools/type';
@@ -22,8 +23,6 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     const windowWidth = useRef(window.innerWidth);
 
     const windowHeight = useRef(window.innerHeight);
-
-    const [refresh, setRefresh] = useState(false);
 
     const isMounted = useRef(false);
 
@@ -87,7 +86,7 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {

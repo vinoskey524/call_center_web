@@ -1,5 +1,6 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../../../Tools/type';
@@ -11,10 +12,11 @@ type propsType = {
         wid: string,
         refId: refIdType,
         controllerRef?: refIdType,
-        rootControllers: any
+        rootControllers: any,
+        parentRef: refIdType
     }
 };
-const PanelCCControllerWidget = (props: propsType, ref: any) => {
+const ProductCreationControllerWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
@@ -22,6 +24,8 @@ const PanelCCControllerWidget = (props: propsType, ref: any) => {
     const windowWidth = useRef(window.innerWidth);
 
     const windowHeight = useRef(window.innerHeight);
+
+    const [refresh, setRefresh] = useState(false);
 
     const isMounted = useRef(false);
 
@@ -39,6 +43,8 @@ const PanelCCControllerWidget = (props: propsType, ref: any) => {
 
     const rootControllers = data.rootControllers;
 
+    const parentRef = data.parentRef;
+
     /* Root controllers */
 
     const mainControllerRef: refIdType = rootControllers.mainControllerRef;
@@ -46,6 +52,14 @@ const PanelCCControllerWidget = (props: propsType, ref: any) => {
     const requestControllerRef: refIdType = rootControllers.requestControllerRef;
 
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
+
+    /* Refs */
+
+    const loadingRef = useRef<any>(undefined);
+
+    const productNameFormInputRef = useRef<any>(undefined);
+
+    const productDescFormInputRef = useRef<any>(undefined);
 
     /* - */
 
@@ -58,7 +72,9 @@ const PanelCCControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
-            case 'emptyRef': { emptyRef.current = refId.current } break;
+            case 'loadingRef': { loadingRef.current = refId.current } break;
+            case 'productNameFormInputRef': { productNameFormInputRef.current = refId.current } break;
+            case 'productDescFormInputRef': { productDescFormInputRef.current = refId.current } break;
             default: { };
         };
     };
@@ -67,7 +83,14 @@ const PanelCCControllerWidget = (props: propsType, ref: any) => {
     const setTextValueFunc = (x: { wid: string, text: string }) => {
         const wid = x.wid, text = x.text;
         switch (wid) {
-            case '': { } break;
+            case 'productNameFormInputRef': {
+                productNameFormInputRef.current.setInputStateFunc({ state: text.length > 0 ? 'correct' : 'empty' });
+            } break;
+
+            case 'productDescFormInputRef': {
+                productDescFormInputRef.current.setInputStateFunc({ state: text.length > 0 ? 'correct' : 'empty' });
+            } break;
+
             default: { };
         };
     };
@@ -78,14 +101,34 @@ const PanelCCControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Select description file */
+    const onDescBtnClickFunc = () => {
+        const fileSelectorId = parentRef.current.file_selector_input_id;
+        const files: any[] = $(`#${fileSelectorId}`).prop('files');
+        if (files.length === 0) {
+            $(`#${fileSelectorId}`).prop({ 'accept': '.doc,.docx,.html' });
+            $(`#${fileSelectorId}`).trigger('click');
+        } else {
+            $(`#${fileSelectorId}`).val('');
+            productDescFormInputRef.current.deleteDescFileFunc();
+        }
+    }
+
+    /* Set description file */
+    const setDescriptionFileFunc = (x: { fileData: any }) => {
+        productDescFormInputRef.current.setDescriptionFileFunc({ fileData: x.fileData });
+    };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
-    }), []);
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        onDescBtnClickFunc() { onDescBtnClickFunc() },
+        setDescriptionFileFunc(x: any) { setDescriptionFileFunc(x) },
+    }), [refresh]);
 
     /* On mount */
     useEffect(() => {
@@ -108,4 +151,4 @@ const PanelCCControllerWidget = (props: propsType, ref: any) => {
     return (<></>);
 };
 
-export default forwardRef(PanelCCControllerWidget);
+export default forwardRef(ProductCreationControllerWidget);

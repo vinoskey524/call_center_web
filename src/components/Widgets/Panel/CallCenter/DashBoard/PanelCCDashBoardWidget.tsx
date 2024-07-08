@@ -30,7 +30,8 @@ const PanelCCDashBoardWidget = (props: propsType, ref: any) => {
 
     const windowHeight = useRef(window.innerHeight);
 
-    const [refresh, setRefresh] = useState(false);
+    const refresher = useRef(false);
+    const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
 
@@ -62,11 +63,16 @@ const PanelCCDashBoardWidget = (props: propsType, ref: any) => {
 
     /* - */
 
+    const panelCCProductMainRef = useRef(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => { setRefresh(!refresh) };
+    const refreshFunc = () => {
+        refresher.current = refresher.current ? false : true;
+        setRefresh(refresher.current);
+    };
 
     /* Set language */
     const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
@@ -122,12 +128,21 @@ const PanelCCDashBoardWidget = (props: propsType, ref: any) => {
 
                 <div className='pccdbw_h_search_container'>
                     <img className='pccdbw_h_search_icon' src={search_icon} />
-                    <input className='pccdbw_h_search_bar' type='text' placeholder='Research' />
+                    <input className='pccdbw_h_search_bar' type='text' placeholder='Search' />
                 </div>
+
+                <div className='pccdbw_hv_separator' />
+
+                <div className='pccdbw_add_btn_container'>
+                    <div className='pccdbw_add_btn_title btn_opacity'>+ Ajouter</div>
+                </div>
+
             </div>
 
             <div /* Body */ className='pccdbw_body'>
-                <div className='pccdbw_body_left'></div>
+                <div className='pccdbw_body_left'>
+                    <PanelCCProductMainWidget ref={panelCCProductMainRef} $data={{ wid: 'panelCCProductMainRef', refId: panelCCProductMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+                </div>
 
                 <div className='pccdbw_body_right'></div>
             </div>

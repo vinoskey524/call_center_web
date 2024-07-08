@@ -25,8 +25,6 @@ const MainControllerWidget = (props: propsType, ref: any) => {
 
     const windowHeight = useRef(window.innerHeight);
 
-    const [refresh, setRefresh] = useState(false);
-
     const isMounted = useRef(false);
 
     const render = useRef(false);
@@ -100,7 +98,7 @@ const MainControllerWidget = (props: propsType, ref: any) => {
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
         startUpCheckDoneFunc() { startUpCheckDoneFunc() }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {

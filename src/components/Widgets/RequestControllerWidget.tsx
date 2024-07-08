@@ -23,8 +23,6 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
 
     const windowHeight = useRef(window.innerHeight);
 
-    const [refresh, setRefresh] = useState(false);
-
     const isMounted = useRef(false);
 
     const render = useRef(false);
@@ -88,7 +86,7 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
         checkRefs() { checkRefs() },
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {

@@ -1,5 +1,10 @@
 /*  */
 
+@font-face {
+    font-family: poppins;
+    src: url('../Assets/fonts/poppins.ttf');
+}
+
 :root {
     /* body */
     --body_width: 100vw;
@@ -21,7 +26,8 @@ body {
     padding: 0;
     background-color: #23272F;
     font-size: 14;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'poppins';
+    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; */
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -43,6 +49,11 @@ p {
     margin: 0px;
 }
 
+img {
+    box-sizing: border-box;
+    margin: 0px;
+}
+
 h1 {
     box-sizing: border-box;
     margin: 0px;
@@ -56,6 +67,7 @@ input {
     margin: 0px;
     resize: none;
     border-width: 0px;
+    padding-inline: 5px;
 }
 
 textarea {
@@ -63,6 +75,8 @@ textarea {
     padding-inline: 8px;
     outline: none;
     resize: none;
+    border-width: 0px;
+    padding: 5px;
 }
 
 button {
@@ -107,7 +121,7 @@ button {
 }
 
 .glass {
-    background: rgba(35, 39, 47, 0.01);
+    background-color: rgba(35, 39, 47, 0.01);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }

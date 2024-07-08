@@ -26,7 +26,8 @@ const PanelHeaderWidget = (props: propsType, ref: any) => {
 
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
-    const [refresh, setRefresh] = useState(false);
+    const refresher = useRef(false);
+    const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
 
@@ -62,7 +63,10 @@ const PanelHeaderWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => { setRefresh(!refresh) };
+    const refreshFunc = () => {
+        refresher.current = refresher.current ? false : true;
+        setRefresh(refresher.current);
+    };
 
     /* Set language */
     const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };

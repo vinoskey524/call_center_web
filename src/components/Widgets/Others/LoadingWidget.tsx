@@ -3,10 +3,12 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
-import { generateIdFunc } from './Tools/methodForest';
-import { language } from './Tools/language';
-import { refIdType } from './Tools/type';
-import { _defaultLanguage_ } from './Tools/constants';
+import { generateIdFunc } from '../../Tools/methodForest';
+import { language } from '../../Tools/language';
+import { refIdType } from '../../Tools/type';
+import { _defaultLanguage_ } from '../../Tools/constants';
+import loading_0_gif from '../../Assets/gif/loading0.gif';
+import loading_1_gif from '../../Assets/gif/loading1.gif';
 
 /* Widget */
 type propsType = {
@@ -14,11 +16,10 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
-        controllerRef?: refIdType,
-        rootControllers: any
+        controllerRef: refIdType
     }
 };
-const PrototypePage = (props: propsType, ref: any) => {
+const LoadingWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
@@ -48,16 +49,6 @@ const PrototypePage = (props: propsType, ref: any) => {
 
     const controllerRef = data.controllerRef;
 
-    const rootControllers = data.rootControllers;
-
-    /* Root controllers */
-
-    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
-
-    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
-
-    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
-
     /* - */
 
 
@@ -69,12 +60,6 @@ const PrototypePage = (props: propsType, ref: any) => {
         setRefresh(refresher.current);
     };
 
-    /* Render */
-    const renderFunc = (x: { render: boolean }) => {
-        render.current = x.render;
-        refreshFunc();
-    };
-
     /* Set language */
     const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
 
@@ -84,21 +69,24 @@ const PrototypePage = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Show loading */
+    const showLoadingFunc = (x: { show: boolean }) => { $(`#loadw_scaffold`).animate({ scale: x.show ? 1 : 0 }, 100) };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
-        renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
-    }), []);
+        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        showLoadingFunc(x: any) { showLoadingFunc(x) }
+    }), [refresh]);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
@@ -113,9 +101,9 @@ const PrototypePage = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div></div>
+        <img id='loadw_scaffold' style={{ width: 50, height: 50, scale: 0 }} src={loading_0_gif} />
     </>;
     return (render.current ? component : <></>);
 };
 
-export default forwardRef(PrototypePage);
+export default forwardRef(LoadingWidget);

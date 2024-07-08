@@ -1,10 +1,26 @@
 .pccpmw_scaffold {
-    width: 90%;
-    height: 30px;
+    width: 96%;
+    height: 45px;
     overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: row;
-    background-color: red;
     border-radius: 8px;
+    margin-block: 2px;
+    box-shadow: 0px 1px 10px rgba(51, 58, 69, 0.6);
+}
+
+.pccpmw_img_container {
+    width: 50px;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pccpmw_img {
+    width: 30px;
+    height: 30px;
 }
