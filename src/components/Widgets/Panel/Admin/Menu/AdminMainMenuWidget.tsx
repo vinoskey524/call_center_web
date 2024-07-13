@@ -1,13 +1,12 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import $ from 'jquery';
 
 /* Custom packages */
-import './PanelCCProductMainWidget.css';
-import { generateIdFunc } from '../../../../Tools/methodForest';
+import './AdminMainMenuWidget.css';
+import white_arrow_icon from '../../../../Assets/png/arrow_white.png';
 import { language } from '../../../../Tools/language';
 import { refIdType } from '../../../../Tools/type';
-import { _defaultLanguage_ } from '../../../../Tools/constants';
+import AdminMenuBtnWidget from './AdminMenuBtnWidget';
 
 /* Widget */
 type propsType = {
@@ -16,7 +15,11 @@ type propsType = {
         wid: string,
         refId: refIdType,
         controllerRef: refIdType,
-        rootControllers: any
+        rootControllers: any,
+        menuData: {
+            container: { id: string, title: string },
+            children: Array<{ id: string, iconUri: string, title: string }>
+        }
     }
 };
 const PrototypeWidget = (props: propsType, ref: any) => {
@@ -24,9 +27,9 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const parentProps = props;
 
-    const windowWidth = useRef(window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    const windowHeight = useRef(window.innerHeight);
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
@@ -35,7 +38,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const render = useRef(!false);
 
-    const lang = useRef(_defaultLanguage_);
+    const lang = useRef('fr');
 
     const traduction = language[lang.current];
 
@@ -47,9 +50,11 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const refId = data.refId;
 
-    const controllerRef = data.controllerRef;
+    const controllerRef = data.controllerRef; /* AdminMainControllerWidget */
 
     const rootControllers = data.rootControllers;
+
+    const menuData = data.menuData;
 
     /* Root controllers */
 
@@ -60,6 +65,14 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
 
     /* - */
+
+    const containerData = menuData.container;
+
+    const childrenData = menuData.children;
+
+    /* - */
+
+    const childrenRefTab = Array(childrenData.length).fill(undefined).map(() => React.createRef());
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -74,10 +87,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => {
-        windowWidth.current = window.innerWidth;
-        windowHeight.current = window.innerHeight;
-    };
+    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -92,27 +102,30 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
     /* On window size change */
-    // useEffect(() => {
-    //     window.addEventListener('resize', onWindowSizeChangeFunc);
-    //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
-    // }, []);
+    useEffect(() => {
+        window.addEventListener('resize', onWindowSizeChangeFunc);
+        return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+    }, []);
 
 
     /* Return */
 
 
+    /* Create Children components */
+    const childrenComp = [];
+    if (childrenComp.length === 0) for (let i = 0; i < childrenData.length; i++) childrenComp.push(<AdminMenuBtnWidget key={i} ref={childrenRefTab[i]} $data={{ refId: childrenRefTab[i], controllerRef: controllerRef, rootControllers: rootControllers, btnData: childrenData[i] }} />);
+    /* - */
     const component = <>
-        <div className='pccpmw_scaffold btn_opacity'>
-            <img className='pccpmw_img' src='logo192.png' />
-            <div style={{ flex: 1, marginLeft: 6 }}>
-                <div className='pccpmw_name'>Nom du produit Nom du produitNom du produitNom du produitNom du produit  du produitNom du produitNom du produi du produitNom du produitNom du produi</div>
-                <div className='pccpmw_bottom_line' />
-            </div>
+        <div className='ammw_scaffold prevent_select'>
+            <button className='ammw_main_btn'>
+                <p className='ammw_main_title'>{containerData.title}</p>
+                <img className='ammw_main_icon' src={white_arrow_icon} />
+            </button>
+            {childrenComp}
         </div>
     </>;
     return (render.current ? component : <></>);

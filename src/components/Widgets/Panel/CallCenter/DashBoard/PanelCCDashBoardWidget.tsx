@@ -65,23 +65,47 @@ const PanelCCDashBoardWidget = (props: propsType, ref: any) => {
 
     const panelCCProductMainRef = useRef(undefined);
 
+    const didAddBtnTouched = useRef(false);
+
+    const didAddBtnSubOptionShown = useRef(false);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
     const refreshFunc = () => {
-        refresher.current = refresher.current ? false : true;
+        refresher.current = !refresher.current;
         setRefresh(refresher.current);
     };
 
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
+    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => {
+        lang.current = x.lang;
+        refreshFunc();
+    };
 
     /* On window size change */
     const onWindowSizeChangeFunc = () => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
     };
+
+    /* On add product or complaint */
+    const onAddProduitComplaintFunc = () => {
+        didAddBtnSubOptionShown.current = !didAddBtnSubOptionShown.current;
+        refreshFunc();
+    };
+
+
+    /* ------------------------------------ jQuery ------------------------------------- */
+
+    /* - */
+    $('body').on('mouseup', () => {
+        if (didAddBtnSubOptionShown.current) {
+            // didAddBtnSubOptionShown.current = false;
+            // refreshFunc();
+        }
+    });
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -100,7 +124,6 @@ const PanelCCDashBoardWidget = (props: propsType, ref: any) => {
         }
     }, []);
 
-
     /* On window size change */
     // useEffect(() => {
     //     window.addEventListener('resize', onWindowSizeChangeFunc);
@@ -112,9 +135,9 @@ const PanelCCDashBoardWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div className='pccdbw_scaffold'>
-            <div /* Header */ className='pccdbw_header glass'>
-                <h1 className='pccdbw_enterprise_title'>Pebco</h1>
+        <div id='pccdbw_scaffold' className='pccdbw_var'>
+            <div /* Header */ id='pccdbw_header' className='glass'>
+                <h1 id='pccdbw_enterprise_title'>Pebco</h1>
 
                 <div className='pccdbw_h_btn_container'>
                     <div className='pccdbw_h_btn_title'>Produits</div>
@@ -126,25 +149,31 @@ const PanelCCDashBoardWidget = (props: propsType, ref: any) => {
 
                 <div className='pccdbw_hv_separator' />
 
-                <div className='pccdbw_h_search_container'>
-                    <img className='pccdbw_h_search_icon' src={search_icon} />
-                    <input className='pccdbw_h_search_bar' type='text' placeholder='Search' />
+                <div id='pccdbw_h_search_container'>
+                    <img id='pccdbw_h_search_icon' src={search_icon} />
+                    <input id='pccdbw_h_search_bar' type='text' placeholder='Search' />
                 </div>
 
                 <div className='pccdbw_hv_separator' />
 
-                <div className='pccdbw_add_btn_container'>
-                    <div className='pccdbw_add_btn_title btn_opacity'>+ Ajouter</div>
+                <div id='pccdbw_add_btn_container'>
+                    <div id='pccdbw_add_btn_title' className='btn_opacity' onClick={onAddProduitComplaintFunc}>+ Ajouter</div>
+                    {didAddBtnSubOptionShown.current &&
+                        <div id='pccdbw_add_option_container'>
+                            <div className='pccdbw_add_option_title btn_opacity'>Produit</div>
+                            <div className='pccdbw_title_separator' />
+                            <div className='pccdbw_add_option_title btn_opacity'>Plainte</div>
+                        </div>
+                    }
                 </div>
-
             </div>
 
-            <div /* Body */ className='pccdbw_body'>
-                <div className='pccdbw_body_left'>
-                    <PanelCCProductMainWidget ref={panelCCProductMainRef} $data={{ wid: 'panelCCProductMainRef', refId: panelCCProductMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+            <div /* Body */ id='pccdbw_body'>
+                <div id='pccdbw_body_left'>
+                    {Array(20).fill(undefined).map(() => <PanelCCProductMainWidget ref={panelCCProductMainRef} $data={{ wid: 'panelCCProductMainRef', refId: panelCCProductMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />)}
                 </div>
 
-                <div className='pccdbw_body_right'></div>
+                <div id='pccdbw_body_right'></div>
             </div>
         </div>
     </>;

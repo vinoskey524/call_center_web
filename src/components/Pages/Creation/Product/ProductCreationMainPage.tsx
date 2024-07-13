@@ -82,7 +82,7 @@ const ProductCreationMainPage = (props: propsType, ref: any) => {
 
     /* Refresh component */
     const refreshFunc = () => {
-        refresher.current = refresher.current ? false : true;
+        refresher.current = !refresher.current;
         setRefresh(refresher.current);
     };
 

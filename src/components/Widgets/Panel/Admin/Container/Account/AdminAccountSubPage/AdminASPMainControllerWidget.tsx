@@ -1,8 +1,9 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
-import { refIdType } from '../Tools/type';
+import { refIdType } from '../../../../../../Tools/type';
 
 /* Widget */
 type propsType = {
@@ -10,11 +11,11 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
-        mainControllerRef: refIdType,
-        requestControllerRef: refIdType
+        controllerRef?: refIdType,
+        rootControllers: any
     }
 };
-const DataStoreControllerWidget = (props: propsType, ref: any) => {
+const AdminASPMainControllerWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
@@ -35,13 +36,19 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
 
     const refId = data.refId;
 
-    const mainControllerRef = data.mainControllerRef;
+    const controllerRef = data.controllerRef;
 
-    const requestControllerRef = data.requestControllerRef;
+    const rootControllers = data.rootControllers;
+
+    /* Root controllers */
+
+    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
+
+    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
+
+    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
 
     /* - */
-
-    const accountType = useRef<'admin' | 'callCenter' | 'customer'>('admin');
 
     const emptyRef = useRef(undefined);
 
@@ -73,11 +80,13 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     };
 
 
+    /* ------------------------------------ jQuery ------------------------------------- */
+
+
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
-        accountType: accountType,
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) }
     }), []);
@@ -86,6 +95,7 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
@@ -102,4 +112,4 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     return (<></>);
 };
 
-export default forwardRef(DataStoreControllerWidget);
+export default forwardRef(AdminASPMainControllerWidget);

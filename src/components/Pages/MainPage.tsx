@@ -10,8 +10,9 @@ import RequestControllerWidget from '../Widgets/RequestControllerWidget';
 import DataStoreControllerWidget from '../Widgets/DataStoreControllerWidget';
 import AuthLoginPage from './Auth/AuthLoginPage';
 import PanelMainPage from './Panel/PanelMainPage';
-import AccountCreationPage from './Account/AccountCreationPage';
 import ProductCreationMainPage from './Creation/Product/ProductCreationMainPage';
+
+import AccountCreationWidget from '../Widgets/Panel/Admin/Container/Account/Creation/AccountCreationWidget';
 
 /* Widget */
 type propsType = {
@@ -118,7 +119,7 @@ const MainPage = (props: propsType, ref: any) => {
             {render.current && <>
                 <AuthLoginPage ref={authLoginRef} $data={{ wid: 'authLoginRef', refId: authLoginRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
                 <PanelMainPage ref={panelMainRef} $data={{ wid: 'panelMainRef', refId: panelMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
-                <AccountCreationPage ref={accountCreationRef} $data={{ wid: 'accountCreationRef', refId: accountCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <AccountCreationWidget ref={accountCreationRef} $data={{ wid: 'accountCreationRef', refId: accountCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
                 <ProductCreationMainPage ref={productCreationMainRef} $data={{ wid: 'productCreationMainRef', refId: productCreationMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
             </>}
         </div>

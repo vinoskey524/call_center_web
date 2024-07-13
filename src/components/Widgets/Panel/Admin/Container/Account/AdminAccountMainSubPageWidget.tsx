@@ -3,10 +3,14 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
-import { generateIdFunc } from './Tools/methodForest';
-import { language } from './Tools/language';
-import { refIdType } from './Tools/type';
-import { _defaultLanguage_ } from './Tools/constants';
+import './AdminAccountMainSubPageWidget.css';
+import { generateIdFunc } from '../../../../../Tools/methodForest';
+import { language } from '../../../../../Tools/language';
+import { refIdType } from '../../../../../Tools/type';
+import { _defaultLanguage_ } from '../../../../../Tools/constants';
+import AdminASPMainContainerWidget from './AdminAccountSubPage/AdminASPMainContainerWidget';
+import CallCSPMainContainerWidget from './CallCenterSubPage/CallCSPMainContainerWidget';
+import CustomerSPMainContainerWidget from './CustomerSubPage/CustomerSPMainContainerWidget';
 
 /* Widget */
 type propsType = {
@@ -14,18 +18,18 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
-        controllerRef?: refIdType,
+        controllerRef: refIdType,
         rootControllers: any
     }
 };
-const PrototypePage = (props: propsType, ref: any) => {
+const AdminAccountMainSubPageWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
 
-    const windowWidth = useRef(window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    const windowHeight = useRef(window.innerHeight);
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
@@ -46,7 +50,7 @@ const PrototypePage = (props: propsType, ref: any) => {
 
     const refId = data.refId;
 
-    const controllerRef = data.controllerRef;
+    const controllerRef = data.controllerRef; /* AdminMainControllerWidget */
 
     const rootControllers = data.rootControllers;
 
@@ -60,35 +64,26 @@ const PrototypePage = (props: propsType, ref: any) => {
 
     /* - */
 
+    const adminASPMainContainerRef = useRef(undefined);
+
+    const callCSPMainContainerRef = useRef(undefined);
+
+    const customerSPMainContainerRef = useRef(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
     const refreshFunc = () => {
-        refresher.current = !refresher.current;
+        refresher.current = refresher.current ? false : true;
         setRefresh(refresher.current);
     };
 
-    /* Render */
-    const renderFunc = (x: { render: boolean }) => {
-        render.current = x.render;
-        refreshFunc();
-    };
-
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => {
-        lang.current = x.lang;
-        refreshFunc();
-    };
+    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => {
-        windowWidth.current = window.innerWidth;
-        windowHeight.current = window.innerHeight;
-    };
-
-
-    /* ------------------------------------ jQuery ------------------------------------- */
+    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -96,9 +91,8 @@ const PrototypePage = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
-        renderFunc(x: any) { renderFunc(x) },
         setLanguageFunc(x: any) { setLanguageFunc(x) }
-    }), []);
+    }), [refresh]);
 
     /* On mount */
     useEffect(() => {
@@ -119,9 +113,13 @@ const PrototypePage = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div></div>
+        <div id='aamspw_scaffold'>
+            <AdminASPMainContainerWidget ref={adminASPMainContainerRef} $data={{ wid: 'adminASPMainContainerRef', refId: adminASPMainContainerRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+            <CallCSPMainContainerWidget ref={callCSPMainContainerRef} $data={{ wid: 'callCSPMainContainerRef', refId: callCSPMainContainerRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+            <CustomerSPMainContainerWidget ref={customerSPMainContainerRef} $data={{ wid: 'customerSPMainContainerRef', refId: customerSPMainContainerRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+        </div>
     </>;
     return (render.current ? component : <></>);
 };
 
-export default forwardRef(PrototypePage);
+export default forwardRef(AdminAccountMainSubPageWidget);

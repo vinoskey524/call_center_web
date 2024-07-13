@@ -139,7 +139,7 @@ const SwitchWidget = (props: propsType, ref: any) => {
 
     const component = <>
         <div id={scaffold_id} className={`sw_scaffold ${className}`} style={style} onClick={onSwitchFunc} title={title}>
-            <div id={slider_id} className='sw_slider' style={{ width: sliderDim, height: sliderDim }}></div>
+            <div id={slider_id} className='sw_slider' style={{ width: sliderDim, height: sliderDim }} />
         </div>
     </>;
     return (component);

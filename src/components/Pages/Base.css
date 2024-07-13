@@ -42,22 +42,26 @@ body {
 
 div {
     box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 p {
     box-sizing: border-box;
     margin: 0px;
+    flex-shrink: 0;
 }
 
 img {
     box-sizing: border-box;
     margin: 0px;
+    flex-shrink: 0;
 }
 
 h1 {
     box-sizing: border-box;
     margin: 0px;
     padding: 0px;
+    flex-shrink: 0;
 }
 
 input {
@@ -68,6 +72,7 @@ input {
     resize: none;
     border-width: 0px;
     padding-inline: 5px;
+    flex-shrink: 0;
 }
 
 textarea {
@@ -77,6 +82,7 @@ textarea {
     resize: none;
     border-width: 0px;
     padding: 5px;
+    flex-shrink: 0;
 }
 
 button {
@@ -88,6 +94,7 @@ button {
     -ms-user-select: none;
     /* Standard syntax */
     user-select: none;
+    flex-shrink: 0;
 }
 
 /* width */
@@ -124,6 +131,7 @@ button {
     background-color: rgba(35, 39, 47, 0.01);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 4px 8px 0 rgba(35, 39, 47, 0.8);
 }
 
 .one_line {
@@ -133,4 +141,11 @@ button {
 
 .btn_opacity:active {
     opacity: 0.5;
+}
+
+.ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
 }

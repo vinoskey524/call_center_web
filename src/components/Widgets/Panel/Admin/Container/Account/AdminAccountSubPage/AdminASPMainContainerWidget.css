@@ -1,0 +1,104 @@
+#aaspmw_scaffold {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    top: 0px;
+    left: 0px;
+    background-color: var(--panel_container_background_color);
+    z-index: 2;
+}
+
+/* Header */
+
+#aaspmw_header {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    position: sticky;
+    display: flex;
+    flex-direction: column;
+    top: 0px;
+    padding-block: 4px;
+    z-index: 2;
+}
+
+/* Title */
+
+#aaspmv_title_container {
+    width: auto;
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 20px;
+}
+
+#aaspmw_title {
+    width: auto;
+    height: auto;
+    color: #D3E4FD;
+    margin-top: 4px;
+    margin-bottom: 6px;
+}
+
+/* Add account */
+
+#aaspmw_add_account_btn_container {
+    width: auto;
+    height: 25px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #008000;
+    margin-left: 15px;
+    margin-top: 2px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+#aaspmw_add_account_btn_title {
+    width: auto;
+    height: auto;
+    color: white;
+    margin-inline: 4px;
+}
+
+/* Table header */
+
+#aaspmw_table_header {
+    width: var(--aafw_scaffold_width);
+    height: 30px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #007aff;
+    margin-left: 20px;
+}
+
+/* Container */
+
+#aaspmw_container {
+    width: 100%;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+    z-index: 0;
+}

@@ -65,7 +65,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     /* Refresh component */
     const refreshFunc = () => {
-        refresher.current = refresher.current ? false : true;
+        refresher.current = !refresher.current;
         setRefresh(refresher.current);
     };
 
@@ -76,13 +76,19 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     };
 
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
+    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => {
+        lang.current = x.lang;
+        refreshFunc();
+    };
 
     /* On window size change */
     const onWindowSizeChangeFunc = () => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
     };
+
+
+    /* ------------------------------------ jQuery ------------------------------------- */
 
 
     /* ------------------------------------ Hooks ------------------------------------- */

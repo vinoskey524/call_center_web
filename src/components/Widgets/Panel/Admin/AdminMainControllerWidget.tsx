@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
-import { refIdType } from './Tools/type';
+import { refIdType } from '../../../Tools/type';
 
 /* Widget */
 type propsType = {
@@ -15,7 +15,7 @@ type propsType = {
         rootControllers: any
     }
 };
-const PrototypeControllerWidget = (props: propsType, ref: any) => {
+const AdminMainControllerWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
@@ -48,9 +48,19 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
 
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
 
+    /* Refs */
+
+    const adminASPMainContainerRef = useRef<any>(undefined);
+
+    const callCSPMainContainerRef = useRef<any>(undefined);
+
+    const customerSPMainContainerRef = useRef<any>(undefined);
+
     /* - */
 
-    const emptyRef = useRef(undefined);
+    const currentMenuData = useRef<{ id: string, refId: refIdType } | undefined>();
+
+    const currentMenuSubPageRef = useRef<any>(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -59,7 +69,9 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
-            case 'emptyRef': { emptyRef.current = refId.current } break;
+            case 'adminASPMainContainerRef': { adminASPMainContainerRef.current = refId.current } break;
+            case 'callCSPMainContainerRef': { callCSPMainContainerRef.current = refId.current } break;
+            case 'customerSPMainContainerRef': { customerSPMainContainerRef.current = refId.current } break;
             default: { };
         };
     };
@@ -79,6 +91,35 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Show menu page */
+    const showMenuPageFunc = (x: { id: string, refId: refIdType }) => {
+        (currentMenuData.current !== undefined) && (currentMenuData.current.refId).current.selectFunc({ select: false });
+        (x.refId).current.selectFunc({ select: true });
+        currentMenuData.current = x;
+
+        /* - */
+        (currentMenuSubPageRef.current !== undefined) && currentMenuSubPageRef.current.showFunc({ show: false });
+        switch (x.id) {
+            case 'admin_menu': {
+                adminASPMainContainerRef.current.showFunc({ show: true });
+                currentMenuSubPageRef.current = adminASPMainContainerRef.current;
+            } break;
+
+            case 'call_center_menu': {
+                console.log('RR :', callCSPMainContainerRef);
+                callCSPMainContainerRef.current.showFunc({ show: true });
+                currentMenuSubPageRef.current = callCSPMainContainerRef.current;
+            } break;
+
+            case 'customer_menu': {
+                customerSPMainContainerRef.current.showFunc({ show: true });
+                currentMenuSubPageRef.current = customerSPMainContainerRef.current;
+            } break;
+
+            default: { };
+        };
+    };
+
 
     /* ------------------------------------ jQuery ------------------------------------- */
 
@@ -88,7 +129,8 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        showMenuPageFunc(x: any) { showMenuPageFunc(x) }
     }), []);
 
     /* On mount */
@@ -112,4 +154,4 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     return (<></>);
 };
 
-export default forwardRef(PrototypeControllerWidget);
+export default forwardRef(AdminMainControllerWidget);
