@@ -10,9 +10,9 @@ import RequestControllerWidget from '../Widgets/RequestControllerWidget';
 import DataStoreControllerWidget from '../Widgets/DataStoreControllerWidget';
 import AuthLoginPage from './Auth/AuthLoginPage';
 import PanelMainPage from './Panel/PanelMainPage';
-import ProductCreationMainPage from './Creation/Product/ProductCreationMainPage';
-
-import AccountCreationWidget from '../Widgets/Panel/Admin/Container/Account/Creation/AccountCreationWidget';
+import ProductCreationWidget from '../Widgets/ProductCreation/ProductCreationWidget';
+import ComplaintCreationWidget from '../Widgets/ComplaintCreation/ComplaintCreationWidget';
+import AccountCreationWidget from '../Widgets/AdminPanel/Container/Account/Creation/AccountCreationWidget';
 
 /* Widget */
 type propsType = {
@@ -66,9 +66,7 @@ const MainPage = (props: propsType, ref: any) => {
 
     const productCreationMainRef = useRef(undefined);
 
-    const timer = useRef<any>(undefined);
-
-    const rootControllersReady = useRef(false);
+    const complaintCreationRef = useRef(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -119,8 +117,10 @@ const MainPage = (props: propsType, ref: any) => {
             {render.current && <>
                 <AuthLoginPage ref={authLoginRef} $data={{ wid: 'authLoginRef', refId: authLoginRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
                 <PanelMainPage ref={panelMainRef} $data={{ wid: 'panelMainRef', refId: panelMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+
                 <AccountCreationWidget ref={accountCreationRef} $data={{ wid: 'accountCreationRef', refId: accountCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
-                <ProductCreationMainPage ref={productCreationMainRef} $data={{ wid: 'productCreationMainRef', refId: productCreationMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <ProductCreationWidget ref={productCreationMainRef} $data={{ wid: 'productCreationMainRef', refId: productCreationMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <ComplaintCreationWidget ref={complaintCreationRef} $data={{ wid: 'complaintCreationRef', refId: complaintCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
             </>}
         </div>
 

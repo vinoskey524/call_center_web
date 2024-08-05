@@ -12,9 +12,12 @@ export const language: any = {
         't0009': 'Call center',
         't0010': 'Customers',
         't0011': 'Add account',
-        't0012': 'Active/Disactive', //
+        't0012': 'Enable/Disable',
         't0013': 'Edit',
         't0014': 'Delete',
+        't0015': 'Account not found.',
+        't0016': 'An error has occurred. Check your internet connection and try again.',
+        't0017': 'Complete all fields.',
     },
     fr: {
         't0000': '',
@@ -32,5 +35,8 @@ export const language: any = {
         't0012': 'Activer/Désactiver',
         't0013': 'Modifier',
         't0014': 'Supprimer',
+        't0015': 'Compte introuvable',
+        't0016': 'Une erreur est survenue. Vérifiez votre connexion internet et réessayez.',
+        't0017': 'Remplissez tous les champs.',
     }
 }

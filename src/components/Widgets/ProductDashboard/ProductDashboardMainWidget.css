@@ -1,0 +1,63 @@
+.prodmw_scaffold {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    background-color: #23272F;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+}
+
+/* Feed List */
+
+.prodmw_feed_list_container {
+    width: 350px;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    /* background-color: red; */
+}
+
+.prodmw_top_space {
+    width: 1px;
+    height: var(--dashboard_header_height);
+}
+
+.prodmw_feed_default_list {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 30px;
+    margin-left: 0px;
+}
+
+.prodmw_feed_search_list {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 30px;
+    background-color: red;
+}
+
+/* Feed preview */
+
+.prodmw_feed_preview {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: visible;
+    position: relative;
+}

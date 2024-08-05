@@ -1,0 +1,57 @@
+.comcrfw_scaffold {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    background-color: #333A45;
+    border-radius: 6px;
+    padding: 2px;
+    margin-bottom: 4px;
+}
+
+.comcrfw_icon {
+    width: 36px;
+    height: 36px;
+}
+
+.comcrfw_container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    padding-inline: 3px;
+}
+
+.comcrfw_filename {
+    width: auto;
+    height: auto;
+    color: white;
+    font-size: 11.5px;
+}
+
+/* Details */
+
+.comcrfw_details {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.comcrfw_file_size {
+    width: auto;
+    height: auto;
+    color: #9e9e9e;
+    font-size: 10.5px;
+}
+
+.comcrfw_delete_btn {
+    width: 12.5px;
+    height: 12.5px;
+    overflow: hidden;
+    position: relative;
+    margin-left: 8px;
+}

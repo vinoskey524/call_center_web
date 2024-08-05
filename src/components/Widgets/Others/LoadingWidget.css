@@ -1,0 +1,17 @@
+#loadw_scaffold {
+    width: auto;
+    max-width: 50px;
+    height: auto;
+    max-height: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#loadw_img {
+    width: 0px;
+    height: 0px;
+    position: relative;
+}

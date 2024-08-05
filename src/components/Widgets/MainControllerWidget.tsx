@@ -51,9 +51,15 @@ const MainControllerWidget = (props: propsType, ref: any) => {
 
     const accountCreationRef = useRef<any>(undefined);
 
+    const productCreationMainRef = useRef<any>(undefined);
+
+    const complaintCreationRef = useRef<any>(undefined);
+
     /* - */
 
     const emptyRef = useRef(undefined);
+
+    const hasInternet = useRef(true);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -65,6 +71,8 @@ const MainControllerWidget = (props: propsType, ref: any) => {
             case 'authLoginRef': { authLoginRef.current = refId.current } break;
             case 'panelMainRef': { panelMainRef.current = refId.current } break;
             case 'accountCreationRef': { accountCreationRef.current = refId.current } break;
+            case 'productCreationMainRef': { productCreationMainRef.current = refId.current } break;
+            case 'complaintCreationRef': { complaintCreationRef.current = refId.current } break;
             default: { };
         };
     };
@@ -87,6 +95,12 @@ const MainControllerWidget = (props: propsType, ref: any) => {
     /* Start up check done */
     const startUpCheckDoneFunc = () => { parentRef.current.renderFunc({ render: true }) };
 
+    /* Login user */
+    const loginUser = () => {
+        panelMainRef.current.renderFunc({ render: true });
+        authLoginRef.current.renderFunc({ render: false });
+    };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
@@ -95,9 +109,15 @@ const MainControllerWidget = (props: propsType, ref: any) => {
         authLoginRef: authLoginRef,
         panelMainRef: panelMainRef,
         accountCreationRef: accountCreationRef,
+        productCreationMainRef: productCreationMainRef,
+        complaintCreationRef: complaintCreationRef,
+
+        hasInternet: hasInternet,
+
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
-        startUpCheckDoneFunc() { startUpCheckDoneFunc() }
+        startUpCheckDoneFunc() { startUpCheckDoneFunc() },
+        loginUser() { loginUser() },
     }), []);
 
     /* On mount */
@@ -111,6 +131,16 @@ const MainControllerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         window.addEventListener('resize', onWindowSizeChangeFunc);
         return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+    });
+
+    /* Connection listener */
+    useEffect(() => {
+        window.addEventListener('online', () => { hasInternet.current = true; console.info('User is connected') });
+        window.addEventListener('offline', () => { hasInternet.current = false; console.info('User is not connected') });
+        return () => {
+            window.removeEventListener('online', () => { });
+            window.removeEventListener('offline', () => { });
+        }
     });
 
 

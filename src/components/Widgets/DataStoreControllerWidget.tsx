@@ -1,5 +1,6 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../Tools/type';
@@ -41,7 +42,9 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
 
     /* - */
 
-    const accountType = useRef<'admin' | 'callCenter' | 'customer'>('admin');
+    const currentUserData = useRef<any | undefined>(undefined);
+
+    const accountType = useRef<'main_admin' | 'call_center' | 'customer_admin' | ''>('');
 
     const emptyRef = useRef(undefined);
 
@@ -72,14 +75,32 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Set current user data */
+    const setDataFunc = (x: { type: string, data: any }) => {
+        const type = x.type, data = x.data;
+        switch (type) {
+            case 'currentUserData': {
+                currentUserData.current = data;
+                accountType.current = data.type;
+            } break;
+
+            default: {
+                console.error(`DataStoreControllerWidget => Data of type "${type}" doesn't exists !`);
+                alert(`DataStoreControllerWidget => Data of type "${type}" doesn't exists !`);
+            };
+        };
+    };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        currentUserData: currentUserData,
         accountType: accountType,
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        setDataFunc(x: any) { setDataFunc(x) }
     }), []);
 
     /* On mount */

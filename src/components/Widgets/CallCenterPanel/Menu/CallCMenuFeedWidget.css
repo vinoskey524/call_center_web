@@ -1,0 +1,50 @@
+.ccmfwi_scaffold {
+    width: 92%;
+    height: 45px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 6px;
+}
+
+.ccmfwi_scaffold:hover {
+    background-color: #4F586A;
+}
+
+.ccmfwi_logo {
+    width: 20px;
+    height: 20px;
+    margin-inline: 6px;
+}
+
+.ccmfwi_container {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ccmfwi_title {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    color: white;
+    font-size: 13.5px;
+    margin-inline: 4px;
+}
+
+.ccmfwi_bottom_line {
+    width: 60px;
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    background-color: rgba(75, 77, 82, 0.45);
+    margin-left: 3px;
+}

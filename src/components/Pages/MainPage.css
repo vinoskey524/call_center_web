@@ -1,5 +1,6 @@
 #mp_scaffold {
     width: 100vw;
+    min-width: 1000px;
     height: 100vh;
     position: relative;
     overflow: hidden;

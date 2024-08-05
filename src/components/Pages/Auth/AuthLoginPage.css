@@ -10,11 +10,7 @@
     justify-content: center;
     align-items: center;
     background-color: #23272F;
-    z-index: 1;
-}
-
-.kevin {
-    width: 100px;
+    z-index: 3;
 }
 
 #al_container {
@@ -27,12 +23,10 @@
     margin-top: -10vh;
 }
 
-#al_title {
-    width: auto;
-    height: auto;
-    color: white;
-    margin-bottom: 12px;
-    font-size: 18px;
+#al_logo {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
 }
 
 .al_input {
@@ -45,7 +39,23 @@
     border-width: 0;
     background-color: #333A45;
     margin-bottom: 8px;
+    padding-inline: 12px;
     color: white;
+}
+
+#al_message_container {
+    width: 260px;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 1px;
+    transition: height 0.2s linear;
 }
 
 .al_btn {
@@ -58,4 +68,5 @@
     border-width: 0;
     margin-bottom: 8px;
     color: white;
+    background-color: #007aff;
 }

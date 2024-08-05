@@ -3,12 +3,12 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
+import './LoadingWidget.css';
 import { generateIdFunc } from '../../Tools/methodForest';
 import { language } from '../../Tools/language';
 import { refIdType } from '../../Tools/type';
 import { _defaultLanguage_ } from '../../Tools/constants';
 import loading_0_gif from '../../Assets/gif/loading0.gif';
-import loading_1_gif from '../../Assets/gif/loading1.gif';
 
 /* Widget */
 type propsType = {
@@ -16,7 +16,7 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
-        controllerRef: refIdType
+        controllerRef?: refIdType
     }
 };
 const LoadingWidget = (props: propsType, ref: any) => {
@@ -33,7 +33,7 @@ const LoadingWidget = (props: propsType, ref: any) => {
 
     const isMounted = useRef(false);
 
-    const render = useRef(!false);
+    const render = useRef(true);
 
     const lang = useRef(_defaultLanguage_);
 
@@ -70,7 +70,7 @@ const LoadingWidget = (props: propsType, ref: any) => {
     };
 
     /* Show loading */
-    const showLoadingFunc = (x: { show: boolean }) => { $(`#loadw_scaffold`).animate({ scale: x.show ? 1 : 0 }, 100) };
+    const showLoadingFunc = (x: { show: boolean }) => { $('#loadw_img').animate(x.show ? { width: 50, height: 50 } : { width: 0, height: 0 }, 300) };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -86,7 +86,7 @@ const LoadingWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            (controllerRef?.current !== undefined) && controllerRef?.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
@@ -101,7 +101,9 @@ const LoadingWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <img id='loadw_scaffold' style={{ width: 50, height: 50, scale: 0 }} src={loading_0_gif} />
+        <div id='loadw_scaffold'>
+            <img id='loadw_img' src={loading_0_gif} />
+        </div>
     </>;
     return (render.current ? component : <></>);
 };

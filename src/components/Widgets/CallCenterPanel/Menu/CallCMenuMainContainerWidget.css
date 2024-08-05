@@ -1,0 +1,60 @@
+#ccmmcw_scaffold {
+    width: 100%;
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+/* Input */
+
+#ccmmcw_input_container {
+    width: 92%;
+    height: 30px;
+    overflow: hidden;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    top: 60px;
+    background-color: rgba(192, 192, 192, 0.2);
+    border-radius: 6px;
+    z-index: 3;
+}
+
+#ccmmcw_icon {
+    width: 15px;
+    height: 15px;
+    margin-inline: 8px;
+}
+
+#ccmmcw_input {
+    flex: 1;
+    display: flex;
+    color: white;
+    margin-right: 2px;
+    background-color: transparent;
+}
+
+#ccmmcw_input::placeholder {
+    color: #9e9e9e;
+}
+
+/* Feed list */
+
+#ccmmcw_feed_list {
+    width: 100%;
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 95px;
+    padding-bottom: 120px;
+}

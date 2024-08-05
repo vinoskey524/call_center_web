@@ -1,0 +1,7 @@
+#nmcw_scaffold {
+    width: 350px;
+    height: 75vh;
+    overflow: hidden;
+    position: relative;
+    border-radius: 14px;
+}

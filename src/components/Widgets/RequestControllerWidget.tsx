@@ -1,8 +1,12 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../Tools/type';
+import { pg_mainFunc } from '../Database/psql/methods';
+import { _success_, _error_, _requestFailed_, _noUserFound_, _wsAddress_ } from '../Tools/constants';
+import ws from '../Database/ws/init';
 
 /* Widget */
 type propsType = {
@@ -41,6 +45,8 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
 
     /* - */
 
+    const wsReady = useRef(false);
+
     const emptyRef = useRef(undefined);
 
     const timer = useRef<any>(undefined);
@@ -78,14 +84,22 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
         else setTimeout(() => { refId.current.checkRefs() }, 100);
     };
 
+    /* Login */
+    const loginFunc = async (x: { data: any, controllerRef?: refIdType }) => {
+        const q = await pg_mainFunc({ func: 'loginFunc', data: x.data });
+        x.controllerRef?.current.getLoginReqFeedbackFunc({ status: q.status, data: q.data });
+    };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        wsReady: wsReady,
         checkRefs() { checkRefs() },
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        loginFunc(x: any) { loginFunc(x) }
     }), []);
 
     /* On mount */
@@ -100,6 +114,14 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         window.addEventListener('resize', onWindowSizeChangeFunc);
         return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+    }, []);
+
+    /* Init web socket */
+    useEffect(() => {
+        ws.onopen = () => { wsReady.current = true; console.log('op'); ws.send('vinoskey hjg'); };
+        ws.onerror = (e) => { wsReady.current = false; console.error('ws error ::', e); ws.send('vinoskey hjg'); };
+        ws.onmessage = (msg) => { console.log('WS ::', msg) };
+        ws.onclose = () => { wsReady.current = false };
     }, []);
 
 

@@ -7,7 +7,6 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-bottom: 2px;
 }
 
 /* state */
@@ -15,7 +14,7 @@
 .formiw_input_state {
     width: 6px;
     height: 6px;
-    background-color: #333A45;
+    /* background-color: #333A45; */
     border-radius: 100%;
 }
 
@@ -72,7 +71,6 @@
     color: white;
     font-size: 13px;
     background-color: #333A45;
-    margin-top: 6px
 }
 
 .formiw_input_import_desc {

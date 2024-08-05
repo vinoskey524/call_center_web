@@ -4,6 +4,7 @@ import $ from 'jquery';
 
 /* Custom packages */
 import { generateIdFunc } from './Tools/methodForest';
+import { _success_, _error_, _requestFailed_ } from './Tools/constants';
 import { language } from './Tools/language';
 import { refIdType } from './Tools/type';
 import { _defaultLanguage_ } from './Tools/constants';
@@ -32,7 +33,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const isMounted = useRef(false);
 
-    const render = useRef(!false);
+    const render = useRef(true);
 
     const lang = useRef(_defaultLanguage_);
 
@@ -59,6 +60,8 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
 
     /* - */
+
+    const emptyRef = useRef(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */

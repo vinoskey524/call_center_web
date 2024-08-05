@@ -4,6 +4,8 @@ import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from './Tools/type';
+import { _success_, _error_, _requestFailed_, _defaultLanguage_ } from './Tools/constants';
+import { language } from './Tools/language';
 
 /* Widget */
 type propsType = {
@@ -27,6 +29,10 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     const isMounted = useRef(false);
 
     const render = useRef(false);
+
+    const lang = useRef(_defaultLanguage_);
+
+    const traduction = language[lang.current];
 
     /* $data */
 
@@ -66,7 +72,7 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
 
     /* Set text value from inputs */
     const setTextValueFunc = (x: { wid: string, text: string }) => {
-        const wid = x.wid, text = x.text;
+        const wid = x.wid, text = (x.text).replaceAll("'", '’');
         switch (wid) {
             case '': { } break;
             default: { };

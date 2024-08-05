@@ -1,6 +1,5 @@
 #pm_scaffold {
     width: 100%;
-    min-width: 1300px;
     height: 100%;
     overflow: hidden;
     position: absolute;
@@ -14,13 +13,43 @@
     z-index: 2;
 }
 
+/* Logo */
+
+#pm_logo_container {
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    top: 0px;
+    left: 0px;
+    z-index: 50;
+}
+
+#pm_logo_icon {
+    width: 35px;
+    height: 35px;
+}
+
+#pm_app_name {
+    width: auto;
+    height: auto;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
 /* Menu */
 
 #pm_menu {
     width: var(--panel_menu_width);
-    min-width: 250px;
+    min-width: var(--panel_menu_width);
     height: 100%;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -30,10 +59,10 @@
 
 #pm_scroll_area {
     width: 100%;
-    flex: content;
+    flex: 1;
     overflow-x: hidden;
     overflow-y: auto;
-    display: block;
+    display: flex;
     padding-top: 10px;
     padding-bottom: 20px;
 }
@@ -42,11 +71,197 @@
 
 #pm_container {
     width: var(--panel_container_width);
-    min-width: 1000px;
+    min-width: var(--panel_container_min_width);
     height: 100%;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     display: flex;
     flex-direction: column;
     background-color: #23272F;
+}
+
+/* Footer */
+
+#pm_footer {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    bottom: 0px;
+    left: 0px;
+    z-index: 5;
+}
+
+#pm_footer_backdrop {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 0;
+}
+
+#pm_footer_wrapper {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block: 8px;
+    z-index: 1;
+}
+
+/* top */
+
+.pm_footer_top {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-inline: 4px;
+}
+
+.pm_footer_btn_container {
+    width: 32px;
+    height: 32px;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+}
+
+.pm_footer_btn_wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+}
+
+.pm_footer_btn_wrapper:hover {
+    background-color: rgba(105, 109, 115, 0.3);
+}
+
+.pm_footer_btn_icon {
+    width: 15px;
+    height: 15px;
+}
+
+.pm_footer_username {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 13.5px;
+    padding-inline: 5px;
+}
+
+/* Disconnect */
+
+.pm_disconnect_container {
+    width: 175px;
+    height: auto;
+    overflow: hidden;
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    left: 5px;
+    bottom: 38px;
+    padding-inline: 6px;
+    padding-block: 10px;
+    border-radius: 8px;
+    opacity: 0;
+    scale: 0.8;
+    z-index: 10;
+}
+
+.pm_disconnect_logo {
+    width: 40px;
+    height: 40px;
+}
+
+.pm_disconnect_msg {
+    width: 96%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: white;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.pm_disconnect_yes {
+    width: 100%;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+    background-color: #007aff;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+.pm_disconnect_no {
+    width: 100%;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fa315a;
+    font-size: 12px;
+    border-radius: 6px;
+    margin-top: 5px;
+}
+
+/* Notification */
+
+.pm_notification_container {
+    width: auto;
+    height: auto;
+    overflow: visible;
+    position: absolute;
+    display: none;
+    left: -100px;
+    bottom: 38px;
+    opacity: 0;
+    scale: 0.95;
+    z-index: 10;
+}
+
+/* separator */
+
+.pm_footer_separator {
+    width: 50%;
+    height: 1px;
+    background-color: rgba(85, 89, 95, 0.6);
+    margin-block: 10px;
+}
+
+/* bottom */
+
+.pm_footer_bottom {
+    width: 92%;
+    height: auto;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
 }

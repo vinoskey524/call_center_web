@@ -1,10 +1,14 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import './AuthLoginPage.css';
 import { language } from '../../Tools/language';
 import { refIdType } from '../../Tools/type';
+import AuthLoginControllerWidget from '../../Widgets/Auth/AuthLoginControllerWidget';
+import LoadingWidget from '../../Widgets/Others/LoadingWidget';
+import call_center_logo from '../../Assets/png/logo_f.png';
 
 /* Widget */
 type propsType = {
@@ -57,11 +61,21 @@ const AuthLoginPage = (props: propsType, ref: any) => {
 
     /* - */
 
+    const authLoginControllerRef = useRef<any>(undefined);
+
+    const authLoadingRef = useRef<any>(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
     const refreshFunc = () => { setRefresh(!refresh) };
+
+    /* Render */
+    const renderFunc = (x: { render: boolean }) => {
+        render.current = x.render;
+        refreshFunc();
+    };
 
     /* Set language */
     const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
@@ -69,12 +83,28 @@ const AuthLoginPage = (props: propsType, ref: any) => {
     /* On window size change */
     const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
 
+    /* On input change */
+    const onInputChangeFunc = (x: { wid: string }) => {
+        const wid = x.wid;
+        $('#al_message_container').text('');
+        switch (wid) {
+            case 'domain_input': { authLoginControllerRef.current.setTextValueFunc({ wid: wid, text: $('#al_domain_input').val() }) } break;
+            case 'username_input': { authLoginControllerRef.current.setTextValueFunc({ wid: wid, text: $('#al_username_input').val() }) } break;
+            case 'password_input': { authLoginControllerRef.current.setTextValueFunc({ wid: wid, text: $('#al_password_input').val() }) } break;
+            default: { };
+        };
+    };
+
+    /* On click */
+    const onLoginFunc = () => { authLoginControllerRef.current.loginFunc() };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
+        renderFunc(x: any) { renderFunc(x) },
         setLanguageFunc(x: any) { setLanguageFunc(x) }
     }), [refresh]);
 
@@ -99,13 +129,16 @@ const AuthLoginPage = (props: propsType, ref: any) => {
     const component = <>
         <div id='al_scaffold'>
             <div id='al_container'>
-                <p id='al_title'>{traduction['t0001']}</p>
-                <input id='al_domain_input' name='domain_input' className='al_input' type='text' placeholder={traduction['t0005']} />
-                <input id='al_username_input' name='username_input' className='al_input' type='text' placeholder={traduction['t0002']} />
-                <input id='al_password_input' name='password_input' className='al_input' type='password' placeholder={traduction['t0003']} />
-                <button style={{ backgroundColor: '#007aff' }} className='al_btn btn_opacity' type='button'>{traduction['t0001']}</button>
+                <img id='al_logo' className='floating' src={call_center_logo} />
+                <input id='al_domain_input' name='domain_input' className='al_input' type='text' placeholder={traduction['t0005']} onChange={() => { onInputChangeFunc({ wid: 'domain_input' }) }} />
+                <input id='al_username_input' name='username_input' className='al_input' type='text' placeholder={traduction['t0002']} onChange={() => { onInputChangeFunc({ wid: 'username_input' }) }} />
+                <input id='al_password_input' name='password_input' className='al_input' type='password' placeholder={traduction['t0003']} onChange={() => { onInputChangeFunc({ wid: 'password_input' }) }} />
+                <div id='al_message_container'></div>
+                <LoadingWidget ref={authLoadingRef} $data={{ wid: 'authLoadingRef', refId: authLoadingRef, controllerRef: authLoginControllerRef }} />
+                <button id='login_btn' className='al_btn btn_opacity' type='button' onClick={onLoginFunc}>{traduction['t0001']}</button>
             </div>
         </div>
+        <AuthLoginControllerWidget ref={authLoginControllerRef} $data={{ wid: 'authLoginControllerRef', refId: authLoginControllerRef, rootControllers: rootControllers }} />
     </>;
     return (render.current ? component : <></>);
 };
