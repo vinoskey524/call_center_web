@@ -106,7 +106,6 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
             } break;
 
             case 'call_center_menu': {
-                console.log('RR :', callCSPMainContainerRef);
                 callCSPMainContainerRef.current.showFunc({ show: true });
                 currentMenuSubPageRef.current = callCSPMainContainerRef.current;
             } break;

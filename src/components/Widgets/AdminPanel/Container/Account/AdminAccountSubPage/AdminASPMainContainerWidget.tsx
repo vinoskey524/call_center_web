@@ -64,7 +64,7 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
 
     /* - */
 
-    const testFeed = Array(100).fill(undefined).map((_, i: number) => { return { id: `id_${i}`, fullName: 'Kevin ODOUTAN', username: 'o.kevin', ssm: 'kh!jnox.e$', rights: 'Full', status: 'connected', active: false } })
+    const testFeed = Array(1).fill(undefined).map((_, i: number) => { return { id: `id_${i}`, fullName: 'Kevin ODOUTAN', username: 'o.kevin', ssm: 'kh!jnox.e$', rights: 'Full', status: 'connected', active: false } })
 
     const feedRef = Array(5).fill(undefined).map(() => React.createRef());
 

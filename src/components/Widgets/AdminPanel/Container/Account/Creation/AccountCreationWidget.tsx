@@ -10,6 +10,7 @@ import { refIdType } from '../../../../../Tools/type';
 import { _defaultLanguage_ } from '../../../../../Tools/constants';
 import AdminRightsCheckboxWidget from './AdminRightsCheckboxWidget';
 import AccountCreationControllerWidget from './AccountCreationControllerWidget';
+import FormInputWidget from '../../../../Others/FormInputWidget';
 
 /* Widget */
 type propsType = {
@@ -63,25 +64,39 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
 
     /* - */
 
-    const adminRightsCheckboxRef = useRef(undefined);
+    const adminRightsCheckboxRef = useRef<any>(undefined);
 
-    const adminFullRightsCheckboxRef = useRef(undefined);
+    const adminFullRightsCheckboxRef = useRef<any>(undefined);
 
-    const adminCreateRightsCheckboxRef = useRef(undefined);
+    const adminCreateRightsCheckboxRef = useRef<any>(undefined);
 
-    const adminEnableDisableRightsCheckboxRef = useRef(undefined);
+    const adminEnableDisableRightsCheckboxRef = useRef<any>(undefined);
 
-    const adminEditRightsCheckboxRef = useRef(undefined);
+    const adminEditRightsCheckboxRef = useRef<any>(undefined);
 
-    const adminDeleteRightsCheckboxRef = useRef(undefined);
+    const adminDeleteRightsCheckboxRef = useRef<any>(undefined);
 
-    const adminReadOnlyRightsCheckboxRef = useRef(undefined);
+    const adminReadOnlyRightsCheckboxRef = useRef<any>(undefined);
 
-    const accountCreationControllerRef = useRef(undefined);
+    const accountCreationControllerRef = useRef<any>(undefined);
 
     const sourcePageType = useRef<'admin' | 'callCenter' | 'customer'>('admin');
 
     const pageTitle = { admin: 'Admin', callCenter: 'Call Center', customer: 'Customer' };
+
+    const fullNameInputRef = useRef<any>(undefined);
+
+    const usernameInputRef = useRef<any>(undefined);
+
+    const emailInputRef = useRef<any>(undefined);
+
+    const phoneInputRef = useRef<any>(undefined);
+
+    const passwordInputRef = useRef<any>(undefined);
+
+    const confirmInputRef = useRef<any>(undefined);
+
+    const expirationInputRef = useRef<any>(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -110,7 +125,7 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
     };
 
     /* On create */
-    const onCreateFunc = () => { };
+    const onCreateFunc = () => { accountCreationControllerRef.current.createAccountFunc({ type: sourcePageType.current }) };
 
     /* On Edit */
     const onEditFunc = () => { };
@@ -154,61 +169,42 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
                     <p id='acrw_title'>New account ({pageTitle[sourcePageType.current]})</p>
 
                     <div /* Full name */ className='acrw_input_container'>
-                        <div className='acrw_input_title'>Full name :</div>
-                        <div className='acrw_input_content'>
-                            <input className='acrw_input_box' type='text' />
-                        </div>
+                        <FormInputWidget ref={fullNameInputRef} $data={{ wid: 'fullNameInputRef', refId: fullNameInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0018'], type: 'text' }} />
                     </div>
 
-                    {sourcePageType.current !== 'customer' && <div /* Username */ className='acrw_input_container'>
-                        <div className='acrw_input_title'>Username :</div>
-                        <div className='acrw_input_content'>
-                            <input className='acrw_input_box' type='text' />
+                    {sourcePageType.current !== 'customer' &&
+                        <div /* Username */ className='acrw_input_container'>
+                            <FormInputWidget ref={usernameInputRef} $data={{ wid: 'usernameInputRef', refId: usernameInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0019'], type: 'text' }} />
                         </div>
-                    </div>}
+                    }
 
                     {sourcePageType.current === 'customer' && <>
                         <div /* Email */ className='acrw_input_container'>
-                            <div className='acrw_input_title'>Email :</div>
-                            <div className='acrw_input_content'>
-                                <input className='acrw_input_box' type='email' />
-                            </div>
+                            <FormInputWidget ref={emailInputRef} $data={{ wid: 'emailInputRef', refId: emailInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0020'], type: 'email' }} />
                         </div>
 
                         <div /* Phone */ className='acrw_input_container'>
-                            <div className='acrw_input_title'>Phone :</div>
-                            <div className='acrw_input_content'>
-                                <input className='acrw_input_box' type='number' />
-                            </div>
+                            <FormInputWidget ref={phoneInputRef} $data={{ wid: 'phoneInputRef', refId: phoneInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0021'], type: 'number' }} />
                         </div>
                     </>}
 
                     <div /* Password */ className='acrw_input_container'>
-                        <div className='acrw_input_title'>Password :</div>
-                        <div className='acrw_input_content'>
-                            <input className='acrw_input_box' type='text' />
-                        </div>
+                        <FormInputWidget ref={passwordInputRef} $data={{ wid: 'passwordInputRef', refId: passwordInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0022'], type: 'password' }} />
                     </div>
 
-                    <div /* Password comfirmation */ className='acrw_input_container'>
-                        <div className='acrw_input_title'>Confirmation :</div>
-                        <div className='acrw_input_content'>
-                            <input className='acrw_input_box' type='text' />
-                        </div>
+                    <div /* Password confirmation */ className='acrw_input_container'>
+                        <FormInputWidget ref={confirmInputRef} $data={{ wid: 'confirmInputRef', refId: confirmInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0023'], type: 'password' }} />
                     </div>
 
                     {sourcePageType.current === 'customer' &&
                         <div /* Expiration date */ className='acrw_input_container'>
-                            <div className='acrw_input_title'>Expiration :</div>
-                            <div className='acrw_input_content'>
-                                <input className='acrw_input_box' type='date' />
-                            </div>
+                            <FormInputWidget ref={expirationInputRef} $data={{ wid: 'expirationInputRef', refId: expirationInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0024'], type: 'date' }} />
                         </div>
                     }
 
                     {sourcePageType.current === 'admin' &&
                         <div /* Rights */ className='acrw_input_checkbox_container'>
-                            <div className='acrw_input_title'>Rights :</div>
+                            <div id='acrw_input_title'>Rights :</div>
                             <div className='acrw_input_checkbox_content'>
                                 <AdminRightsCheckboxWidget /* Full */ ref={adminFullRightsCheckboxRef} $data={{
                                     wid: 'adminFullRightsCheckboxRef',
@@ -290,14 +286,17 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
                         </div>
                     }
 
-                    <button className='acrw_btn_container btn_opacity' onClick={onCreateFunc}>
-                        <p className='acrw_btn_title'>Create</p>
-                    </button>
+                    <div id='acrw_btn_area' className='just_row'>
+                        <div id='acrw_btn_wrapper' className='just_row'>
+                            <button className='acrw_btn_container btn_opacity' onClick={onCreateFunc}>
+                                <p className='acrw_btn_title'>{traduction['t0025']}</p>
+                            </button>
 
-                    <button className='acrw_btn_container btn_opacity' style={{ backgroundColor: 'transparent', marginBottom: 15 }} onClick={onCancelFunc}>
-                        <p className='acrw_btn_title' style={{ color: '#fa315a' }}>Annuler</p>
-                    </button>
-
+                            <button className='acrw_btn_container btn_opacity' style={{ backgroundColor: 'transparent', marginLeft: 5 }} onClick={onCancelFunc}>
+                                <p className='acrw_btn_title' style={{ color: '#fa315a' }}>{traduction['t0026']}</p>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

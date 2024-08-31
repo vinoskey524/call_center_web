@@ -198,6 +198,10 @@ const FormInputWidget = (props: propsType, ref: any) => {
     //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
     // }, []);
 
+    /* jQuery */
+    useEffect(() => {
+    }, []);
+
 
     /* Return */
 
@@ -205,7 +209,8 @@ const FormInputWidget = (props: propsType, ref: any) => {
     const component = <>
         <div className='formiw_input_container' title={isOptional ? 'Optional' : ''} style={Object.assign({ marginBottom: marginBottom }, isTextarea && { alignItems: 'start' })}>
             <div id={formiw_input_state_id} className='formiw_input_state' style={Object.assign({ backgroundColor: defaultInputStateColor }, isTextarea && { marginTop: 10 })} />
-            <div className='formiw_input_title'>{title} :</div>
+            <div className='formiw_input_title'>{title}</div>
+            <div className='formiw_input_vdot'>:</div>
             <div className='formiw_input_content'>
                 {!previewDescFile.current && <>
                     {(!isTextarea && !isSelect) && <input id={formiw_input_box_id} className='formiw_input_box' type={inputType} placeholder={placeholder} onChange={onChangeFunc} />}

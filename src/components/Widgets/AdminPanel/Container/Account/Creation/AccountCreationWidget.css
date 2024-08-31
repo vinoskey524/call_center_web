@@ -82,8 +82,8 @@
     align-items: center;
 }
 
-.acrw_input_title {
-    width: 36%;
+#acrw_input_title {
+    flex: 1;
     height: 100%;
     overflow: hidden;
     position: initial;
@@ -131,8 +131,8 @@
 }
 
 .acrw_input_checkbox_content {
-    width: 64%;
-    min-width: 64%;
+    width: 60%;
+    min-width: 60%;
     height: auto;
     overflow: hidden;
     position: relative;
@@ -169,16 +169,32 @@
 
 /* Btn */
 
+#acrw_btn_area {
+    width: 95%;
+    height: auto;
+    justify-content: end;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#acrw_btn_wrapper {
+    width: 60%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+}
+
 .acrw_btn_container {
-    width: 85.2%;
-    height: 29px;
+    width: auto;
+    height: 20px;
     overflow: hidden;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 6px;
-    margin-top: 10px;
+    padding-inline: 15px;
     background-color: #007aff;
 }
 
@@ -186,4 +202,5 @@
     width: auto;
     height: auto;
     color: white;
+    font-size: 13px;
 }

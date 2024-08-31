@@ -201,6 +201,7 @@ const AdminRightsCheckboxWidget = (props: propsType, ref: any) => {
                 <input className={`arcw_checkbox`} type='checkbox' style={{ width: checkboxSize, height: checkboxSize }} defaultChecked={mainOption.isChecked} />
                 <div className={`arcw_title one_line`} style={{ color: mainOption.color ? mainOption.color : 'white', fontSize: mainOption.fontSize ? mainOption.fontSize : 14 }}>{mainOption.title}</div>
             </div>
+
             {subChildrenComponents.current}
         </div>
     </>;

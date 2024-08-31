@@ -1,7 +1,7 @@
 .formiw_input_container {
     width: 100%;
     height: auto;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     display: flex;
     flex-direction: row;
@@ -22,25 +22,34 @@
 
 .formiw_input_title {
     flex: 1;
-    height: 25px;
+    height: auto;
+    min-height: 25px;
     overflow: hidden;
-    position: rela;
+    position: relative;
     display: flex;
     flex-direction: row;
     justify-content: right;
     align-items: center;
-    padding-right: 6px;
+    text-align: right;
     color: #007aff;
     font-size: 13px;
     font-weight: bold;
-    margin-left: 5px;
+}
+
+.formiw_input_vdot {
+    width: auto;
+    height: auto;
+    color: #007aff;
+    font-size: 13px;
+    font-weight: bold;
+    margin-inline: 4px;
 }
 
 /* content */
 
 .formiw_input_content {
-    width: 65%;
-    min-width: 65%;
+    width: 60%;
+    min-width: 60%;
     height: auto;
     overflow: hidden;
     position: relative;

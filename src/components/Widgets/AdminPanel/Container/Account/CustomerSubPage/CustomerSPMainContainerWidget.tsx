@@ -65,7 +65,7 @@ const CustomerSPMainContainerWidget = (props: propsType, ref: any) => {
 
     const customerSPMainControllerRef = useRef(undefined);
 
-    const testFeed = Array(41).fill(undefined).map((_, i: number) => { return { id: `id_${i}`, fullName: 'Kevin ODOUTAN', email: 'entreprise@gmail.com', phone: '+229 96986123', expiration: '26 jours', active: false } })
+    const testFeed = Array(1).fill(undefined).map((_, i: number) => { return { id: `id_${i}`, fullName: 'Kevin ODOUTAN', email: 'entreprise@gmail.com', phone: '+229 96986123', expiration: '26 jours', active: false } })
 
     const feedRef = Array(5).fill(undefined).map(() => React.createRef());
 

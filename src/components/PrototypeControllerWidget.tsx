@@ -72,7 +72,7 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
 
     /* Set text value from inputs */
     const setTextValueFunc = (x: { wid: string, text: string }) => {
-        const wid = x.wid, text = (x.text).replaceAll("'", '’');
+        const wid = x.wid, text = (x.text).replaceAll("'", '’').trimStart();
         switch (wid) {
             case '': { } break;
             default: { };

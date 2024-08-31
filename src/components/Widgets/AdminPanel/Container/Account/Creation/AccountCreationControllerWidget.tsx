@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 
 /* Custom packages */
 import { refIdType } from '../../../../../Tools/type';
+import { generateIdFunc } from '../../../../../Tools/methodForest';
 
 /* Widget */
 type optionCheckingType = {
@@ -71,19 +72,30 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
 
     /* Refs */
 
+    const fullNameInputRef = useRef<any>(undefined);
+    const usernameInputRef = useRef<any>(undefined);
+    const emailInputRef = useRef<any>(undefined);
+    const phoneInputRef = useRef<any>(undefined);
+    const passwordInputRef = useRef<any>(undefined);
+    const confirmInputRef = useRef<any>(undefined);
+    const expirationInputRef = useRef<any>(undefined);
+
     const adminFullRightsCheckboxRef = useRef<any>(undefined);
-
     const adminCreateRightsCheckboxRef = useRef<any>(undefined);
-
     const adminEnableDisableRightsCheckboxRef = useRef<any>(undefined);
-
     const adminEditRightsCheckboxRef = useRef<any>(undefined);
-
     const adminDeleteRightsCheckboxRef = useRef<any>(undefined);
-
     const adminReadOnlyRightsCheckboxRef = useRef<any>(undefined);
 
     /* - */
+
+    const fullNameValueRef = useRef('');
+    const usernameValueRef = useRef('');
+    const emailValueRef = useRef('');
+    const phoneValueRef = useRef('');
+    const passwordValueRef = useRef('');
+    const confirmValueRef = useRef('');
+    const expirationValueRef = useRef('');
 
     const checkboxTab = [adminFullRightsCheckboxRef, adminCreateRightsCheckboxRef, adminEnableDisableRightsCheckboxRef, adminEditRightsCheckboxRef, adminDeleteRightsCheckboxRef, adminReadOnlyRightsCheckboxRef];
 
@@ -96,8 +108,6 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
         readOnly: { isChecked: false }
     });
 
-    // ' {full: { isChecked: true }, create: { isChecked: true, subOptions: { adminIsChecked: true, callCenterIsChecked: true, customerIsChecked: true } },  enableDisable: { isChecked: false, subOptions: { adminIsChecked: false, callCenterIsChecked: false, customerIsChecked: false } },  }'
-
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -105,6 +115,14 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
+            case 'fullNameInputRef': { fullNameInputRef.current = refId.current } break;
+            case 'usernameInputRef': { usernameInputRef.current = refId.current } break;
+            case 'emailInputRef': { emailInputRef.current = refId.current } break;
+            case 'phoneInputRef': { phoneInputRef.current = refId.current } break;
+            case 'passwordInputRef': { passwordInputRef.current = refId.current } break;
+            case 'confirmInputRef': { confirmInputRef.current = refId.current } break;
+            case 'expirationInputRef': { expirationInputRef.current = refId.current } break;
+            /* rights */
             case 'adminFullRightsCheckboxRef': { adminFullRightsCheckboxRef.current = refId.current } break;
             case 'adminCreateRightsCheckboxRef': { adminCreateRightsCheckboxRef.current = refId.current } break;
             case 'adminEnableDisableRightsCheckboxRef': { adminEnableDisableRightsCheckboxRef.current = refId.current } break;
@@ -117,9 +135,50 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
 
     /* Set text value from inputs */
     const setTextValueFunc = (x: { wid: string, text: string }) => {
-        const wid = x.wid, text = x.text;
+        const wid = x.wid, text = (x.text).replaceAll("'", '’').trimStart(), l = text.length;
         switch (wid) {
-            case '': { } break;
+            case 'fullNameInputRef': {
+                fullNameValueRef.current = text;
+                fullNameInputRef.current.setTextFunc({ text: text });
+                fullNameInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+            } break;
+
+            case 'usernameInputRef': {
+                usernameValueRef.current = text;
+                usernameInputRef.current.setTextFunc({ text: text });
+                usernameInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+            } break;
+
+            case 'emailInputRef': {
+                emailValueRef.current = text;
+                emailInputRef.current.setTextFunc({ text: text });
+                emailInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+            } break;
+
+            case 'phoneInputRef': {
+                phoneValueRef.current = text;
+                phoneInputRef.current.setTextFunc({ text: text });
+                phoneInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+            } break;
+
+            case 'passwordInputRef': {
+                passwordValueRef.current = text;
+                passwordInputRef.current.setTextFunc({ text: text });
+                passwordInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 8) ? 'correct' : 'error' });
+            } break;
+
+            case 'confirmInputRef': {
+                confirmValueRef.current = text;
+                confirmInputRef.current.setTextFunc({ text: text });
+                confirmInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 8 && (passwordValueRef.current === text)) ? 'correct' : 'error' });
+            } break;
+
+            case 'expirationInputRef': {
+                expirationValueRef.current = text;
+                expirationInputRef.current.setTextFunc({ text: text });
+                expirationInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+            } break;
+
             default: { };
         };
     };
@@ -306,6 +365,28 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
         checkRightsIntegrityFunc();
     };
 
+    /* Create account */
+    const createAccountFunc = (x: { type: 'admin' | 'callCenter' | 'customer' }) => {
+        switch (x.type) {
+            case 'admin': {
+                const accountData = {
+                    id: generateIdFunc(),
+                    full_name: fullNameValueRef.current,
+                    username: usernameValueRef.current,
+                    ssm: passwordValueRef.current,
+                    rights: optionCheckingState.current,
+                };
+                console.log(accountData);
+            } break;
+
+            case 'callCenter': { } break;
+
+            case 'customer': { } break;
+
+            default: { };
+        };
+    };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
@@ -314,7 +395,8 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
         onMainOptionClickedFunc(x: any) { onMainOptionClickedFunc(x) },
-        onSubOptionClickedFunc(x: any) { onSubOptionClickedFunc(x) }
+        onSubOptionClickedFunc(x: any) { onSubOptionClickedFunc(x) },
+        createAccountFunc(x: any) { createAccountFunc(x) },
     }), [refresh]);
 
     /* On mount */

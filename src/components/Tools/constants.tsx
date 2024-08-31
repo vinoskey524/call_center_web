@@ -25,7 +25,7 @@ export const _wsPort_ = 8812;
 export const _wsAddress_ = `ws://${_serverAddress_}:${_wsPort_}`;
 
 /** Default language */
-export const _defaultLanguage_ = 'en';
+export const _defaultLanguage_ = 'fr';
 
 /** File icons  */
 export const _fileIcon_ = {

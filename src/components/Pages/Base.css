@@ -112,6 +112,14 @@ input {
 
 }
 
+input:-webkit-autofill {
+    -webkit-text-fill-color: inherit !important;
+    -webkit-box-shadow: 0 0 0px 1000px inherit inset !important;
+    color: inherit !important;
+    background-color: inherit !important;
+    /* transition: background-color 5s ease-in-out 0s; */
+}
+
 textarea {
     box-sizing: border-box;
     padding-inline: 8px;
@@ -259,3 +267,25 @@ button {
 }
 
 /* - */
+
+.overhide {
+    overflow: hidden;
+}
+
+.just_column {
+    width: 'auto';
+    height: 'auto';
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.just_row {
+    width: 'auto';
+    height: 'auto';
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
