@@ -4,7 +4,9 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "webworker",
+      "es6"
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -21,6 +23,7 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "webpack.config.js"
   ]
 }

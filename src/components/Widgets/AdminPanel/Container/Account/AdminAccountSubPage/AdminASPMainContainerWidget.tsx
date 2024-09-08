@@ -1,3 +1,5 @@
+// @refersh reset
+
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import $ from 'jquery';
@@ -11,6 +13,7 @@ import { _defaultLanguage_ } from '../../../../../Tools/constants';
 import AdminSPFeedWidget from './AdminASPFeedWidget';
 import SwitchWidget from '../../../../Others/SwitchWidget';
 import AdminASPMainControllerWidget from './AdminASPMainControllerWidget';
+import reload_icon from '../../../../../Assets/png/reload.png';
 
 /* Widget */
 type propsType = {
@@ -70,7 +73,7 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
 
     const switchRef = useRef(undefined);
 
-    const adminASPMainControllerRef = useRef(undefined);
+    const adminASPMainControllerRef = useRef<any>(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -102,6 +105,9 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
         accountCreationRef.current.showFunc({ show: true, sourcePage: 'admin' });
     };
 
+    /* Fetch account */
+    const fetchAccountFunc = () => { adminASPMainControllerRef.current.fetchAccountFunc() };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
@@ -126,6 +132,24 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
         return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
     }, []);
 
+    /* jQuery */
+    useEffect(() => {
+        // const $arbc = $('#aaspmv_refresh_btn_container');
+        // const $arbi = $('#aaspmv_refresh_btn_icon');
+        // $arbc.on('mouseenter', () => {
+        //     $arbi.css({ transform: 'scale(1.15)' });
+        // });
+        // $arbc.on('mousedown', () => {
+        //     $arbi.css({ transform: 'scale(0.9)' });
+        // });
+        // $arbc.on('mouseup', () => {
+        //     $arbi.css({ transform: 'scale(1.15)' });
+        // });
+        // $arbc.on('mouseleave', () => {
+        //     $arbi.css({ transform: 'scale(1)' });
+        // });
+    }, []);
+
 
     /* Return */
 
@@ -141,6 +165,9 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
                     <h1 id='aaspmw_title'>{traduction['t0008']}</h1>
                     <button id='aaspmw_add_account_btn_container' className='btn_opacity' onClick={createNewAccountFunc}>
                         <p id='aaspmw_add_account_btn_title'>+ {traduction['t0011']}</p>
+                    </button>
+                    <button id='aaspmv_refresh_btn_container' onClick={fetchAccountFunc}>
+                        <img id='aaspmv_refresh_btn_icon' src={reload_icon} />
                     </button>
                 </div>
 

@@ -27,6 +27,9 @@ export const language: any = {
         't0024': 'Expiration',
         't0025': 'Create',
         't0026': 'Cancel',
+        't0027': 'Fullname already exists.',
+        't0028': 'Username already exists.',
+        't0029': 'Email already exists.',
     },
     fr: {
         't0000': '',
@@ -56,5 +59,8 @@ export const language: any = {
         't0024': 'Expiration',
         't0025': 'Créer',
         't0026': 'Annuler',
+        't0027': 'Nom complet déjà existant.',
+        't0028': `Nom d'utilisateur déjà existant.`,
+        't0029': 'Email déjà existant.',
     }
 }

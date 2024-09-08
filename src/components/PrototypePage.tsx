@@ -91,9 +91,6 @@ const PrototypePage = (props: propsType, ref: any) => {
     };
 
 
-    /* ------------------------------------ jQuery ------------------------------------- */
-
-
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
@@ -101,7 +98,7 @@ const PrototypePage = (props: propsType, ref: any) => {
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
         setLanguageFunc(x: any) { setLanguageFunc(x) }
-    }), []);
+    }), [refresh]);
 
     /* On mount */
     useEffect(() => {

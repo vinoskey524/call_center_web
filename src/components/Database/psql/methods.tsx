@@ -1,6 +1,7 @@
 import { _success_, _error_, _requestFailed_ } from '../../Tools/constants';
 import { pg } from './init';
 import { postgresMainFuncType } from '../../Tools/type';
+import { decipherFunc } from '../../Tools/methodForest';
 
 /** Pg main func */
 export const pg_mainFunc = async (x: { func: postgresMainFuncType, data?: any }): Promise<{ status: string, data: any }> => {

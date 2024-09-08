@@ -3,11 +3,8 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
-import { generateIdFunc } from './Tools/methodForest';
-import { _success_, _error_, _requestFailed_ } from './Tools/constants';
-import { language } from './Tools/language';
-import { refIdType } from './Tools/type';
-import { _defaultLanguage_ } from './Tools/constants';
+import './UIBlockerWidget.css';
+import { refIdType } from '../../Tools/type';
 
 /* Widget */
 type propsType = {
@@ -15,13 +12,11 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
-        controllerRef: refIdType,
-        rootControllers: any
+        controllerRef: refIdType
     }
 };
-const PrototypeWidget = (props: propsType, ref: any) => {
+const UIBlockerWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
-
     const parentProps = props;
 
     const windowWidth = useRef(window.innerWidth);
@@ -33,11 +28,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
     const isMounted = useRef(false);
 
-    const render = useRef(true);
-
-    const lang = useRef(_defaultLanguage_);
-
-    const traduction = language[lang.current];
+    const render = useRef(false);
 
     /* $data */
 
@@ -48,20 +39,6 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     const refId = data.refId;
 
     const controllerRef = data.controllerRef;
-
-    const rootControllers = data.rootControllers;
-
-    /* Root controllers */
-
-    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
-
-    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
-
-    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
-
-    /* - */
-
-    const emptyRef = useRef(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -78,12 +55,6 @@ const PrototypeWidget = (props: propsType, ref: any) => {
         refreshFunc();
     };
 
-    /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => {
-        lang.current = x.lang;
-        refreshFunc();
-    };
-
     /* On window size change */
     const onWindowSizeChangeFunc = () => {
         windowWidth.current = window.innerWidth;
@@ -97,8 +68,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {
@@ -119,9 +89,9 @@ const PrototypeWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div></div>
+        <div className='uiBlockerScaffold'></div>
     </>;
     return (render.current ? component : <></>);
 };
 
-export default forwardRef(PrototypeWidget);
+export default forwardRef(UIBlockerWidget);

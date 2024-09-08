@@ -102,3 +102,31 @@
     margin-top: 5px;
     z-index: 0;
 }
+
+/* - */
+
+#aaspmv_refresh_btn_container {
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    margin-left: 5px;
+}
+
+#aaspmv_refresh_btn_icon {
+    width: 20px;
+    height: 20px;
+    scale: 1;
+    transition: all 0.12s ease-in-out;
+}
+
+#aaspmv_refresh_btn_container:hover #aaspmv_refresh_btn_icon {
+    scale: 1.15
+}
+
+#aaspmv_refresh_btn_container:active #aaspmv_refresh_btn_icon {
+    scale: 0.9
+}

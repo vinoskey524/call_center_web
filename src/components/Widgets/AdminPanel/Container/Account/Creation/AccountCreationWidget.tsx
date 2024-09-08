@@ -1,3 +1,5 @@
+// @refresh reset
+
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import $ from 'jquery';
@@ -11,6 +13,8 @@ import { _defaultLanguage_ } from '../../../../../Tools/constants';
 import AdminRightsCheckboxWidget from './AdminRightsCheckboxWidget';
 import AccountCreationControllerWidget from './AccountCreationControllerWidget';
 import FormInputWidget from '../../../../Others/FormInputWidget';
+import LoadingWidget from '../../../../Others/LoadingWidget';
+import UIBlockerWidget from '../../../../Others/UIBlockerWidget';
 
 /* Widget */
 type propsType = {
@@ -98,6 +102,14 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
 
     const expirationInputRef = useRef<any>(undefined);
 
+    const accountLoadingRef = useRef<any>(undefined);
+
+    const uiBlockerRef = useRef<any>(undefined);
+
+    /* - */
+
+    const acrw_input_classname = useRef<string>('acrw_input_classname');
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -131,7 +143,11 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
     const onEditFunc = () => { };
 
     /* On cancel */
-    const onCancelFunc = () => { showFunc({ show: false }) };
+    const onCancelFunc = () => {
+        $('#acrw_container').removeClass('shakeX');
+        setTimeout(() => { showFunc({ show: false }) }, 0);
+        accountCreationControllerRef.current.cancelFunc();
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -168,39 +184,19 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
                 <div id='acrw_container_content'>
                     <p id='acrw_title'>New account ({pageTitle[sourcePageType.current]})</p>
 
-                    <div /* Full name */ className='acrw_input_container'>
-                        <FormInputWidget ref={fullNameInputRef} $data={{ wid: 'fullNameInputRef', refId: fullNameInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0018'], type: 'text' }} />
+                    <LoadingWidget ref={accountLoadingRef} $data={{ wid: 'accountLoadingRef', refId: accountLoadingRef, controllerRef: accountCreationControllerRef }} />
+
+                    <div className='acrw_input_container'>
+                        <FormInputWidget /* Full name */ ref={fullNameInputRef} $data={{ wid: 'fullNameInputRef', refId: fullNameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0018'], type: 'text' }} />
+                        {sourcePageType.current !== 'customer' && <FormInputWidget /* Username */ ref={usernameInputRef} $data={{ wid: 'usernameInputRef', refId: usernameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0019'], type: 'text' }} />}
+                        {sourcePageType.current === 'customer' && <>
+                            <FormInputWidget /* Email */ ref={emailInputRef} $data={{ wid: 'emailInputRef', refId: emailInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0020'], type: 'email' }} />
+                            <FormInputWidget /* Phone */ ref={phoneInputRef} $data={{ wid: 'phoneInputRef', refId: phoneInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0021'], type: 'number' }} />
+                        </>}
+                        <FormInputWidget /* Password */ ref={passwordInputRef} $data={{ wid: 'passwordInputRef', refId: passwordInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0022'], type: 'password' }} />
+                        <FormInputWidget /* confirmation */ ref={confirmInputRef} $data={{ wid: 'confirmInputRef', refId: confirmInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0023'], type: 'password' }} />
+                        {sourcePageType.current === 'customer' && <FormInputWidget /* Expiration date */ ref={expirationInputRef} $data={{ wid: 'expirationInputRef', refId: expirationInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0024'], type: 'date' }} />}
                     </div>
-
-                    {sourcePageType.current !== 'customer' &&
-                        <div /* Username */ className='acrw_input_container'>
-                            <FormInputWidget ref={usernameInputRef} $data={{ wid: 'usernameInputRef', refId: usernameInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0019'], type: 'text' }} />
-                        </div>
-                    }
-
-                    {sourcePageType.current === 'customer' && <>
-                        <div /* Email */ className='acrw_input_container'>
-                            <FormInputWidget ref={emailInputRef} $data={{ wid: 'emailInputRef', refId: emailInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0020'], type: 'email' }} />
-                        </div>
-
-                        <div /* Phone */ className='acrw_input_container'>
-                            <FormInputWidget ref={phoneInputRef} $data={{ wid: 'phoneInputRef', refId: phoneInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0021'], type: 'number' }} />
-                        </div>
-                    </>}
-
-                    <div /* Password */ className='acrw_input_container'>
-                        <FormInputWidget ref={passwordInputRef} $data={{ wid: 'passwordInputRef', refId: passwordInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0022'], type: 'password' }} />
-                    </div>
-
-                    <div /* Password confirmation */ className='acrw_input_container'>
-                        <FormInputWidget ref={confirmInputRef} $data={{ wid: 'confirmInputRef', refId: confirmInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0023'], type: 'password' }} />
-                    </div>
-
-                    {sourcePageType.current === 'customer' &&
-                        <div /* Expiration date */ className='acrw_input_container'>
-                            <FormInputWidget ref={expirationInputRef} $data={{ wid: 'expirationInputRef', refId: expirationInputRef, controllerRef: accountCreationControllerRef, title: traduction['t0024'], type: 'date' }} />
-                        </div>
-                    }
 
                     {sourcePageType.current === 'admin' &&
                         <div /* Rights */ className='acrw_input_checkbox_container'>
@@ -298,6 +294,7 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
                         </div>
                     </div>
                 </div>
+                <UIBlockerWidget ref={uiBlockerRef} $data={{ wid: 'uiBlockerRef', refId: uiBlockerRef, controllerRef: accountCreationControllerRef }} />
             </div>
         </div>
         <AccountCreationControllerWidget ref={accountCreationControllerRef} $data={{ wid: 'accountCreationControllerRef', refId: accountCreationControllerRef, rootControllers: rootControllers }} />

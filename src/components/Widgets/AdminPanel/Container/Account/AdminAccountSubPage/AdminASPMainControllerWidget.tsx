@@ -4,6 +4,7 @@ import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../../../../../Tools/type';
+import { _success_ } from '../../../../../Tools/constants';
 
 /* Widget */
 type propsType = {
@@ -52,6 +53,9 @@ const AdminASPMainControllerWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const firstTimestamp = useRef(0);
+    const lastTimestamp = useRef(0);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -61,7 +65,7 @@ const AdminASPMainControllerWidget = (props: propsType, ref: any) => {
         switch (wid) {
             case 'emptyRef': { emptyRef.current = refId.current } break;
             default: { };
-        };
+        }
     };
 
     /* Set text value from inputs */
@@ -70,7 +74,7 @@ const AdminASPMainControllerWidget = (props: propsType, ref: any) => {
         switch (wid) {
             case '': { } break;
             default: { };
-        };
+        }
     };
 
     /* On window size change */
@@ -79,8 +83,44 @@ const AdminASPMainControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Fetch account */
+    const fetchAccountFunc = async () => {
+        try {
+            const currentUserData = dataStoreControllerRef.current.currentUserData.current;
+            const domain = currentUserData.domain;
 
-    /* ------------------------------------ jQuery ------------------------------------- */
+            /* - */
+            const req = await requestControllerRef.current.fetchAccountFunc({ data: { domain: domain, type: 'main_admin', state: 'new', timestamp_ms: lastTimestamp.current } });
+            if (req.status !== _success_) throw new Error(JSON.stringify(req));
+
+            const data = JSON.parse(req.data);
+            const userData: any[] = data.users;
+            const accountData: any[] = data.accounts;
+
+            /* Mix data */
+            let mixData = [];
+            for (let i = 0; i < userData.length; i++) {
+                const user = userData[i];
+                const account = (accountData.filter((e: any) => e.id === user.id))[0];
+
+                delete user._id;
+                delete account._id;
+                delete account.id;
+                delete account.timestamp;
+                delete account.timestamp_ms;
+
+                const res = Object.assign(user, account);
+                mixData.push(res);
+            }
+
+            /* Store data into dataStoreController */
+            dataStoreControllerRef.current.setDataFunc({ type: 'mainAdminAccount', data: mixData });
+
+        } catch (e: any) {
+            const err = JSON.parse(e.message);
+            console.log(err);
+        }
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -88,7 +128,8 @@ const AdminASPMainControllerWidget = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        fetchAccountFunc() { fetchAccountFunc() }
     }), []);
 
     /* On mount */

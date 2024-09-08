@@ -1,9 +1,12 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../../../../../Tools/type';
 import { generateIdFunc } from '../../../../../Tools/methodForest';
+import { _defaultLanguage_, _cipherFailed_, _decipherFailed_, _emailExists_, _incompleteForm_, _requestFailed_, _usernameExists_, _fullnameExists_ } from '../../../../../Tools/constants';
+import { language } from '../../../../../Tools/language';
 
 /* Widget */
 type optionCheckingType = {
@@ -50,6 +53,10 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
 
     const render = useRef(false);
 
+    const lang = useRef(_defaultLanguage_);
+
+    const traduction = language[lang.current];
+
     /* $data */
 
     const data = props.$data;
@@ -73,12 +80,28 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
     /* Refs */
 
     const fullNameInputRef = useRef<any>(undefined);
+    const isFullNameInputCorrect = useRef(false);
+
     const usernameInputRef = useRef<any>(undefined);
+    const isUsernameInputCorrect = useRef(false);
+
     const emailInputRef = useRef<any>(undefined);
+    const isEmailInputCorrect = useRef(false);
+
     const phoneInputRef = useRef<any>(undefined);
+    const isPhoneInputCorrect = useRef(false);
+
     const passwordInputRef = useRef<any>(undefined);
+    const isPasswordInputCorrect = useRef(false);
+
     const confirmInputRef = useRef<any>(undefined);
+    const isConfirmInputCorrect = useRef(false);
+
     const expirationInputRef = useRef<any>(undefined);
+    const isExpirationInputCorrect = useRef(false);
+
+    const inputRefTab = [fullNameInputRef, usernameInputRef, emailInputRef, phoneInputRef, passwordInputRef, confirmInputRef, expirationInputRef];
+    const correctTab = [isFullNameInputCorrect, isUsernameInputCorrect, isEmailInputCorrect, isPhoneInputCorrect, isPasswordInputCorrect, isConfirmInputCorrect, isExpirationInputCorrect];
 
     const adminFullRightsCheckboxRef = useRef<any>(undefined);
     const adminCreateRightsCheckboxRef = useRef<any>(undefined);
@@ -86,6 +109,9 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
     const adminEditRightsCheckboxRef = useRef<any>(undefined);
     const adminDeleteRightsCheckboxRef = useRef<any>(undefined);
     const adminReadOnlyRightsCheckboxRef = useRef<any>(undefined);
+
+    const accountLoadingRef = useRef<any>(undefined);
+    const uiBlockerRef = useRef<any>(undefined);
 
     /* - */
 
@@ -98,6 +124,7 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
     const expirationValueRef = useRef('');
 
     const checkboxTab = [adminFullRightsCheckboxRef, adminCreateRightsCheckboxRef, adminEnableDisableRightsCheckboxRef, adminEditRightsCheckboxRef, adminDeleteRightsCheckboxRef, adminReadOnlyRightsCheckboxRef];
+    const valueTab = [fullNameValueRef, usernameValueRef, emailValueRef, phoneValueRef, passwordValueRef, confirmValueRef, expirationValueRef];
 
     const optionCheckingState = useRef<any>({
         full: { isChecked: false },
@@ -105,8 +132,10 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
         enableDisable: { isChecked: false, subOptions: { adminIsChecked: false, callCenterIsChecked: false, customerIsChecked: false } },
         edit: { isChecked: false, subOptions: { adminIsChecked: false, callCenterIsChecked: false, customerIsChecked: false } },
         delete: { isChecked: false, subOptions: { adminIsChecked: false, callCenterIsChecked: false, customerIsChecked: false } },
-        readOnly: { isChecked: false }
+        readOnly: { isChecked: true }
     });
+
+    const canCreateAccount = useRef(true);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -129,6 +158,9 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
             case 'adminEditRightsCheckboxRef': { adminEditRightsCheckboxRef.current = refId.current } break;
             case 'adminDeleteRightsCheckboxRef': { adminDeleteRightsCheckboxRef.current = refId.current } break;
             case 'adminReadOnlyRightsCheckboxRef': { adminReadOnlyRightsCheckboxRef.current = refId.current } break;
+            /* - */
+            case 'accountLoadingRef': { accountLoadingRef.current = refId.current } break;
+            case 'uiBlockerRef': { uiBlockerRef.current = refId.current } break;
             default: { };
         };
     };
@@ -138,45 +170,70 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
         const wid = x.wid, text = (x.text).replaceAll("'", '’').trimStart(), l = text.length;
         switch (wid) {
             case 'fullNameInputRef': {
+                const state = (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error';
                 fullNameValueRef.current = text;
                 fullNameInputRef.current.setTextFunc({ text: text });
-                fullNameInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+                fullNameInputRef.current.setInputStateFunc({ state: state });
+                isFullNameInputCorrect.current = (state === 'correct') ? true : false;
             } break;
 
             case 'usernameInputRef': {
+                const state = (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error';
                 usernameValueRef.current = text;
                 usernameInputRef.current.setTextFunc({ text: text });
-                usernameInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+                usernameInputRef.current.setInputStateFunc({ state: state });
+                isUsernameInputCorrect.current = (state === 'correct') ? true : false;
             } break;
 
             case 'emailInputRef': {
+                const state = (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error';
                 emailValueRef.current = text;
                 emailInputRef.current.setTextFunc({ text: text });
-                emailInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+                emailInputRef.current.setInputStateFunc({ state: state });
+                isEmailInputCorrect.current = (state === 'correct') ? true : false;
             } break;
 
             case 'phoneInputRef': {
+                const state = (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error';
                 phoneValueRef.current = text;
                 phoneInputRef.current.setTextFunc({ text: text });
-                phoneInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+                phoneInputRef.current.setInputStateFunc({ state: state });
+                isPhoneInputCorrect.current = (state === 'correct') ? true : false;
             } break;
 
             case 'passwordInputRef': {
+                const state = (l === 0) ? 'empty' : (l >= 8) ? 'correct' : 'error';
                 passwordValueRef.current = text;
                 passwordInputRef.current.setTextFunc({ text: text });
-                passwordInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 8) ? 'correct' : 'error' });
+                passwordInputRef.current.setInputStateFunc({ state: state });
+                isPasswordInputCorrect.current = (state === 'correct') ? true : false;
+
+                /* Check confirm */
+                if (confirmValueRef.current.length > 0) {
+                    if (state === 'correct' && passwordValueRef.current === confirmValueRef.current) {
+                        confirmInputRef.current.setInputStateFunc({ state: 'correct' });
+                        isConfirmInputCorrect.current = true;
+                    } else {
+                        confirmInputRef.current.setInputStateFunc({ state: 'error' });
+                        isConfirmInputCorrect.current = false;
+                    }
+                }
             } break;
 
             case 'confirmInputRef': {
+                const state = (l === 0) ? 'empty' : (l >= 8 && (passwordValueRef.current === text)) ? 'correct' : 'error';
                 confirmValueRef.current = text;
                 confirmInputRef.current.setTextFunc({ text: text });
-                confirmInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 8 && (passwordValueRef.current === text)) ? 'correct' : 'error' });
+                confirmInputRef.current.setInputStateFunc({ state: state });
+                isConfirmInputCorrect.current = (state === 'correct') ? true : false;
             } break;
 
             case 'expirationInputRef': {
+                const state = (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error';
                 expirationValueRef.current = text;
                 expirationInputRef.current.setTextFunc({ text: text });
-                expirationInputRef.current.setInputStateFunc({ state: (l === 0) ? 'empty' : (l >= 2) ? 'correct' : 'error' });
+                expirationInputRef.current.setInputStateFunc({ state: state });
+                isExpirationInputCorrect.current = (state === 'correct') ? true : false;
             } break;
 
             default: { };
@@ -367,24 +424,113 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
 
     /* Create account */
     const createAccountFunc = (x: { type: 'admin' | 'callCenter' | 'customer' }) => {
-        switch (x.type) {
-            case 'admin': {
-                const accountData = {
-                    id: generateIdFunc(),
-                    full_name: fullNameValueRef.current,
-                    username: usernameValueRef.current,
-                    ssm: passwordValueRef.current,
-                    rights: optionCheckingState.current,
-                };
-                console.log(accountData);
+        if (canCreateAccount.current) {
+            canCreateAccount.current = false;
+            uiBlockerRef.current.renderFunc({ render: true });
+
+            let inputTab = [];
+            try {
+                const type = x.type;
+                const fullNameCorrect = isFullNameInputCorrect.current;
+                const usernameCorrect = isUsernameInputCorrect.current;
+                const passwordCorrect = isPasswordInputCorrect.current;
+                const confirmCorrect = isConfirmInputCorrect.current;
+
+                const domain: string = dataStoreControllerRef.current.currentUserData.current.domain;
+
+                switch (type) {
+                    case 'admin': {
+                        const tab = [fullNameCorrect, usernameCorrect, passwordCorrect, confirmCorrect];
+                        const arr = [fullNameInputRef, usernameInputRef, passwordInputRef, confirmInputRef];
+
+                        if (tab.includes(false)) {
+                            for (let i = 0; i < tab.length; i++) { tab[i] === false && inputTab.push(arr[i]) }
+                            throw new Error(_incompleteForm_);
+                        }
+
+                        accountLoadingRef.current.showLoadingFunc({ show: true });
+
+                        const accountData = { id: generateIdFunc(), fullname: fullNameValueRef.current, username: usernameValueRef.current, ssm: passwordValueRef.current, type: 'main_admin', rights: optionCheckingState.current, domain: domain };
+                        requestControllerRef.current.createAccountFunc({ type: type, data: accountData, controllerRef: refId });
+                    } break;
+
+                    case 'callCenter': { } break;
+
+                    case 'customer': { } break;
+
+                    default: { };
+                }
+
+            } catch (e: any) {
+                accountLoadingRef.current.showLoadingFunc({ show: false });
+
+                uiBlockerRef.current.renderFunc({ render: false });
+                canCreateAccount.current = true;
+
+                const msg = e.message;
+                $('#acrw_container').addClass('shakeX');
+
+                switch (msg) {
+                    case _incompleteForm_: { for (let i = 0; i < inputTab.length; i++) { inputTab[i].current.setInputStateFunc({ state: 'error' }) } } break;
+                    default: { };
+                }
+
+                setTimeout(() => { $('#acrw_container').removeClass('shakeX') }, 1200);
+            }
+        }
+    };
+
+    /* Cancel */
+    const cancelFunc = () => {
+        accountLoadingRef.current.showLoadingFunc({ show: false });
+
+        for (let i = 0; i < inputRefTab.length; i++) {
+            const target = inputRefTab[i];
+            if (typeof target === 'object' && target.current !== undefined) {
+                target.current.setInputStateFunc({ state: 'empty' });
+                target.current.clearTextFunc();
+            }
+        }
+        for (let n = 0; n < correctTab.length; n++) { correctTab[n].current = false }
+        for (let m = 0; m < valueTab.length; m++) { valueTab[m].current = '' }
+
+        // $('#acrw_input_classname').va
+    };
+
+    /* Get account creation feedback */
+    const getAccountCreationFeedbackFunc = (x: { data: any }) => {
+        const data = x.data;
+        refId.current.cancelFunc();
+
+        canCreateAccount.current = true;
+        uiBlockerRef.current.renderFunc({ render: false });
+
+        console.log('account created ::', data);
+    };
+
+    /* Handler account creation error */
+    const handleAccountCreationErrorFunc = (x: { status: any, data: any }) => {
+        const status = x.status, data = x.data;
+        accountLoadingRef.current.showLoadingFunc({ show: false });
+        switch (status) {
+            case _cipherFailed_: {
+                console.log('cipher failed ::', data);
             } break;
 
-            case 'callCenter': { } break;
+            case _decipherFailed_: {
+                console.log('decipher failed ::', data);
+            } break;
 
-            case 'customer': { } break;
+            case _requestFailed_: {
+                (data === _fullnameExists_) && fullNameInputRef.current.setErrorMsgFunc({ msg: traduction['t0027'] });
+                (data === _usernameExists_) && usernameInputRef.current.setErrorMsgFunc({ msg: traduction['t0028'] });
+                (data === _emailExists_) && emailInputRef.current.setErrorMsgFunc({ msg: traduction['t0029'] });
+            } break;
 
             default: { };
-        };
+        }
+        canCreateAccount.current = true;
+        uiBlockerRef.current.renderFunc({ render: false });
     };
 
 
@@ -397,6 +543,9 @@ const AccountCreationControllerWidget = (props: propsType, ref: any) => {
         onMainOptionClickedFunc(x: any) { onMainOptionClickedFunc(x) },
         onSubOptionClickedFunc(x: any) { onSubOptionClickedFunc(x) },
         createAccountFunc(x: any) { createAccountFunc(x) },
+        cancelFunc() { cancelFunc() },
+        getAccountCreationFeedbackFunc(x: any) { getAccountCreationFeedbackFunc(x) },
+        handleAccountCreationErrorFunc(x: any) { handleAccountCreationErrorFunc(x) }
     }), [refresh]);
 
     /* On mount */

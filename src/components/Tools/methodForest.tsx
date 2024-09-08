@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { _error_ } from './constants';
+import { _error_, _success_ } from './constants';
 
 /** Id generator */
 export const generateIdFunc = (x?: { length: number }) => {
@@ -49,7 +49,6 @@ const bufferToHexFunc = (x: { data: any }) => {
     let hexString = '';
     for (let i = 0; i < byteArray.length; i++) { const hex = byteArray[i].toString(16).padStart(2, '0'); hexString += hex }
     return hexString;
-    // return Array.from(new Uint8Array(x.buffer)).map((b) => b.toString(16).padStart(2, '0')).join('')
 };
 const hexToBufferFunc = (x: { data: any }) => {
     const hex = x.data, len = hex.length, buffer = new Uint8Array(len / 2);
@@ -153,20 +152,24 @@ export const cipherFunc = async (x: { data: string }) => {
         /* Get authTag */
         const authTagLength = 16; /* The authTag is the last 16 bytes of the ciphertext (for a 128-bit tag) */
         const ciphertextArray = new Uint8Array(ciphertext); /* Convert ciphertext to a Uint8Array */
-        const authTag = ciphertextArray.slice(ciphertextArray.length - authTagLength);
+        const authTagIndex = ciphertextArray.length - authTagLength;
+        const authTag = ciphertextArray.slice(authTagIndex);
 
         /* Export key */
         const keyExported = await crypto.subtle.exportKey('raw', key);
 
+        /* Extract encrypted text only */
+        const encryptedTextOnly = ciphertext.slice(0, authTagIndex);
+
         /* - */
-        const res = bufferToHexFunc({ data: ciphertext });
+        const res = bufferToHexFunc({ data: encryptedTextOnly });
         const fkey = bufferToHexFunc({ data: keyExported });
         const fiv = bufferToHexFunc({ data: iv });
         const fauthTag = bufferToHexFunc({ data: authTag });
 
         /* - */
         const mix = await cipherMixerFunc({ data: res, key: fkey, iv: fiv, authTag: fauthTag });
-        return mix;
+        return { status: _success_, data: mix };
 
     } catch (e: any) { return { status: _error_, data: e.message } }
 };
@@ -178,7 +181,7 @@ export const decipherFunc = async (x: { data: string }) => {
         const data = demixed.data, key = demixed.key, iv = demixed.iv, authTag = demixed.authTag;
 
         /* Get buffer */
-        const bdata = hexToBufferFunc({ data: data });
+        const bdata = hexToBufferFunc({ data: data + authTag });
         const bkey = hexToBufferFunc({ data: key });
         const biv = hexToBufferFunc({ data: iv });
 
@@ -189,7 +192,7 @@ export const decipherFunc = async (x: { data: string }) => {
         const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: biv, tagLength: 128 }, dkey, bdata);
         const decipherText = new TextDecoder().decode(decrypted);
 
-        return { data: decipherText };
+        return { status: _success_, data: decipherText };
 
     } catch (e: any) { return { status: _error_, data: e } }
 };

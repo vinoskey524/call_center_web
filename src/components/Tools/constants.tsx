@@ -4,10 +4,24 @@
 import word_icon from '../Assets/png/word.png';
 import html_icon from '../Assets/png/html.png';
 
+/* mode */
+export const _dev_ = (process.env.NODE_ENV === 'development') ? true : false;
+export const _prod_ = (process.env.NODE_ENV === 'production') ? true : false;
+export const _test_ = (process.env.NODE_ENV === 'test') ? true : false;
+
 /** Callback execution final state */
 export const _success_ = 'success';
 export const _error_ = 'error';
 export const _requestFailed_ = 'requestFailed';
+
+export const _pgReqFailed_ = 'pgReqFailed';
+export const _cipherFailed_ = 'cipherFailed';
+export const _decipherFailed_ = 'decipherFailed';
+export const _incompleteForm_ = 'incompleteForm';
+
+export const _fullnameExists_ = 'fullnameExists';
+export const _usernameExists_ = 'usernameExists';
+export const _emailExists_ = 'emailExists';
 
 /**  */
 export const _noUserFound_ = 'no user found';

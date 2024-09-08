@@ -3,10 +3,11 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
+import ws from '../Database/ws/init';
 import { refIdType } from '../Tools/type';
 import { pg_mainFunc } from '../Database/psql/methods';
-import { _success_, _error_, _requestFailed_, _noUserFound_, _wsAddress_ } from '../Tools/constants';
-import ws from '../Database/ws/init';
+import { _success_, _error_, _requestFailed_, _pgReqFailed_, _cipherFailed_, _decipherFailed_, _noUserFound_, _wsAddress_ } from '../Tools/constants';
+import { cipherFunc, decipherFunc } from '../Tools/methodForest';
 
 /* Widget */
 type propsType = {
@@ -80,15 +81,113 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
 
     /* Check refs :: start_up_check_0 */
     const checkRefs = () => {
-        if (mainControllerRef.current !== undefined && dataStoreControllerRef !== undefined) mainControllerRef.current.startUpCheckDoneFunc()
+        if (mainControllerRef.current !== undefined && dataStoreControllerRef !== undefined) mainControllerRef.current.startUpCheckDoneFunc();
         else setTimeout(() => { refId.current.checkRefs() }, 100);
     };
 
+
+    /* ------------------------------------ Remote Request ------------------------------------- */
+
     /* Login */
     const loginFunc = async (x: { data: any, controllerRef?: refIdType }) => {
-        const q = await pg_mainFunc({ func: 'loginFunc', data: x.data });
-        x.controllerRef?.current.getLoginReqFeedbackFunc({ status: q.status, data: q.data });
+        try {
+            /* Cipher */
+            const ciphedData = await cipherFunc({ data: JSON.stringify(x.data) });
+            if (ciphedData.status !== _success_) throw new Error(_cipherFailed_);
+
+            /* Request to pg */
+            const req = await pg_mainFunc({ func: 'loginFunc', data: ciphedData.data });
+            if (req.status !== _success_) throw new Error(req.status);
+
+            /* Decipher */
+            const deciphedData = await decipherFunc({ data: req.data });
+            if (deciphedData.status !== _success_) throw new Error(_decipherFailed_);
+
+            /* - */
+            const fdata = JSON.parse(deciphedData.data);
+            (x.controllerRef)?.current.getLoginReqFeedbackFunc({ status: req.status, data: fdata });
+
+        } catch (e: any) {
+            const msg = e.message;
+            switch (msg) {
+                case _cipherFailed_: { } break;
+                case _decipherFailed_: { } break;
+                default: { };
+            }
+        }
     };
+
+    /* Create account */
+    const createAccountFunc = async (x: { type: string, data: any, controllerRef: refIdType }) => {
+        const type = x.type, data = x.data, controllerRef = x.controllerRef;
+        try {
+            /* Cipher */
+            const ciphedData = await cipherFunc({ data: JSON.stringify(data) });
+            if (ciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _cipherFailed_, data: ciphedData.data }));
+
+            /* Request to pg */
+            const req = await pg_mainFunc({ func: 'createAccountFunc', data: ciphedData.data });
+            if (req.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: req.data }));
+
+            /* Decipher */
+            const deciphedData = await decipherFunc({ data: req.data });
+            if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
+
+            /* - */
+            (x.controllerRef).current.getAccountCreationFeedbackFunc({ data: data });
+
+        } catch (e: any) {
+            const msg = JSON.parse(e.message);
+            (x.controllerRef).current.handleAccountCreationErrorFunc(msg);
+        }
+    };
+
+    /* Fetch account */
+    const fetchAccountFunc = async (x: { data: { domain: string, type: string, state: 'new' | 'old', timestamp_ms: number } }) => {
+        const data = x.data;
+        try {
+            /* Cipher */
+            const ciphedData = await cipherFunc({ data: JSON.stringify(data) });
+            if (ciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _cipherFailed_, data: ciphedData.data }));
+
+            /* Request to pg */
+            const req = await pg_mainFunc({ func: 'fetchAccountFunc', data: ciphedData.data });
+            if (req.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: req.data }));
+
+            /* Decipher */
+            const deciphedData = await decipherFunc({ data: req.data });
+            if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
+
+            /* - */
+            return { status: _success_, data: deciphedData.data };
+
+        } catch (e: any) { return JSON.parse(e.message) }
+    };
+
+    /* Function Prototype */
+    // const prototypeFunc = async (x: { data: any }) => {
+    //     const data = x.data;
+    //     try {
+    //         /* Cipher */
+    //         const ciphedData = await cipherFunc({ data: JSON.stringify(data) });
+    //         if (ciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _cipherFailed_, data: ciphedData.data }));
+
+    //         /* Request to pg */
+    //         const req = await pg_mainFunc({ func: 'funtion_to_exec', data: ciphedData.data });
+    //         if (req.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: req.data }));
+
+    //         /* Decipher */
+    //         const deciphedData = await decipherFunc({ data: req.data });
+    //         if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
+
+    //         /* - */
+    //         return { status: _success_, data: undefined };
+
+    //     } catch (e: any) { return JSON.parse(e.message) }
+    // };
+
+
+    /* ------------------------------------ Local Request ------------------------------------- */
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -99,7 +198,9 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
         checkRefs() { checkRefs() },
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
-        loginFunc(x: any) { loginFunc(x) }
+        loginFunc(x: any) { loginFunc(x) },
+        createAccountFunc(x: any) { createAccountFunc(x) },
+        fetchAccountFunc(x: any) { return fetchAccountFunc(x) }
     }), []);
 
     /* On mount */

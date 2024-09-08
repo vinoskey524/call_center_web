@@ -9,7 +9,6 @@ import { refIdType } from '../../Tools/type';
 import AuthLoginControllerWidget from '../../Widgets/Auth/AuthLoginControllerWidget';
 import LoadingWidget from '../../Widgets/Others/LoadingWidget';
 import call_center_logo from '../../Assets/png/logo_f.png';
-import { cipherFunc, decipherFunc } from '../../Tools/methodForest';
 
 /* Widget */
 type propsType = {
@@ -97,20 +96,7 @@ const AuthLoginPage = (props: propsType, ref: any) => {
     };
 
     /* On click */
-    const onLoginFunc = async () => {
-        // authLoginControllerRef.current.loginFunc()
-
-        // const test: any = await cipherFunc({ data: `Cette approche modulaire améliore la performance globale et simplifie la maintenance en isolant les différentes fonctions du système.` });
-        const test: any = await cipherFunc({ data: `Kevin` });
-
-        // 771014229c4fce0f919afa194035853e
-        // const dc = await decipherFunc(Object.assign(test, { key: '071014229c4fce0f919afa194035853e' }));
-        const dc = await decipherFunc({ data: test });
-
-        console.log('Encrypted :', test);
-        console.log('---------------');
-        console.log('Decrypted :', dc);
-    };
+    const onLoginFunc = async () => { authLoginControllerRef.current.loginFunc() };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */

@@ -96,7 +96,7 @@ const MainControllerWidget = (props: propsType, ref: any) => {
     const startUpCheckDoneFunc = () => { parentRef.current.renderFunc({ render: true }) };
 
     /* Login user */
-    const loginUser = () => {
+    const loginUserFunc = () => {
         panelMainRef.current.renderFunc({ render: true });
         authLoginRef.current.renderFunc({ render: false });
     };
@@ -117,7 +117,7 @@ const MainControllerWidget = (props: propsType, ref: any) => {
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
         startUpCheckDoneFunc() { startUpCheckDoneFunc() },
-        loginUser() { loginUser() },
+        loginUserFunc() { loginUserFunc() },
     }), []);
 
     /* On mount */

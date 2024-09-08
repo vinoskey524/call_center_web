@@ -125,7 +125,7 @@ const AuthLoginControllerWidget = (props: propsType, ref: any) => {
             if (hasFoundUser) {
                 $('#al_logo').removeClass('floating');
                 dataStoreControllerRef.current.setDataFunc({ type: 'currentUserData', data: data });
-                mainControllerRef.current.loginUser();
+                mainControllerRef.current.loginUserFunc();
             } else {
                 setTimeout(() => {
                     $('#al_message_container').css({ 'color': '#FCF2A9' });

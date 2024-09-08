@@ -98,9 +98,9 @@ const PanelMainPage = (props: propsType, ref: any) => {
 
     /* - */
 
-    const currentUserData = (dataStoreControllerRef.current).currentUserData.current;
+    const currentUserData = dataStoreControllerRef.current.currentUserData.current;
 
-    const accountType: refIdType = dataStoreControllerRef.current.accountType;
+    const accountType = currentUserData?.type;
 
     const accountMenuData = {
         container: { id: 'account', title: traduction['t0007'] },
@@ -136,6 +136,11 @@ const PanelMainPage = (props: propsType, ref: any) => {
 
     /* On window size change */
     const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+
+    /* Init user data */
+    const initUSerData = () => {
+        currentUserData.current = (dataStoreControllerRef.current).currentUserData.current;
+    };
 
     /* Display Disconnection */
     const displayDisconnectionFunc = () => {
@@ -184,15 +189,15 @@ const PanelMainPage = (props: propsType, ref: any) => {
     const component = <>
         {currentUserData !== undefined && <>
             <div id='pm_scaffold'>
-                {(accountType.current !== 'customer_admin') &&
+                {(accountType !== 'customer_admin') &&
                     <div id='pm_menu'>
                         <div id='pm_logo_container' className='prevent_select menu_glass'>
                             <img id='pm_logo_icon' src={logo_f_icon} />
                             <p id='pm_app_name'>Call Center</p>
                         </div>
 
-                        {accountType.current === 'main_admin' && <AdminMainMenuWidget ref={adminMainMenuRef} $data={{ wid: 'adminMainMenuRef', refId: adminMainMenuRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />}
-                        {accountType.current === 'call_center' && <CallCMenuMainContainerWidget ref={callCMenuMainContainerRef} $data={{ wid: 'callCMenuMainContainerRef', refId: callCMenuMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
+                        {accountType === 'main_admin' && <AdminMainMenuWidget ref={adminMainMenuRef} $data={{ wid: 'adminMainMenuRef', refId: adminMainMenuRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />}
+                        {accountType === 'call_center' && <CallCMenuMainContainerWidget ref={callCMenuMainContainerRef} $data={{ wid: 'callCMenuMainContainerRef', refId: callCMenuMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
 
                         <div id='pm_footer'>
                             <div id='pm_footer_backdrop' className='menu_glass' />
@@ -228,16 +233,16 @@ const PanelMainPage = (props: propsType, ref: any) => {
                     </div>
                 }
 
-                {(accountType.current !== 'customer_admin') ?
+                {(accountType !== 'customer_admin') ?
                     <div id='pm_container'>
-                        {accountType.current === 'main_admin' && <AdminMainContainerWidget ref={adminMainContainerRef} $data={{ wid: 'adminMainContainerRef', refId: adminMainContainerRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers }} />}
-                        {accountType.current === 'call_center' && <CallCMainContainerWidget ref={callCMainContainerRef} $data={{ wid: 'callCMainContainerRef', refId: callCMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
+                        {accountType === 'main_admin' && <AdminMainContainerWidget ref={adminMainContainerRef} $data={{ wid: 'adminMainContainerRef', refId: adminMainContainerRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers }} />}
+                        {accountType === 'call_center' && <CallCMainContainerWidget ref={callCMainContainerRef} $data={{ wid: 'callCMainContainerRef', refId: callCMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
                     </div> :
                     <CustomerMainContainerWidget ref={CustomerMainContainerRef} $data={{ wid: 'CustomerMainContainerRef', refId: CustomerMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />
                 }
             </div>
-            {accountType.current === 'main_admin' && <AdminMainControllerWidget ref={adminMainControllerRef} $data={{ wid: 'adminMainControllerRef', refId: adminMainControllerRef, rootControllers: rootControllers }} />}
-            {accountType.current === 'call_center' && <CallCMainControllerWidget ref={callCMainControllerRef} $data={{ wid: 'callCMainControllerRef', refId: callCMainControllerRef, rootControllers: rootControllers }} />}
+            {accountType === 'main_admin' && <AdminMainControllerWidget ref={adminMainControllerRef} $data={{ wid: 'adminMainControllerRef', refId: adminMainControllerRef, rootControllers: rootControllers }} />}
+            {accountType === 'call_center' && <CallCMainControllerWidget ref={callCMainControllerRef} $data={{ wid: 'callCMainControllerRef', refId: callCMainControllerRef, rootControllers: rootControllers }} />}
         </>}
     </>;
     return (render.current ? component : <></>);

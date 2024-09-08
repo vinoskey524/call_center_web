@@ -22,6 +22,7 @@ type propsType = {
         controllerRef: refIdType,
         title: string,
         type: 'text' | 'textarea' | 'select' | 'email' | 'date' | 'password' | 'number',
+        className?: string,
         placeholder?: string,
         marginBottom?: number,
         enableDescImport?: boolean,
@@ -62,6 +63,8 @@ const FormInputWidget = (props: propsType, ref: any) => {
 
     const title = data.title;
 
+    const className = data.className || '';
+
     const inputType = data.type;
 
     const placeholder = data.placeholder || '';
@@ -83,6 +86,8 @@ const FormInputWidget = (props: propsType, ref: any) => {
     const formiw_input_state_id = useRef(generateIdFunc({ length: 8 })).current;
 
     const formiw_input_box_id = useRef(generateIdFunc({ length: 8 })).current;
+
+    const formiw_input_error_id = useRef(generateIdFunc({ length: 8 })).current;
 
     const descImportBtnIcon = useRef(import_icon);
 
@@ -159,6 +164,10 @@ const FormInputWidget = (props: propsType, ref: any) => {
     const onChangeFunc = () => {
         const val = $(`#${formiw_input_box_id}`).val();
         controllerRef.current.setTextValueFunc({ wid: wid, text: val });
+
+        /* Remove error message */
+        $(`#${formiw_input_error_id}`).css({ display: 'none' });
+        $(`#${formiw_input_error_id}`).text('');
     };
 
     /* On select */
@@ -169,6 +178,13 @@ const FormInputWidget = (props: propsType, ref: any) => {
 
     /* Clear text */
     const clearTextFunc = () => { $(`#${formiw_input_box_id}`).val('') };
+
+    /* Set error message */
+    const setErrorMsgFunc = (x: { msg: string, value: string }) => {
+        refId.current.setInputStateFunc({ state: 'error' });
+        $(`#${formiw_input_error_id}`).text(x.msg);
+        $(`#${formiw_input_error_id}`).css({ display: 'flex' });
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -181,7 +197,8 @@ const FormInputWidget = (props: propsType, ref: any) => {
         setDescriptionFileFunc(x: any) { setDescriptionFileFunc(x) },
         deleteDescFileFunc() { deleteDescFileFunc() },
         setTextFunc(x: any) { setTextFunc(x) },
-        clearTextFunc() { clearTextFunc() }
+        clearTextFunc() { clearTextFunc() },
+        setErrorMsgFunc(x: any) { setErrorMsgFunc(x) }
     }), [refresh]);
 
     /* On mount */
@@ -208,39 +225,44 @@ const FormInputWidget = (props: propsType, ref: any) => {
 
     const component = <>
         <div className='formiw_input_container' title={isOptional ? 'Optional' : ''} style={Object.assign({ marginBottom: marginBottom }, isTextarea && { alignItems: 'start' })}>
-            <div id={formiw_input_state_id} className='formiw_input_state' style={Object.assign({ backgroundColor: defaultInputStateColor }, isTextarea && { marginTop: 10 })} />
-            <div className='formiw_input_title'>{title}</div>
-            <div className='formiw_input_vdot'>:</div>
-            <div className='formiw_input_content'>
-                {!previewDescFile.current && <>
-                    {(!isTextarea && !isSelect) && <input id={formiw_input_box_id} className='formiw_input_box' type={inputType} placeholder={placeholder} onChange={onChangeFunc} />}
-                    {isTextarea && <textarea id={formiw_input_box_id} className='formiw_textarea_input_box' placeholder={placeholder} onChange={onChangeFunc} />}
-                    {isSelect && <select id={formiw_input_box_id} className='formiw_input_box' onSelect={onSelectFunc}>
-                        <option>a</option>
-                        <option>b</option>
-                        <option>c</option>
-                        <option>d</option>
-                    </select>}
-                </>}
+            <div className='just_row center_all'>
+                <div id={formiw_input_state_id} className='formiw_input_state' style={Object.assign({ backgroundColor: defaultInputStateColor }, isTextarea && { marginTop: 10 })} />
+                <div className='formiw_input_title ellipsis_line_1'>{title}</div>
+                <div className='formiw_input_vdot'>:</div>
+                <div className='formiw_input_content'>
+                    {!previewDescFile.current && <>
+                        {(!isTextarea && !isSelect) && <input id={formiw_input_box_id} className={`formiw_input_box ${className}`} type={inputType} placeholder={placeholder} onChange={onChangeFunc} />}
+                        {isTextarea && <textarea id={formiw_input_box_id} className={`formiw_textarea_input_box ${className}`} placeholder={placeholder} onChange={onChangeFunc} />}
+                        {isSelect && <select id={formiw_input_box_id} className={`formiw_input_box ${className}`} onSelect={onSelectFunc}>
+                            <option>a</option>
+                            <option>b</option>
+                            <option>c</option>
+                            <option>d</option>
+                        </select>}
+                    </>}
 
-                {(previewDescFile.current && isTextarea) &&
-                    <div className='formiw_input_desc_preview_container'>
-                        <img className='formiw_input_desc_preview_icon' src={previewDescIcon.current} />
-                        <div className='formiw_input_desc_preview_info_container'>
-                            <p className='formiw_input_desc_preview_info_title'>{descFileData.current.name}</p>
-                            <p className='formiw_input_desc_preview_info_size'>{descFileData.current.formatedSize}</p>
+                    {(previewDescFile.current && isTextarea) &&
+                        <div className='formiw_input_desc_preview_container'>
+                            <img className='formiw_input_desc_preview_icon' src={previewDescIcon.current} />
+                            <div className='formiw_input_desc_preview_info_container'>
+                                <p className='formiw_input_desc_preview_info_title'>{descFileData.current.name}</p>
+                                <p className='formiw_input_desc_preview_info_size'>{descFileData.current.formatedSize}</p>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
 
-                {(isTextarea && enableDescImport) &&
-                    <button id={formiw_input_import_desc_id} className='formiw_input_import_desc btn_opacity' onClick={onDescBtnClickFunc}>
-                        <img className='formiw_input_import_desc_icon' src={descImportBtnIcon.current} />
-                        <p className='formiw_input_import_desc_title'>{descImportBtnTitle.current}</p>
-                    </button>
-                }
+                    {(isTextarea && enableDescImport) &&
+                        <button id={formiw_input_import_desc_id} className='formiw_input_import_desc btn_opacity' onClick={onDescBtnClickFunc}>
+                            <img className='formiw_input_import_desc_icon' src={descImportBtnIcon.current} />
+                            <p className='formiw_input_import_desc_title'>{descImportBtnTitle.current}</p>
+                        </button>
+                    }
+                </div>
+            </div>
 
+            <div id='formiw_bottom_desc_container'>
                 {desc && <p className='formiw_input_desc'>{desc}</p>}
+                <div id={formiw_input_error_id} className='formiw_input_error'></div>
             </div>
         </div>
     </>;

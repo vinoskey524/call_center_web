@@ -4,6 +4,7 @@ import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../Tools/type';
+import { _error_, _success_ } from '../Tools/constants';
 
 /* Widget */
 type propsType = {
@@ -42,11 +43,12 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
 
     /* - */
 
+    const emptyRef = useRef(undefined);
+
     const currentUserData = useRef<any | undefined>(undefined);
 
-    const accountType = useRef<'main_admin' | 'call_center' | 'customer_admin' | ''>('');
-
-    const emptyRef = useRef(undefined);
+    const mainAdminAccountIdTab = useRef<string[]>([]);
+    const mainAdminAccountTab = useRef<any[]>([]);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -79,9 +81,27 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     const setDataFunc = (x: { type: string, data: any }) => {
         const type = x.type, data = x.data;
         switch (type) {
-            case 'currentUserData': {
-                currentUserData.current = data;
-                accountType.current = data.type;
+            case 'currentUserData': { currentUserData.current = data } break;
+
+            case 'mainAdminAccount': {
+                const len = mainAdminAccountTab.current.length;
+                const tab = [];
+
+                /* Ensure there's no duplicated data */
+                if (len > 0) { for (let i = 0; i < data.length; i++) { mainAdminAccountIdTab.current.indexOf(data[i].id) === -1 && tab.push(data[i]) } }
+                else {
+                    for (let i = 0; i < data.length; i++) { mainAdminAccountIdTab.current.push(data[i].id) }
+                    tab.push(...data);
+                }
+
+                /* - */
+                if (tab.length > 0) {
+                    const sortedData = [...mainAdminAccountTab.current, ...tab].sort((a: any, b: any) => a.timestamp_ms - b.timestamp_ms);
+                    mainAdminAccountTab.current = sortedData;
+
+                    /* Store data into local storage */
+                    console.log(mainAdminAccountTab.current);
+                }
             } break;
 
             default: {
@@ -97,10 +117,11 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         currentUserData: currentUserData,
-        accountType: accountType,
+        mainAdminAccountTab: mainAdminAccountTab,
+
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
-        setDataFunc(x: any) { setDataFunc(x) }
+        setDataFunc(x: any) { setDataFunc(x) },
     }), []);
 
     /* On mount */

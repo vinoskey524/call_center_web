@@ -109,7 +109,6 @@ input {
     border-width: 0px;
     padding-inline: 5px;
     flex-shrink: 0;
-
 }
 
 input:-webkit-autofill {
@@ -215,13 +214,6 @@ button {
 
 /* Ellipsis */
 
-.ellipsis {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-}
-
 .ellipsis_line_1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -266,6 +258,38 @@ button {
     }
 }
 
+/* Horizontal shaking animation */
+.shakeX {
+    animation: shaking 0.6s cubic-bezier(.36, .07, .19, .97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shaking {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
 /* - */
 
 .overhide {
@@ -288,4 +312,13 @@ button {
     position: relative;
     display: flex;
     flex-direction: row;
+}
+
+.center_all {
+    justify-content: center;
+    align-items: center;
+}
+
+.prevent_touch {
+    pointer-events: none;
 }
