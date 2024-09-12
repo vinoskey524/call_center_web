@@ -1,8 +1,13 @@
 /** Standard packages */
+import { BrowserView, MobileView, browserName, isBrowser, isMobile } from 'react-device-detect';
 
 /** Custom packages */
 import word_icon from '../Assets/png/word.png';
 import html_icon from '../Assets/png/html.png';
+
+/** Device type */
+export const _deviceType_: 'browser' | 'mobile' = isBrowser ? 'browser' : 'mobile';
+export const _browserName_ = browserName;
 
 /* mode */
 export const _dev_ = (process.env.NODE_ENV === 'development') ? true : false;
@@ -19,9 +24,12 @@ export const _cipherFailed_ = 'cipherFailed';
 export const _decipherFailed_ = 'decipherFailed';
 export const _incompleteForm_ = 'incompleteForm';
 
+export const _domainExists_ = 'domainExists';
+export const _companyNameExists_ = 'companyNameExists';
+export const _emailExists_ = 'emailExists';
+export const _phoneExists_ = 'phoneExists';
 export const _fullnameExists_ = 'fullnameExists';
 export const _usernameExists_ = 'usernameExists';
-export const _emailExists_ = 'emailExists';
 
 /**  */
 export const _noUserFound_ = 'no user found';
@@ -29,6 +37,7 @@ export const _incorrectCredentials_ = 'incorrect credentials';
 
 /** Server address */
 export const _serverAddress_ = 'localhost';
+// export const _serverAddress_ = '192.168.100.9';
 
 /** psql db url */
 export const _databasePort_ = 8811;

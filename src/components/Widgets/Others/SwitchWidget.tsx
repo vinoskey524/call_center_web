@@ -99,6 +99,7 @@ const SwitchWidget = (props: propsType, ref: any) => {
         isSwitched.current = x.switch;
         $(`#${scaffold_id}`).css({ 'background-color': isSwitched.current ? '#1B76D0' : style.backgroundColor });
         $(`#${slider_id}`).css({ 'background-color': isSwitched.current ? '#fff' : '#9e9e9e' });
+        $(`#${slider_id}`).animate({ 'marginLeft': isSwitched.current ? (style.width - (sliderDim + 4)) : 0 }, 200); /* 4 => padding-inline */
     };
 
     /* On switch */
@@ -124,6 +125,7 @@ const SwitchWidget = (props: propsType, ref: any) => {
         if (!isMounted.current) {
             isMounted.current = true;
             (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            switched && switchFunc({ switch: true });
         }
     }, []);
 

@@ -48,7 +48,19 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     const currentUserData = useRef<any | undefined>(undefined);
 
     const mainAdminAccountIdTab = useRef<string[]>([]);
-    const mainAdminAccountTab = useRef<any[]>([]);
+    const mainAdminAccountData = useRef<any[]>([]);
+    const mainAdminAccountNewerTimestamp_ms = useRef(0);
+    const mainAdminAccountOlderTimestamp_ms = useRef(0);
+
+    const callCenterAccountIdTab = useRef<string[]>([]);
+    const callCenterAccountData = useRef<any[]>([]);
+    const callCenterAccountNewerTimestamp_ms = useRef(0);
+    const callCenterAccountOlderTimestamp_ms = useRef(0);
+
+    const customerAccountIdTab = useRef<string[]>([]);
+    const customerAccountData = useRef<any[]>([]);
+    const customerAccountNewerTimestamp_ms = useRef(0);
+    const customerAccountOlderTimestamp_ms = useRef(0);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -84,23 +96,101 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
             case 'currentUserData': { currentUserData.current = data } break;
 
             case 'mainAdminAccount': {
-                const len = mainAdminAccountTab.current.length;
+                const len = mainAdminAccountData.current.length;
                 const tab = [];
 
                 /* Ensure there's no duplicated data */
-                if (len > 0) { for (let i = 0; i < data.length; i++) { mainAdminAccountIdTab.current.indexOf(data[i].id) === -1 && tab.push(data[i]) } }
-                else {
+                if (len > 0) {
+                    for (let i = 0; i < data.length; i++) {
+                        const id = data[i].id;
+                        if (mainAdminAccountIdTab.current.indexOf(id) === -1) {
+                            tab.push(data[i])
+                            mainAdminAccountIdTab.current.push(id);
+                        }
+                    }
+                } else {
                     for (let i = 0; i < data.length; i++) { mainAdminAccountIdTab.current.push(data[i].id) }
                     tab.push(...data);
                 }
 
                 /* - */
                 if (tab.length > 0) {
-                    const sortedData = [...mainAdminAccountTab.current, ...tab].sort((a: any, b: any) => a.timestamp_ms - b.timestamp_ms);
-                    mainAdminAccountTab.current = sortedData;
+                    const sortedData = [...mainAdminAccountData.current, ...tab].sort((a: any, b: any) => b.timestamp_ms - a.timestamp_ms);
+                    mainAdminAccountData.current = sortedData;
+
+                    /* Update timestamp_ms */
+                    mainAdminAccountNewerTimestamp_ms.current = mainAdminAccountData.current[0].timestamp_ms;
+                    mainAdminAccountOlderTimestamp_ms.current = (mainAdminAccountData.current.slice(-1))[0].timestamp_ms;
 
                     /* Store data into local storage */
-                    console.log(mainAdminAccountTab.current);
+
+                    // console.log(mainAdminAccountData.current, mainAdminAccountNewerTimestamp_ms, mainAdminAccountOlderTimestamp_ms);
+                }
+            } break;
+
+            case 'callCenterAccount': {
+                const len = callCenterAccountData.current.length;
+                const tab = [];
+
+                /* Ensure there's no duplicated data */
+                if (len > 0) {
+                    for (let i = 0; i < data.length; i++) {
+                        const id = data[i].id;
+                        if (callCenterAccountIdTab.current.indexOf(id) === -1) {
+                            tab.push(data[i])
+                            callCenterAccountIdTab.current.push(id);
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < data.length; i++) { callCenterAccountIdTab.current.push(data[i].id) }
+                    tab.push(...data);
+                }
+
+                /* - */
+                if (tab.length > 0) {
+                    const sortedData = [...callCenterAccountData.current, ...tab].sort((a: any, b: any) => b.timestamp_ms - a.timestamp_ms);
+                    callCenterAccountData.current = sortedData;
+
+                    /* Update timestamp_ms */
+                    callCenterAccountNewerTimestamp_ms.current = callCenterAccountData.current[0].timestamp_ms;
+                    callCenterAccountOlderTimestamp_ms.current = (callCenterAccountData.current.slice(-1))[0].timestamp_ms;
+
+                    /* Store data into local storage */
+
+                    // console.log(callCenterAccountData.current, mainAdminAccountNewerTimestamp_ms, mainAdminAccountOlderTimestamp_ms);
+                }
+            } break;
+
+            case 'customerAccount': {
+                const len = customerAccountData.current.length;
+                const tab = [];
+
+                /* Ensure there's no duplicated data */
+                if (len > 0) {
+                    for (let i = 0; i < data.length; i++) {
+                        const id = data[i].id;
+                        if (customerAccountIdTab.current.indexOf(id) === -1) {
+                            tab.push(data[i])
+                            customerAccountIdTab.current.push(id);
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < data.length; i++) { customerAccountIdTab.current.push(data[i].id) }
+                    tab.push(...data);
+                }
+
+                /* - */
+                if (tab.length > 0) {
+                    const sortedData = [...customerAccountData.current, ...tab].sort((a: any, b: any) => b.timestamp_ms - a.timestamp_ms);
+                    customerAccountData.current = sortedData;
+
+                    /* Update timestamp_ms */
+                    customerAccountNewerTimestamp_ms.current = customerAccountData.current[0].timestamp_ms;
+                    customerAccountOlderTimestamp_ms.current = (customerAccountData.current.slice(-1))[0].timestamp_ms;
+
+                    /* Store data into local storage */
+
+                    // console.log(customerAccountData.current, mainAdminAccountNewerTimestamp_ms, mainAdminAccountOlderTimestamp_ms);
                 }
             } break;
 
@@ -117,11 +207,22 @@ const DataStoreControllerWidget = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         currentUserData: currentUserData,
-        mainAdminAccountTab: mainAdminAccountTab,
+
+        mainAdminAccountData: mainAdminAccountData,
+        mainAdminAccountNewerTimestamp_ms: mainAdminAccountNewerTimestamp_ms,
+        mainAdminAccountOlderTimestamp_ms: mainAdminAccountOlderTimestamp_ms,
+
+        callCenterAccountData: callCenterAccountData,
+        callCenterAccountNewerTimestamp_ms: callCenterAccountNewerTimestamp_ms,
+        callCenterAccountOlderTimestamp_ms: callCenterAccountOlderTimestamp_ms,
+
+        customerAccountData: customerAccountData,
+        customerAccountNewerTimestamp_ms: customerAccountNewerTimestamp_ms,
+        customerAccountOlderTimestamp_ms: customerAccountOlderTimestamp_ms,
 
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
-        setDataFunc(x: any) { setDataFunc(x) },
+        setDataFunc(x: any) { setDataFunc(x) }
     }), []);
 
     /* On mount */

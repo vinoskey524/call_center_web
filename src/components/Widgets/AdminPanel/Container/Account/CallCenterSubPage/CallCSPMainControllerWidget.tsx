@@ -4,6 +4,9 @@ import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../../../../../Tools/type';
+import { _dev_, _success_, _error_, _requestFailed_, _defaultLanguage_ } from '../../../../../Tools/constants';
+import { catchErrorFunc } from '../../../../../Tools/methodForest';
+import { language } from '../../../../../Tools/language';
 
 /* Widget */
 type propsType = {
@@ -28,6 +31,10 @@ const CallCSPMainControllerWidget = (props: propsType, ref: any) => {
 
     const render = useRef(false);
 
+    const lang = useRef(_defaultLanguage_);
+
+    const traduction = language[lang.current];
+
     /* $data */
 
     const data = props.$data;
@@ -50,6 +57,8 @@ const CallCSPMainControllerWidget = (props: propsType, ref: any) => {
 
     /* - */
 
+    const callCenterFeedListRef = useRef<any>(undefined);
+
     const emptyRef = useRef(undefined);
 
 
@@ -59,7 +68,7 @@ const CallCSPMainControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
-            case 'emptyRef': { emptyRef.current = refId.current } break;
+            case 'callCenterFeedListRef': { callCenterFeedListRef.current = refId.current } break;
             default: { };
         };
     };
@@ -79,8 +88,88 @@ const CallCSPMainControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Initialize */
+    const initFunc = async () => {
+        try {
+            let checkDb = false;
 
-    /* ------------------------------------ jQuery ------------------------------------- */
+            /* Check for local data */
+            const localData: any[] = dataStoreControllerRef.current.callCenterAccountData.current;
+            if (localData.length > 0) {
+                callCenterFeedListRef.current.setDataFunc({ data: localData, position: 'bottom' });
+            } else checkDb = true;
+
+            /* Check db for new data, if necessary */
+            if (checkDb) { await refId.current.fetchAccountFunc() }
+
+        } catch (e: any) { catchErrorFunc({ err: e.message }) }
+    };
+
+    /* Fetch account */
+    const fetchAccountFunc = async () => {
+        try {
+            const currentUserData = dataStoreControllerRef.current.currentUserData.current;
+            const domain = currentUserData.domain;
+
+            /* Req to pg */
+            const timestamp_ms = dataStoreControllerRef.current.callCenterAccountNewerTimestamp_ms.current;
+            const req = await requestControllerRef.current.fetchAccountFunc({ domain: domain, type: 'call_center', state: 'new', timestamp_ms: timestamp_ms });
+            if (req.status !== _success_) throw new Error(JSON.stringify(req)); /* If error */
+
+            /* On pg req success */
+            const data: { userData: any[], accountData: any[] } = req.data;
+            const userData: any[] = data.userData;
+            const accountData: any[] = data.accountData;
+            if (userData.length > 0 && accountData.length > 0) {
+                /* Merge data */
+                const mergedData = refId.current.mergeAccountDataFunc({ userData: userData, accountData: accountData });
+
+                /* Store data into dataStoreController */
+                dataStoreControllerRef.current.setDataFunc({ type: 'callCenterAccount', data: mergedData });
+
+                /* Render accounts */
+                refId.current.renderAccountFunc({ data: mergedData, merged: true });
+
+            } else {
+                callCenterFeedListRef.current.setMessageFunc({ text: traduction['t0032'] });
+                _dev_ && console.warn('no data found.');
+            }
+
+        } catch (e: any) { catchErrorFunc({ err: e.message }) }
+    };
+
+    /* Merge account data */
+    const mergeAccountDataFunc = (x: { userData: any[], accountData: any[] }) => {
+        const userData = x.userData, accountData = x.accountData;
+        let mergedData = [];
+
+        for (let i = 0; i < userData.length; i++) {
+            const user = userData[i];
+            const account = (accountData.filter((e: any) => e.id === user.id))[0];
+
+            delete user._id;
+            delete account._id;
+            delete account.id;
+            delete account.timestamp;
+            delete account.timestamp_ms;
+
+            const res = Object.assign(user, account);
+            mergedData.push(res);
+        }
+
+        return mergedData;
+    };
+
+    /* Render accounts */
+    const renderAccountFunc = (x: { data: any, merged?: boolean }) => {
+        try {
+            const data = x.data;
+            const merged = x.merged ? x.merged : false;
+            const mergedData = merged ? data : refId.current.mergeAccountDataFunc({ userData: [data.userData], accountData: [data.accountData] });
+            callCenterFeedListRef.current.setDataFunc({ data: mergedData, position: 'top' });
+
+        } catch (e: any) { catchErrorFunc({ err: e.message }) }
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -88,22 +177,30 @@ const CallCSPMainControllerWidget = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        fetchAccountFunc() { fetchAccountFunc() },
+        mergeAccountDataFunc(x: any) { return mergeAccountDataFunc(x) },
+        renderAccountFunc(x: any) { renderAccountFunc(x) }
     }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (mainControllerRef?.current !== undefined) && mainControllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
             (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+
+            /* Init */
+            callCenterFeedListRef.current.showLoaderFunc({ show: true });
+            initFunc();
         }
     }, []);
 
     /* On window size change */
-    useEffect(() => {
-        window.addEventListener('resize', onWindowSizeChangeFunc);
-        return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
-    });
+    // useEffect(() => {
+    //     window.addEventListener('resize', onWindowSizeChangeFunc);
+    //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+    // });
 
 
     /* Return */

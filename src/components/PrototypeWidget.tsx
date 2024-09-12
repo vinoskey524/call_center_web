@@ -98,7 +98,7 @@ const PrototypeWidget = (props: propsType, ref: any) => {
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
         setLanguageFunc(x: any) { setLanguageFunc(x) }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {

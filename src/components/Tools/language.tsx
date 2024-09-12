@@ -30,6 +30,13 @@ export const language: any = {
         't0027': 'Fullname already exists.',
         't0028': 'Username already exists.',
         't0029': 'Email already exists.',
+        't0030': 'Domain',
+        't0031': 'Loading',
+        't0032': `Created accounts will display here.`,
+        't0033': 'Domain already exists.',
+        't0034': 'Company name',
+        't0035': 'Company name already exists.',
+        't0036': 'Phone already exists.',
     },
     fr: {
         't0000': '',
@@ -62,5 +69,12 @@ export const language: any = {
         't0027': 'Nom complet déjà existant.',
         't0028': `Nom d'utilisateur déjà existant.`,
         't0029': 'Email déjà existant.',
+        't0030': 'Domaine',
+        't0031': 'Chargement',
+        't0032': `Les comptes créés s'afficheront ici.`,
+        't0033': 'Domaine déjà existant.',
+        't0034': 'Raison sociale',
+        't0035': 'Raison social déjà existant.',
+        't0036': 'Téléphone déjà existant.',
     }
 }

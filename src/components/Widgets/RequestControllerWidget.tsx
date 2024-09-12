@@ -6,8 +6,8 @@ import $ from 'jquery';
 import ws from '../Database/ws/init';
 import { refIdType } from '../Tools/type';
 import { pg_mainFunc } from '../Database/psql/methods';
-import { _success_, _error_, _requestFailed_, _pgReqFailed_, _cipherFailed_, _decipherFailed_, _noUserFound_, _wsAddress_ } from '../Tools/constants';
-import { cipherFunc, decipherFunc } from '../Tools/methodForest';
+import { _success_, _error_, _requestFailed_, _pgReqFailed_, _cipherFailed_, _decipherFailed_, _noUserFound_, _wsAddress_, _dev_ } from '../Tools/constants';
+import { catchErrorFunc, cipherFunc, decipherFunc } from '../Tools/methodForest';
 
 /* Widget */
 type propsType = {
@@ -89,37 +89,30 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Remote Request ------------------------------------- */
 
     /* Login */
-    const loginFunc = async (x: { data: any, controllerRef?: refIdType }) => {
+    const loginFunc = async (x: { data: any }) => {
         try {
             /* Cipher */
             const ciphedData = await cipherFunc({ data: JSON.stringify(x.data) });
-            if (ciphedData.status !== _success_) throw new Error(_cipherFailed_);
+            if (ciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _cipherFailed_, data: ciphedData.data }));
 
             /* Request to pg */
             const req = await pg_mainFunc({ func: 'loginFunc', data: ciphedData.data });
-            if (req.status !== _success_) throw new Error(req.status);
+            if (req.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: req.data }));
 
             /* Decipher */
             const deciphedData = await decipherFunc({ data: req.data });
-            if (deciphedData.status !== _success_) throw new Error(_decipherFailed_);
+            if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
 
             /* - */
-            const fdata = JSON.parse(deciphedData.data);
-            (x.controllerRef)?.current.getLoginReqFeedbackFunc({ status: req.status, data: fdata });
+            return { status: _success_, data: JSON.parse(deciphedData.data) };
 
-        } catch (e: any) {
-            const msg = e.message;
-            switch (msg) {
-                case _cipherFailed_: { } break;
-                case _decipherFailed_: { } break;
-                default: { };
-            }
-        }
+        } catch (e: any) { return catchErrorFunc({ err: e.message }) }
     };
 
     /* Create account */
-    const createAccountFunc = async (x: { type: string, data: any, controllerRef: refIdType }) => {
-        const type = x.type, data = x.data, controllerRef = x.controllerRef;
+    /* type => main_admin | call_center | customer_admin | customer */
+    const createAccountFunc = async (x: { type: string, data: any }) => {
+        const type = x.type, data = x.data;
         try {
             /* Cipher */
             const ciphedData = await cipherFunc({ data: JSON.stringify(data) });
@@ -134,17 +127,14 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
             if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
 
             /* - */
-            (x.controllerRef).current.getAccountCreationFeedbackFunc({ data: data });
+            return { status: _success_, data: JSON.parse(deciphedData.data) };
 
-        } catch (e: any) {
-            const msg = JSON.parse(e.message);
-            (x.controllerRef).current.handleAccountCreationErrorFunc(msg);
-        }
+        } catch (e: any) { return catchErrorFunc({ err: e.message }) }
     };
 
     /* Fetch account */
-    const fetchAccountFunc = async (x: { data: { domain: string, type: string, state: 'new' | 'old', timestamp_ms: number } }) => {
-        const data = x.data;
+    const fetchAccountFunc = async (x: { domain: string, type: string, state: 'new' | 'old', timestamp_ms: number }) => {
+        const data = { domain: x.domain, type: x.type, state: x.state, timestamp_ms: x.timestamp_ms };
         try {
             /* Cipher */
             const ciphedData = await cipherFunc({ data: JSON.stringify(data) });
@@ -159,9 +149,9 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
             if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
 
             /* - */
-            return { status: _success_, data: deciphedData.data };
+            return { status: _success_, data: JSON.parse(deciphedData.data) };
 
-        } catch (e: any) { return JSON.parse(e.message) }
+        } catch (e: any) { return catchErrorFunc({ err: e.message }) }
     };
 
     /* Function Prototype */
@@ -183,7 +173,7 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
     //         /* - */
     //         return { status: _success_, data: undefined };
 
-    //     } catch (e: any) { return JSON.parse(e.message) }
+    //     } catch (e: any) { return catchErrorFunc({ err: e.message }) }
     // };
 
 
@@ -198,8 +188,8 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
         checkRefs() { checkRefs() },
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
-        loginFunc(x: any) { loginFunc(x) },
-        createAccountFunc(x: any) { createAccountFunc(x) },
+        loginFunc(x: any) { return loginFunc(x) },
+        createAccountFunc(x: any) { return createAccountFunc(x) },
         fetchAccountFunc(x: any) { return fetchAccountFunc(x) }
     }), []);
 

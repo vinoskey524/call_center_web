@@ -14,6 +14,8 @@ import AdminSPFeedWidget from './AdminASPFeedWidget';
 import SwitchWidget from '../../../../Others/SwitchWidget';
 import AdminASPMainControllerWidget from './AdminASPMainControllerWidget';
 import reload_icon from '../../../../../Assets/png/reload.png';
+import FeedListWidget from '../../../../FeedList/FeedListWidget';
+import AdminASPFeedWidget from './AdminASPFeedWidget';
 
 /* Widget */
 type propsType = {
@@ -67,13 +69,15 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
 
     /* - */
 
-    const testFeed = Array(1).fill(undefined).map((_, i: number) => { return { id: `id_${i}`, fullName: 'Kevin ODOUTAN', username: 'o.kevin', ssm: 'kh!jnox.e$', rights: 'Full', status: 'connected', active: false } })
+    const testFeed = Array(1).fill(undefined).map((_, i: number) => { return { id: `id_${i}`, fullname: 'Kevin ODOUTAN', username: 'o.kevin', ssm: 'kh!jnox.e$', rights: 'Full', status: 'connected', active: false } });
 
     const feedRef = Array(5).fill(undefined).map(() => React.createRef());
 
     const switchRef = useRef(undefined);
 
     const adminASPMainControllerRef = useRef<any>(undefined);
+
+    const adminFeedListRef = useRef<any>(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -148,18 +152,17 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
         // $arbc.on('mouseleave', () => {
         //     $arbi.css({ transform: 'scale(1)' });
         // });
+
+        // if (adminFeed.length === 0) for (let i = 0; i < testFeed.length; i++) adminFeed.push(<AdminSPFeedWidget key={i} ref={feedRef[i]} $data={{ refId: feedRef[i], controllerRef: adminASPMainControllerRef, rootControllers: rootControllers, accountData: testFeed[i] }} />);
     }, []);
 
 
     /* Return */
 
 
-    /* Create feed */
-    const adminFeed = [];
-    if (adminFeed.length === 0) for (let i = 0; i < testFeed.length; i++) adminFeed.push(<AdminSPFeedWidget key={i} ref={feedRef[i]} $data={{ refId: feedRef[i], controllerRef: adminASPMainControllerRef, rootControllers: rootControllers, accountData: testFeed[i] }} />);
-    /* - */
     const component = <>
         <div id='aaspmw_scaffold' className='prevent_select'>
+
             <div id='aaspmw_header' className='glass'>
                 <div id='aaspmv_title_container'>
                     <h1 id='aaspmw_title'>{traduction['t0008']}</h1>
@@ -193,8 +196,11 @@ const AdminASPMainContainerWidget = (props: propsType, ref: any) => {
                 </div>
             </div>
 
-            <div id='aaspmw_container'>
-                {adminFeed}
+            <div id='aaspmw_body'>
+                <FeedListWidget ref={adminFeedListRef} $data={{
+                    wid: 'adminFeedListRef', refId: adminFeedListRef, controllerRef: adminASPMainControllerRef, rootControllers: rootControllers, paddingTop: 95,
+                    widget: ({ _key, _refId, _data }: any) => { return <AdminASPFeedWidget key={_key} ref={_refId} $data={{ refId: _refId, controllerRef: adminASPMainControllerRef, rootControllers: rootControllers, accountData: _data }} /> }
+                }} />
             </div>
         </div>
         <AdminASPMainControllerWidget ref={adminASPMainControllerRef} $data={{ wid: 'adminASPMainControllerRef', refId: adminASPMainControllerRef, rootControllers: rootControllers }} />

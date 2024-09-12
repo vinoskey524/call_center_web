@@ -98,6 +98,13 @@ const AuthLoginPage = (props: propsType, ref: any) => {
     /* On click */
     const onLoginFunc = async () => { authLoginControllerRef.current.loginFunc() };
 
+    /* Set text */
+    const setTextFunc = (x: { type: 'domain' | 'username' | 'password', text: string }) => {
+        const obj = { domain: $('#al_domain_input'), username: $('#al_username_input'), password: $('#al_password_input') };
+        const $target = obj[x.type];
+        $target.val(x.text);
+    };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
@@ -105,7 +112,8 @@ const AuthLoginPage = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
+        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        setTextFunc(x: any) { setTextFunc(x) }
     }), [refresh]);
 
     /* On mount */
@@ -138,7 +146,7 @@ const AuthLoginPage = (props: propsType, ref: any) => {
                 <button id='login_btn' className='al_btn btn_opacity' type='button' onClick={onLoginFunc}>{traduction['t0001']}</button>
             </div>
         </div>
-        <AuthLoginControllerWidget ref={authLoginControllerRef} $data={{ wid: 'authLoginControllerRef', refId: authLoginControllerRef, rootControllers: rootControllers }} />
+        <AuthLoginControllerWidget ref={authLoginControllerRef} $data={{ wid: 'authLoginControllerRef', refId: authLoginControllerRef, rootControllers: rootControllers, parentRef: refId }} />
     </>;
     return (render.current ? component : <></>);
 };

@@ -6,6 +6,7 @@ import $ from 'jquery';
 import { refIdType } from './Tools/type';
 import { _success_, _error_, _requestFailed_, _defaultLanguage_ } from './Tools/constants';
 import { language } from './Tools/language';
+import { replaceAllOccurenceFunc, replaceConsecutiveSpacesByOneFunc } from './Tools/methodForest';
 
 /* Widget */
 type propsType = {
@@ -72,7 +73,9 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
 
     /* Set text value from inputs */
     const setTextValueFunc = (x: { wid: string, text: string }) => {
-        const wid = x.wid, text = (x.text).replaceAll("'", '’').trimStart();
+        const wid = x.wid, t = (x.text).replaceAll("'", '’').trimStart(), text = replaceConsecutiveSpacesByOneFunc(t), len = text.length;
+        const lowerText = text.toLowerCase(), upperText = text.toUpperCase();
+
         switch (wid) {
             case '': { } break;
             default: { };
@@ -84,9 +87,6 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
     };
-
-
-    /* ------------------------------------ jQuery ------------------------------------- */
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -101,15 +101,16 @@ const PrototypeControllerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (mainControllerRef?.current !== undefined) && mainControllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
             (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
         }
     }, []);
 
     /* On window size change */
-    useEffect(() => {
-        window.addEventListener('resize', onWindowSizeChangeFunc);
-        return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
-    });
+    // useEffect(() => {
+    //     window.addEventListener('resize', onWindowSizeChangeFunc);
+    //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+    // });
 
 
     /* Return */

@@ -20,7 +20,7 @@ type propsType = {
         refId: refIdType,
         controllerRef: refIdType,
         rootControllers: any,
-        accountData: { id: string, fullName: string, username: string, ssm: string, rights: string, status: string }
+        accountData: any
     }
 };
 const CallCSPFeedWidget = (props: propsType, ref: any) => {
@@ -53,7 +53,7 @@ const CallCSPFeedWidget = (props: propsType, ref: any) => {
 
     const rootControllers = data.rootControllers;
 
-    const accountData = data.accountData;
+    const accountData = useRef(data.accountData);
 
     /* Root controllers */
 
@@ -118,17 +118,20 @@ const CallCSPFeedWidget = (props: propsType, ref: any) => {
             </div>
             <div className='ccspfw_hyphen' />
 
-            <p className='ccspfw_full_name one_line'>{accountData.fullName}</p>
+            <p className='ccspfw_full_name one_line'>{accountData.current.fullname}</p>
             <div className='ccspfw_hyphen' />
 
-            <p className='ccspfw_username one_line'>{accountData.username}</p>
+            <p className='ccspfw_username one_line'>{accountData.current.username}</p>
             <div className='ccspfw_hyphen' />
 
-            <p className='ccspfw_status one_line'>{accountData.status}</p>
+            <p className='ccspfw_status one_line'>{accountData.current.status}</p>
             <div className='ccspfw_hyphen' />
 
             <div className='ccspfw_action_btn_container'>
-                <SwitchWidget ref={switchRef} $data={{ wid: 'switchRef', refId: switchRef, controllerRef: { current: undefined }, style: { width: 40, height: 21, backgroundColor: 'white' }, title: traduction['t0012'] }} />
+                <SwitchWidget ref={switchRef} $data={{
+                    wid: 'switchRef', refId: switchRef, controllerRef: { current: undefined }, style: { width: 40, height: 21, backgroundColor: 'white' }, title: traduction['t0012'],
+                    switched: accountData.current.is_active ? true : false
+                }} />
                 <img className='ccspfw_action_btn_icon btn_opacity' style={{ marginInline: 20 }} src={edit_icon} onClick={() => { }} />
                 <img className='ccspfw_action_btn_icon btn_opacity' src={trash_icon} title='Delete' onClick={() => { }} />
             </div>

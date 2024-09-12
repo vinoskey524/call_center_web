@@ -1,12 +1,15 @@
+/** Standard packages */
 import $ from 'jquery';
-import { _error_, _success_ } from './constants';
+
+/** Custom packages */
+import { _dev_, _error_, _success_, _browserName_ } from './constants';
 
 /** Id generator */
 export const generateIdFunc = (x?: { length: number }) => {
     const val = '0aW9zXe8CrVt1By5NuA46iZ3oEpRmTlYkUjIhOgPfMdQsSqDwFxGcHvJbKnL';
     const length = (x?.length !== undefined) ? x.length : val.length;
     let id = '';
-    for (var i = 0; i < length; i++) id += val.charAt(Math.floor(Math.random() * 36));
+    for (var i = 0; i < length; i++) id += (val.charAt(Math.floor(Math.random() * 36)) + val.charAt(Math.floor(Math.random() * 36)));
     return id;
 };
 
@@ -16,13 +19,13 @@ export const animateModalFunc = (x: { scaffold: string, container: string, show:
     const container = x.container;
     const show = x.show;
     if (show) {
-        const d = 100;
+        const d = (_browserName_ === 'Safari') ? 90 : 60;
         $(`${scaffold}`).animate({ 'opacity': 1 }, d);
         $(`${container}`).animate({}, d);
         $(`${container}`).animate({ 'scale': 1 }, d);
         $(`${scaffold}`).css({ 'top': 0 });
     } else {
-        const d = 90;
+        const d = (_browserName_ === 'Safari') ? 80 : 50;
         $(`${container}`).css({ 'scale': 1.00001 });
         $(`${container}`).animate({}, d);
         $(`${container}`).animate({ 'scale': 0.85 }, d);
@@ -36,6 +39,85 @@ export const animateModalFunc = (x: { scaffold: string, container: string, show:
 
 /** Split string into chunks  */
 export const stringToChunksFunc = (x: { data: string, length: number }) => { return (x.data).match(new RegExp(`.{1,${x.length}}`, 'g')) };
+
+/** Check username */
+export const checkUsernameFunc = (x: string) => {
+    const res = x.toLowerCase().match(/^[a-z0-9]*$/);
+    return (res !== null && res !== undefined) ? true : false;
+};
+
+/** Check email */
+export const checkEmailFunc = (x: { email: string }) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(x.email);
+};
+
+/** Check if data is potentially a json type */
+export const isJsonFunc = (x: { data: any }) => {
+    try {
+        const parse = JSON.parse(x.data);
+        const type = Array.isArray(parse) ? 'array' : 'object';
+        return { status: _success_, data: { parsedData: parse, type: type } }
+
+    } catch (e: any) { return { status: _error_, data: 'not a json type' } }
+};
+
+/** Catch error */
+export const catchErrorFunc = (x: { err: any, prefix?: string }) => {
+    const err = x.err, prefix = x.prefix || '';
+    const isJson: any = isJsonFunc({ data: err });
+    const res = (isJson.status === _success_) ? isJson.data.parsedData : err;
+    _dev_ && console.error((prefix === '' ? '' : `${prefix} ::`), res);
+    return res;
+};
+
+/** Replace consecutive spaces by only one space inside string */
+export const replaceConsecutiveSpacesByOneFunc = (x: string) => { return x.replace(/ +/g, ' ') };
+
+/** Replace all occurence in a string */
+export const replaceAllOccurenceFunc = (x: { text: string, replace: string, with: string }) => {
+    const reg = new RegExp(x.replace, 'g');
+    return (x.text).replace(reg, x.with);
+};
+
+/** Get time */
+export const getTimeFunc = (x: { milliseconds: number }) => {
+    const milli = x.milliseconds;
+    const hour = new Date(milli).getHours();
+    const minute = new Date(milli).getMinutes();
+    return { h: hour, m: (minute < 10) ? ('0' + minute) : minute };
+};
+
+/** Get number of lines */
+export const lineCounterFunc = (x: string) => { return (x.split(/\r?\n|\r|\n/g)).length };
+
+
+
+
+
+
+/* ------------------------------------------------------ Package based methods ------------------------------------------------------ */
+
+/** Check phone number */
+export const checkPhoneNumberFunc = (x: { phone: number, iso: string }) => {
+    // const phone = x.phone, iso = x.iso;
+    // try {
+    //     const phoneNumber: any = parsePhoneNumber(phone, iso);
+    //     const res = {
+    //         country: phoneNumber.country,
+    //         countryCallingCode: '+' + phoneNumber.countryCallingCode,
+    //         isValid: phoneNumber.isValid(),
+    //         isPossible: phoneNumber.isPossible(),
+    //         formatNational: phoneNumber.formatNational(),
+    //         formatInternational: phoneNumber.formatInternational(),
+    //     };
+
+    //     if (phoneNumber && phoneNumber.isValid() && phoneNumber.isPossible()) return { status: _success_, data: res };
+    //     else throw new Error('Phone number is invalid !');
+
+    // } catch (e: any) { return { status: _error_, data: e.message } }
+};
+
 
 
 
@@ -55,10 +137,7 @@ const hexToBufferFunc = (x: { data: any }) => {
     for (let i = 0; i < len; i += 2) { buffer[i / 2] = parseInt(hex.substr(i, 2), 16) }
     return buffer;
 };
-const generateKeyFunc = async () => {
-    const tagLength = 128;
-    return await crypto.subtle.generateKey({ name: 'AES-GCM', length: tagLength }, true, ['encrypt', 'decrypt']);
-};
+const generateKeyFunc = async () => { return await crypto.subtle.generateKey({ name: 'AES-GCM', length: 128 }, true, ['encrypt', 'decrypt']) };
 const cipherStringToChunksFunc = (x: { data: string }) => {
     const data = x.data;
     const dataLength = data.length;

@@ -10,6 +10,7 @@ import { refIdType } from '../../../../../Tools/type';
 import { _defaultLanguage_ } from '../../../../../Tools/constants';
 import CallCSPFeedWidget from './CallCSPFeedWidget';
 import CallCSPMainControllerWidget from './CallCSPMainControllerWidget';
+import FeedListWidget from '../../../../FeedList/FeedListWidget';
 
 /* Widget */
 type propsType = {
@@ -62,6 +63,8 @@ const CallCSPMainContainerWidget = (props: propsType, ref: any) => {
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
 
     /* - */
+
+    const callCenterFeedListRef = useRef(undefined);
 
     const callCSPMainControllerRef = useRef(undefined);
 
@@ -157,8 +160,11 @@ const CallCSPMainContainerWidget = (props: propsType, ref: any) => {
                 </div>
             </div>
 
-            <div id='ccspmcw_container'>
-                {callCenterFeed}
+            <div id='ccspmcw_body'>
+                <FeedListWidget ref={callCenterFeedListRef} $data={{
+                    wid: 'callCenterFeedListRef', refId: callCenterFeedListRef, controllerRef: callCSPMainControllerRef, rootControllers: rootControllers, paddingTop: 95,
+                    widget: ({ _key, _refId, _data }: any) => { return <CallCSPFeedWidget key={_key} ref={_refId} $data={{ refId: refId, controllerRef: callCSPMainControllerRef, rootControllers: rootControllers, accountData: _data }} /> }
+                }} />
             </div>
         </div>
         <CallCSPMainControllerWidget ref={callCSPMainControllerRef} $data={{ wid: 'callCSPMainControllerRef', refId: callCSPMainControllerRef, rootControllers: rootControllers }} />

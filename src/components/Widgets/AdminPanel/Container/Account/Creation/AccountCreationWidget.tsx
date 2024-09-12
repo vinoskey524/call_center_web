@@ -88,7 +88,11 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
 
     const pageTitle = { admin: 'Admin', callCenter: 'Call Center', customer: 'Customer' };
 
-    const fullNameInputRef = useRef<any>(undefined);
+    const domainInputRef = useRef<any>(undefined);
+
+    const companyNameInputRef = useRef<any>(undefined);
+
+    const fullnameInputRef = useRef<any>(undefined);
 
     const usernameInputRef = useRef<any>(undefined);
 
@@ -131,10 +135,16 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
     /* Show */
     const showFunc = (x: { show: boolean, sourcePage?: 'admin' | 'callCenter' | 'customer' }) => {
         const show = x.show, sourcePage = x.sourcePage;
+        const domain = dataStoreControllerRef.current.currentUserData.current.domain;
+
+        /* - */
         (sourcePage !== undefined) && (sourcePageType.current = sourcePage);
+        domainInputRef.current.updateReadonlyStateFunc({ readonly: (sourcePage === 'customer') ? false : true, text: (sourcePage === 'customer') ? '' : domain });
+
+        /* - */
         setRefresh(!refresh);
-        animateModalFunc({ scaffold: '#acrw_scaffold', container: '#acrw_container', show: x.show });
-    };
+        animateModalFunc({ scaffold: '#acrw_scaffold', container: '#acrw_container', show: show });
+    }
 
     /* On create */
     const onCreateFunc = () => { accountCreationControllerRef.current.createAccountFunc({ type: sourcePageType.current }) };
@@ -187,15 +197,28 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
                     <LoadingWidget ref={accountLoadingRef} $data={{ wid: 'accountLoadingRef', refId: accountLoadingRef, controllerRef: accountCreationControllerRef }} />
 
                     <div className='acrw_input_container'>
-                        <FormInputWidget /* Full name */ ref={fullNameInputRef} $data={{ wid: 'fullNameInputRef', refId: fullNameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0018'], type: 'text' }} />
+                        {sourcePageType.current === 'customer' && <div className='acrw_area_title'>Infos de l'entreprise</div>}
+
+                        <FormInputWidget /* Domain */ ref={domainInputRef} $data={{ wid: 'domainInputRef', refId: domainInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0030'], type: 'text', readonly: (sourcePageType.current === 'customer') ? false : true }} />
+
+                        {sourcePageType.current === 'customer' && <FormInputWidget /* Company name */ ref={companyNameInputRef} $data={{ wid: 'companyNameInputRef', refId: companyNameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0034'], type: 'text' }} />}
+
+                        {sourcePageType.current !== 'customer' && <FormInputWidget /* Full name */ ref={fullnameInputRef} $data={{ wid: 'fullnameInputRef', refId: fullnameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0018'], type: 'text' }} />}
+
                         {sourcePageType.current !== 'customer' && <FormInputWidget /* Username */ ref={usernameInputRef} $data={{ wid: 'usernameInputRef', refId: usernameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0019'], type: 'text' }} />}
                         {sourcePageType.current === 'customer' && <>
                             <FormInputWidget /* Email */ ref={emailInputRef} $data={{ wid: 'emailInputRef', refId: emailInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0020'], type: 'email' }} />
                             <FormInputWidget /* Phone */ ref={phoneInputRef} $data={{ wid: 'phoneInputRef', refId: phoneInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0021'], type: 'number' }} />
                         </>}
+
+                        {sourcePageType.current === 'customer' && <FormInputWidget /* Expiration date */ ref={expirationInputRef} $data={{ wid: 'expirationInputRef', refId: expirationInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0024'], type: 'date' }} />}
+
+                        {sourcePageType.current === 'customer' && <div className='acrw_area_title'>Compte admin (Défaut)</div>}
+                        {sourcePageType.current === 'customer' && <FormInputWidget /* Full name */ ref={fullnameInputRef} $data={{ wid: 'fullnameInputRef', refId: fullnameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0018'], type: 'text' }} />}
+                        {sourcePageType.current === 'customer' && <FormInputWidget /* Username */ ref={usernameInputRef} $data={{ wid: 'usernameInputRef', refId: usernameInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0019'], type: 'text' }} />}
+
                         <FormInputWidget /* Password */ ref={passwordInputRef} $data={{ wid: 'passwordInputRef', refId: passwordInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0022'], type: 'password' }} />
                         <FormInputWidget /* confirmation */ ref={confirmInputRef} $data={{ wid: 'confirmInputRef', refId: confirmInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0023'], type: 'password' }} />
-                        {sourcePageType.current === 'customer' && <FormInputWidget /* Expiration date */ ref={expirationInputRef} $data={{ wid: 'expirationInputRef', refId: expirationInputRef, controllerRef: accountCreationControllerRef, className: acrw_input_classname.current, title: traduction['t0024'], type: 'date' }} />}
                     </div>
 
                     {sourcePageType.current === 'admin' &&
@@ -293,7 +316,9 @@ const AccountCreationWidget = (props: propsType, ref: any) => {
                             </button>
                         </div>
                     </div>
+
                 </div>
+
                 <UIBlockerWidget ref={uiBlockerRef} $data={{ wid: 'uiBlockerRef', refId: uiBlockerRef, controllerRef: accountCreationControllerRef }} />
             </div>
         </div>

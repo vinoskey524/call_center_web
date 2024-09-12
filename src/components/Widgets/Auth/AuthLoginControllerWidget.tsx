@@ -1,11 +1,12 @@
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import $, { contains } from 'jquery';
+import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../../Tools/type';
 import { _success_, _error_, _requestFailed_, _incorrectCredentials_, _defaultLanguage_ } from '../../Tools/constants';
 import { language } from '../../Tools/language';
+import { catchErrorFunc, replaceAllOccurenceFunc, replaceConsecutiveSpacesByOneFunc } from '../../Tools/methodForest';
 
 /* Widget */
 type propsType = {
@@ -14,7 +15,8 @@ type propsType = {
         wid: string,
         refId: refIdType,
         controllerRef?: refIdType,
-        rootControllers: any
+        rootControllers: any,
+        parentRef: refIdType
     }
 };
 const AuthLoginControllerWidget = (props: propsType, ref: any) => {
@@ -48,6 +50,8 @@ const AuthLoginControllerWidget = (props: propsType, ref: any) => {
 
     const rootControllers = data.rootControllers;
 
+    const parentRef = data.parentRef;
+
     /* Root controllers */
 
     const mainControllerRef: refIdType = rootControllers.mainControllerRef;
@@ -64,7 +68,7 @@ const AuthLoginControllerWidget = (props: propsType, ref: any) => {
 
     const loginData = useRef({ domain: '', username: '', ssm: '' });
 
-    const isLoginReqPending = useRef(false);
+    const canLogin = useRef(true);
 
     const notFoundAccountHistory = useRef([]);
 
@@ -82,11 +86,25 @@ const AuthLoginControllerWidget = (props: propsType, ref: any) => {
 
     /* Set text value from inputs */
     const setTextValueFunc = (x: { wid: string, text: string }) => {
-        const wid = x.wid, text = (x.text).replaceAll("'", '’');
+        const wid = x.wid, t = (x.text).replaceAll("'", '’').trimStart(), text = replaceConsecutiveSpacesByOneFunc(t);
         switch (wid) {
-            case 'domain_input': { loginData.current.domain = text } break;
-            case 'username_input': { loginData.current.username = text } break;
-            case 'password_input': { loginData.current.ssm = text } break;
+            case 'domain_input': {
+                const txt = replaceAllOccurenceFunc({ text: text, replace: ' ', with: '' }).toLowerCase();
+                loginData.current.domain = txt;
+                parentRef.current.setTextFunc({ type: 'domain', text: txt });
+            } break;
+
+            case 'username_input': {
+                const txt = text.toLowerCase();
+                loginData.current.username = txt;
+                parentRef.current.setTextFunc({ type: 'username', text: txt });
+            } break;
+
+            case 'password_input': {
+                loginData.current.ssm = text;
+                parentRef.current.setTextFunc({ type: 'password', text: text });
+            } break;
+
             default: { };
         };
     };
@@ -95,53 +113,73 @@ const AuthLoginControllerWidget = (props: propsType, ref: any) => {
     const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
 
     /* Login */
-    const loginFunc = () => {
-        if (!isLoginReqPending.current) {
-            isLoginReqPending.current = true;
-            $('#al_message_container').text('');
-            $('.al_input').attr({ 'readonly': true });
+    const loginFunc = async () => {
+        try {
+            if (canLogin.current) {
+                canLogin.current = false;
 
-            const val = Object.values(loginData.current);
-            const searchEmptyVal = val.indexOf('');
+                $('#al_message_container').text('');
+                $('.al_input').attr({ 'readonly': true });
 
-            if (searchEmptyVal === -1) {
-                authLoadingRef.current.showLoadingFunc({ show: true });
-                requestControllerRef.current.loginFunc({ data: loginData.current, controllerRef: refId });
-            } else {
-                $('#al_message_container').css({ 'color': '#FCF2A9' });
-                $('#al_message_container').text(`${traduction['t0017']}`);
-                $('.al_input').removeAttr('readonly');
-                isLoginReqPending.current = false;
+                const val = Object.values(loginData.current);
+                const searchEmptyVal = val.indexOf('');
+
+                if (searchEmptyVal === -1) {
+                    /* Show loading */
+                    authLoadingRef.current.showLoadingFunc({ show: true });
+
+                    /* Req to pg */
+                    const req = await requestControllerRef.current.loginFunc({ data: loginData.current, controllerRef: refId });
+                    refId.current.getLoginReqFeedbackFunc({ status: req.status, data: req.data });
+
+                } else {
+                    $('#al_message_container').css({ 'color': '#FCF2A9' });
+                    $('#al_message_container').text(`${traduction['t0017']}`);
+                    $('.al_input').removeAttr('readonly');
+                    canLogin.current = false;
+                }
             }
-        }
+
+        } catch (e: any) { catchErrorFunc({ err: e.message }) };
     };
 
     /* Get login request feedback */
     const getLoginReqFeedbackFunc = (x: { status: string, data: any }) => {
-        const status = x.status, data = x.data;
-        authLoadingRef.current.showLoadingFunc({ show: false });
-        if (status === _success_) {
-            const hasFoundUser = Object.keys(data).length > 0 ? true : false;
-            if (hasFoundUser) {
-                $('#al_logo').removeClass('floating');
-                dataStoreControllerRef.current.setDataFunc({ type: 'currentUserData', data: data });
-                mainControllerRef.current.loginUserFunc();
+        try {
+            const status = x.status, data = x.data;
+            authLoadingRef.current.showLoadingFunc({ show: false });
+
+            /* - */
+            if (status === _success_) {
+                const hasFoundUser = Object.keys(data).length > 0 ? true : false;
+                if (hasFoundUser) {
+                    $('#al_logo').removeClass('floating');
+                    dataStoreControllerRef.current.setDataFunc({ type: 'currentUserData', data: data });
+                    mainControllerRef.current.loginUserFunc();
+
+                } else {
+                    setTimeout(() => {
+                        $('#al_message_container').css({ 'color': '#FCF2A9' });
+                        $('#al_message_container').text(`${traduction['t0015']}`);
+
+                        /* - */
+                        $('.al_input').removeAttr('readonly');
+                        canLogin.current = true;
+                    }, 320);
+                }
+
             } else {
                 setTimeout(() => {
-                    $('#al_message_container').css({ 'color': '#FCF2A9' });
-                    $('#al_message_container').text(`${traduction['t0015']}`);
+                    $('#al_message_container').css({ 'color': 'red' });
+                    $('#al_message_container').text(`${traduction['t0016']}`); /* Retry error message */
+
+                    /* - */
+                    $('.al_input').removeAttr('readonly');
+                    canLogin.current = true;
                 }, 320);
             }
-        } else {
-            setTimeout(() => {
-                $('#al_message_container').css({ 'color': 'red' });
-                $('#al_message_container').text(`${traduction['t0016']}`);
-            }, 320);
-        }
-        setTimeout(() => {
-            $('.al_input').removeAttr('readonly');
-            isLoginReqPending.current = false;
-        }, 1000);
+
+        } catch (e: any) { catchErrorFunc({ err: e.message }) };
     };
 
 

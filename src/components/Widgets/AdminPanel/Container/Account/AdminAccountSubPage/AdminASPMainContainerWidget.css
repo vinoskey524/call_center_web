@@ -1,8 +1,7 @@
 #aaspmw_scaffold {
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    overflow: hidden;
     position: absolute;
     display: flex;
     align-items: center;
@@ -129,4 +128,16 @@
 
 #aaspmv_refresh_btn_container:active #aaspmv_refresh_btn_icon {
     scale: 0.9
+}
+
+/* body */
+
+#aaspmw_body {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }

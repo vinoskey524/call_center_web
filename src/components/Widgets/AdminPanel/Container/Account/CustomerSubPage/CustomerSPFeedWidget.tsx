@@ -19,7 +19,7 @@ type propsType = {
         refId: refIdType,
         controllerRef: refIdType,
         rootControllers: any,
-        accountData: { id: string, fullName: string, email: string, phone: string, expiration: string }
+        accountData: any
     }
 };
 const CustomerSPFeedWidget = (props: propsType, ref: any) => {
@@ -52,7 +52,7 @@ const CustomerSPFeedWidget = (props: propsType, ref: any) => {
 
     const rootControllers = data.rootControllers;
 
-    const accountData = data.accountData;
+    const accountData = useRef(data.accountData);
 
     /* Root controllers */
 
@@ -115,20 +115,23 @@ const CustomerSPFeedWidget = (props: propsType, ref: any) => {
             </div>
             <div className='cspfw_hyphen' />
 
-            <p className='cspfw_full_name one_line'>{accountData.fullName}</p>
+            <p className='cspfw_full_name one_line'>{accountData.current.company_name}</p>
             <div className='cspfw_hyphen' />
 
-            <p className='cspfw_email one_line'>{accountData.email}</p>
+            <p className='cspfw_email one_line'>{accountData.current.email}</p>
             <div className='cspfw_hyphen' />
 
-            <p className='cspfw_phone one_line'>{accountData.phone}</p>
+            <p className='cspfw_phone one_line'>{accountData.current.phone}</p>
             <div className='cspfw_hyphen' />
 
-            <p className='cspfw_expiration one_line'>{accountData.expiration}</p>
+            <p className='cspfw_expiration one_line'>{accountData.current.expiration}</p>
             <div className='cspfw_hyphen' />
 
             <div className='cspfw_action_btn_container'>
-                <SwitchWidget ref={switchRef} $data={{ wid: 'switchRef', refId: switchRef, controllerRef: { current: undefined }, style: { width: 40, height: 21, backgroundColor: 'white' }, title: traduction['t0012'] }} />
+                <SwitchWidget ref={switchRef} $data={{
+                    wid: 'switchRef', refId: switchRef, controllerRef: { current: undefined }, style: { width: 40, height: 21, backgroundColor: 'white' }, title: traduction['t0012'],
+                    switched: accountData.current.is_active ? true : false
+                }} />
                 <img className='cspfw_action_btn_icon btn_opacity' style={{ marginInline: 20 }} src={edit_icon} onClick={() => { }} />
                 <img className='cspfw_action_btn_icon btn_opacity' src={trash_icon} title='Delete' onClick={() => { }} />
             </div>

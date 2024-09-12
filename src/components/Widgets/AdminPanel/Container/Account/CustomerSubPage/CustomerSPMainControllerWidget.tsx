@@ -4,6 +4,9 @@ import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../../../../../Tools/type';
+import { _dev_, _success_, _defaultLanguage_ } from '../../../../../Tools/constants';
+import { catchErrorFunc } from '../../../../../Tools/methodForest';
+import { language } from '../../../../../Tools/language';
 
 /* Widget */
 type propsType = {
@@ -27,6 +30,10 @@ const CustomerSPMainControllerWidget = (props: propsType, ref: any) => {
     const isMounted = useRef(false);
 
     const render = useRef(false);
+
+    const lang = useRef(_defaultLanguage_);
+
+    const traduction = language[lang.current];
 
     /* $data */
 
@@ -52,6 +59,8 @@ const CustomerSPMainControllerWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const customerFeedListRef = useRef<any>(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -59,7 +68,7 @@ const CustomerSPMainControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
-            case 'emptyRef': { emptyRef.current = refId.current } break;
+            case 'customerFeedListRef': { customerFeedListRef.current = refId.current } break;
             default: { };
         };
     };
@@ -79,8 +88,65 @@ const CustomerSPMainControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Initialize */
+    const initFunc = async () => {
+        try {
+            let checkDb = false;
 
-    /* ------------------------------------ jQuery ------------------------------------- */
+            /* Check for local data */
+            const localData: any[] = dataStoreControllerRef.current.customerAccountData.current;
+            if (localData.length > 0) {
+                customerFeedListRef.current.setDataFunc({ data: localData, position: 'bottom' });
+            } else checkDb = true;
+
+            /* Check db for new data, if necessary */
+            if (checkDb) { await refId.current.fetchAccountFunc() }
+
+        } catch (e: any) { catchErrorFunc({ err: e.message }) }
+    };
+
+    /* Fetch account */
+    const fetchAccountFunc = async () => {
+        try {
+            const currentUserData = dataStoreControllerRef.current.currentUserData.current;
+            const domain = currentUserData.domain;
+
+            /* Req to pg */
+            const timestamp_ms = dataStoreControllerRef.current.customerAccountNewerTimestamp_ms.current;
+            const req = await requestControllerRef.current.fetchAccountFunc({ domain: domain, type: 'customer', state: 'new', timestamp_ms: timestamp_ms });
+            if (req.status !== _success_) throw new Error(JSON.stringify(req)); /* If error */
+
+            /* On pg req success */
+            const data: { adminData: any[], customerData: any[] } = req.data;
+            console.log(req.data);
+
+            const adminData: any[] = data.adminData;
+            const customerData: any[] = data.customerData;
+            if (adminData.length > 0 && customerData.length > 0) {
+                const mergedData = Object.assign(customerData, { defaultAdmin: adminData });
+
+                /* Store data into dataStoreController */
+                dataStoreControllerRef.current.setDataFunc({ type: 'customerAccount', data: mergedData });
+
+                /* Render accounts */
+                refId.current.renderAccountFunc({ data: mergedData, merged: true });
+
+            } else {
+                customerFeedListRef.current.setMessageFunc({ text: traduction['t0032'] });
+                _dev_ && console.warn('no data found.');
+            }
+
+        } catch (e: any) { catchErrorFunc({ err: e.message }) }
+    };
+
+    /* Render accounts */
+    const renderAccountFunc = (x: { data: any, merged?: boolean }) => {
+        try {
+            const data = x.merged ? x.data : Object.assign(x.data.customerData, { defaultAdmin: x.data.adminData });
+            console.log(data);
+            customerFeedListRef.current.setDataFunc({ data: Array.isArray(data) ? data : [data], position: 'top' });
+        } catch (e: any) { catchErrorFunc({ err: e.message }) }
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -88,14 +154,21 @@ const CustomerSPMainControllerWidget = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
-        setTextValueFunc(x: any) { setTextValueFunc(x) }
+        setTextValueFunc(x: any) { setTextValueFunc(x) },
+        fetchAccountFunc() { fetchAccountFunc() },
+        renderAccountFunc(x: any) { renderAccountFunc(x) }
     }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (mainControllerRef?.current !== undefined) && mainControllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
             (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+
+            /* Init */
+            customerFeedListRef.current.showLoaderFunc({ show: true });
+            initFunc();
         }
     }, []);
 

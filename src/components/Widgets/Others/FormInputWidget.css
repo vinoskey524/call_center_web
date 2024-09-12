@@ -185,3 +185,15 @@
     display: flex;
     align-self: flex-end;
 }
+
+/* - */
+.formiw_readonly_input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    text-align: center;
+    color: #fff;
+    padding-inline: 6px;
+    opacity: 0.4;
+}

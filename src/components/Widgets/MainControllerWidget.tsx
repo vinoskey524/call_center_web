@@ -43,17 +43,19 @@ const MainControllerWidget = (props: propsType, ref: any) => {
 
     const dataStoreControllerRef = data.dataStoreControllerRef;
 
-    /* - */
+    /* Refs */
 
     const authLoginRef = useRef<any>(undefined);
-
     const panelMainRef = useRef<any>(undefined)
-
     const accountCreationRef = useRef<any>(undefined);
-
     const productCreationMainRef = useRef<any>(undefined);
-
     const complaintCreationRef = useRef<any>(undefined);
+
+    const adminASPMainControllerRef = useRef<any>(undefined);
+    const callCSPMainControllerRef = useRef<any>(undefined);
+    const customerSPMainControllerRef = useRef<any>(undefined);
+    const accountCreationControllerRef = useRef<any>(undefined);
+    const adminMainControllerRef = useRef<any>(undefined);
 
     /* - */
 
@@ -73,6 +75,13 @@ const MainControllerWidget = (props: propsType, ref: any) => {
             case 'accountCreationRef': { accountCreationRef.current = refId.current } break;
             case 'productCreationMainRef': { productCreationMainRef.current = refId.current } break;
             case 'complaintCreationRef': { complaintCreationRef.current = refId.current } break;
+
+            case 'adminASPMainControllerRef': { adminASPMainControllerRef.current = refId.current } break;
+            case 'callCSPMainControllerRef': { callCSPMainControllerRef.current = refId.current } break;
+            case 'customerSPMainControllerRef': { customerSPMainControllerRef.current = refId.current } break;
+            case 'accountCreationControllerRef': { accountCreationControllerRef.current = refId.current } break;
+            case 'adminMainControllerRef': { adminMainControllerRef.current = refId.current } break;
+
             default: { };
         };
     };
@@ -111,6 +120,12 @@ const MainControllerWidget = (props: propsType, ref: any) => {
         accountCreationRef: accountCreationRef,
         productCreationMainRef: productCreationMainRef,
         complaintCreationRef: complaintCreationRef,
+
+        adminASPMainControllerRef: adminASPMainControllerRef,
+        callCSPMainControllerRef: callCSPMainControllerRef,
+        customerSPMainControllerRef: customerSPMainControllerRef,
+        accountCreationControllerRef: accountCreationControllerRef,
+        adminMainControllerRef: adminMainControllerRef,
 
         hasInternet: hasInternet,
 

@@ -4,6 +4,8 @@ import $ from 'jquery';
 
 /* Custom packages */
 import { refIdType } from '../../Tools/type';
+import { _success_, _error_, _requestFailed_, _defaultLanguage_, _dev_ } from '../../Tools/constants';
+import { language } from '../../Tools/language';
 
 /* Widget */
 type propsType = {
@@ -11,11 +13,13 @@ type propsType = {
         /** Every change made to "wid" affect controller */
         wid: string,
         refId: refIdType,
+        parentRef: refIdType,
         controllerRef?: refIdType,
-        rootControllers: any
+        rootControllers: any,
+        initialFeed: any[]
     }
 };
-const AdminMainControllerWidget = (props: propsType, ref: any) => {
+const FeedListControllerWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
@@ -28,6 +32,10 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
 
     const render = useRef(false);
 
+    const lang = useRef(_defaultLanguage_);
+
+    const traduction = language[lang.current];
+
     /* $data */
 
     const data = props.$data;
@@ -36,9 +44,13 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
 
     const refId = data.refId;
 
+    const parentRef = data.parentRef;
+
     const controllerRef = data.controllerRef;
 
     const rootControllers = data.rootControllers;
+
+    const initialFeed = data.initialFeed || [];
 
     /* Root controllers */
 
@@ -50,17 +62,15 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
 
     /* Refs */
 
-    const adminASPMainContainerRef = useRef<any>(undefined);
+    const feedMainSubContainerRef = useRef<any>(undefined);
 
-    const callCSPMainContainerRef = useRef<any>(undefined);
-
-    const customerSPMainContainerRef = useRef<any>(undefined);
+    const feedListLoaderRef = useRef<any>(undefined);
 
     /* - */
 
-    const currentMenuData = useRef<{ id: string, refId: refIdType } | undefined>();
+    const emptyRef = useRef(undefined);
 
-    const currentMenuSubPageRef = useRef<any>(undefined);
+    const subContainerMap = useRef<refIdType[]>([]);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -69,16 +79,15 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
     const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
         switch (wid) {
-            case 'adminASPMainContainerRef': { adminASPMainContainerRef.current = refId.current } break;
-            case 'callCSPMainContainerRef': { callCSPMainContainerRef.current = refId.current } break;
-            case 'customerSPMainContainerRef': { customerSPMainContainerRef.current = refId.current } break;
+            case 'feedMainSubContainerRef': { feedMainSubContainerRef.current = refId.current } break;
+            case 'feedListLoaderRef': { feedListLoaderRef.current = refId.current } break;
             default: { };
         };
     };
 
     /* Set text value from inputs */
     const setTextValueFunc = (x: { wid: string, text: string }) => {
-        const wid = x.wid, text = x.text;
+        const wid = x.wid, text = (x.text).replaceAll("'", '’').trimStart();
         switch (wid) {
             case '': { } break;
             default: { };
@@ -91,36 +100,39 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
-    /* Show menu page */
-    const showMenuPageFunc = (x: { id: string, refId: refIdType }) => {
-        (currentMenuData.current !== undefined) && (currentMenuData.current.refId).current.selectFunc({ select: false });
-        (x.refId).current.selectFunc({ select: true });
-        currentMenuData.current = x;
-
-        /* - */
-        (currentMenuSubPageRef.current !== undefined) && currentMenuSubPageRef.current.showFunc({ show: false });
-        switch (x.id) {
-            case 'admin_menu': {
-                adminASPMainContainerRef.current.showFunc({ show: true });
-                currentMenuSubPageRef.current = adminASPMainContainerRef.current;
-            } break;
-
-            case 'call_center_menu': {
-                callCSPMainContainerRef.current.showFunc({ show: true });
-                currentMenuSubPageRef.current = callCSPMainContainerRef.current;
-            } break;
-
-            case 'customer_menu': {
-                customerSPMainContainerRef.current.showFunc({ show: true });
-                currentMenuSubPageRef.current = customerSPMainContainerRef.current;
-            } break;
-
-            default: { };
-        };
+    /* Show | hide loading */
+    const showLoaderFunc = (x: { show: boolean }) => {
+        feedListLoaderRef.current.showLoaderFunc({ show: x.show });
     };
 
+    /* Set data */
+    const setDataFunc = (x: { data: any[], position: 'top' | 'bottom' }) => {
+        const data = x.data, position = x.position;
+        if (data.length > 0) {
+            const len = subContainerMap.current.length;
+            if (len === 0) {
+                feedMainSubContainerRef.current.renderContainerFunc({ data: data });
 
-    /* ------------------------------------ jQuery ------------------------------------- */
+            } else if (len > 0) {
+                const subContainerRef = (position === 'top') ? subContainerMap.current[0] : (subContainerMap.current.slice(-1))[0];
+                subContainerRef.current.renderContainerFunc({ data: data });
+
+            } else { _dev_ && console.error(`There'less than 3 subContainer =>`, subContainerMap) }
+
+            /* Hide loader */
+            feedListLoaderRef.current.showLoaderFunc({ show: false });
+        }
+    };
+
+    /* Set subContainer */
+    const setSubContainerFunc = (x: { data: refIdType[], position: 'top' | 'bottom' }) => {
+        const data = x.data, position = x.position;
+        const tab = (position === 'top') ? [...data, ...subContainerMap.current] : [...subContainerMap.current, ...data];
+        subContainerMap.current = tab;
+    };
+
+    /* Set message */
+    const setMessageFunc = (x: { text: string, type?: 'message' | 'warning' | 'error' }) => { feedListLoaderRef.current.setMessageFunc(x) };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -129,7 +141,10 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
-        showMenuPageFunc(x: any) { showMenuPageFunc(x) }
+        showLoaderFunc(x: any) { showLoaderFunc(x) },
+        setDataFunc(x: any) { setDataFunc(x) },
+        setSubContainerFunc(x: any) { setSubContainerFunc(x) },
+        setMessageFunc(x: any) { setMessageFunc(x) }
     }), []);
 
     /* On mount */
@@ -154,4 +169,4 @@ const AdminMainControllerWidget = (props: propsType, ref: any) => {
     return (<></>);
 };
 
-export default forwardRef(AdminMainControllerWidget);
+export default forwardRef(FeedListControllerWidget);

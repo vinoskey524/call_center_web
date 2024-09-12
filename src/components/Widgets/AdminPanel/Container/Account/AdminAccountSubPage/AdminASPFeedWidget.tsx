@@ -18,7 +18,8 @@ type propsType = {
         refId: refIdType,
         controllerRef: refIdType,
         rootControllers: any,
-        accountData: { id: string, fullName: string, username: string, ssm: string, rights: string, status: string }
+        accountData: any
+        // accountData: { id: string, fullname: string, username: string, ssm: string, rights: string, status: string }
     }
 };
 const AdminASPFeedWidget = (props: propsType, ref: any) => {
@@ -51,7 +52,7 @@ const AdminASPFeedWidget = (props: propsType, ref: any) => {
 
     const rootControllers = data.rootControllers;
 
-    const accountData = data.accountData;
+    const accountData = useRef(data.accountData);
 
     /* Root controllers */
 
@@ -60,6 +61,12 @@ const AdminASPFeedWidget = (props: propsType, ref: any) => {
     const requestControllerRef: refIdType = rootControllers.requestControllerRef;
 
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
+
+    /* User data */
+
+    const rights = accountData.current.rights;
+
+    const isActive = accountData.current.is_active;
 
     /* - */
 
@@ -103,8 +110,6 @@ const AdminASPFeedWidget = (props: propsType, ref: any) => {
     // }, []);
 
 
-
-
     /* Return */
 
 
@@ -115,20 +120,24 @@ const AdminASPFeedWidget = (props: propsType, ref: any) => {
             </div>
             <div className='aaspfw_hyphen' />
 
-            <p className='aaspfw_full_name one_line'>{accountData.fullName}</p>
+            <p className='aaspfw_full_name one_line'>{accountData.current.fullname}</p>
             <div className='aaspfw_hyphen' />
 
-            <p className='aaspfw_username one_line'>{accountData.username}</p>
+            <p className='aaspfw_username one_line'>{accountData.current.username}</p>
             <div className='aaspfw_hyphen' />
 
-            <p className='aaspfw_rights one_line'>{accountData.rights}</p>
+            <p className='aaspfw_rights one_line'>{'rights'}</p>
             <div className='aaspfw_hyphen' />
 
-            <p className='aaspfw_status one_line'>{accountData.status}</p>
+            <p className='aaspfw_status one_line'>{accountData.current.status}</p>
             <div className='aaspfw_hyphen' />
 
             <div className='aaspfw_action_btn_container'>
-                <SwitchWidget ref={switchRef} $data={{ wid: 'switchRef', refId: switchRef, controllerRef: { current: undefined }, style: { width: 40, height: 21, backgroundColor: 'white' }, title: traduction['t0012'] }} />
+                <SwitchWidget ref={switchRef} $data={{
+                    wid: 'switchRef', refId: switchRef, controllerRef: { current: undefined }, style: { width: 40, height: 21, backgroundColor: 'white' }, title: traduction['t0012'],
+                    switched: accountData.current.is_active ? true : false
+                }} />
+
                 <img className='aaspfw_action_btn_icon btn_opacity' style={{ marginInline: 20 }} src={edit_icon} onClick={() => { }} />
                 <img className='aaspfw_action_btn_icon btn_opacity' src={trash_icon} title='Delete' onClick={() => { }} />
             </div>

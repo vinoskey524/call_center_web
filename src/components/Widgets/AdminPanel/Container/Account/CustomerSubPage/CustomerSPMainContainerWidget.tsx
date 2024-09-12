@@ -10,6 +10,7 @@ import { refIdType } from '../../../../../Tools/type';
 import { _defaultLanguage_ } from '../../../../../Tools/constants';
 import CustomerSPFeedWidget from './CustomerSPFeedWidget';
 import CustomerSPMainControllerWidget from './CustomerSPMainControllerWidget';
+import FeedListWidget from '../../../../FeedList/FeedListWidget';
 
 /* Widget */
 type propsType = {
@@ -62,6 +63,8 @@ const CustomerSPMainContainerWidget = (props: propsType, ref: any) => {
     const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
 
     /* - */
+
+    const customerFeedListRef = useRef(undefined);
 
     const customerSPMainControllerRef = useRef(undefined);
 
@@ -160,8 +163,11 @@ const CustomerSPMainContainerWidget = (props: propsType, ref: any) => {
                 </div>
             </div>
 
-            <div id='cspmcw_container'>
-                {callCenterFeed}
+            <div id='cspmcw_body'>
+                <FeedListWidget ref={customerFeedListRef} $data={{
+                    wid: 'customerFeedListRef', refId: customerFeedListRef, controllerRef: customerSPMainControllerRef, rootControllers: rootControllers, paddingTop: 95,
+                    widget: ({ _key, _refId, _data }: any) => { return <CustomerSPFeedWidget key={_key} ref={_refId} $data={{ refId: refId, controllerRef: customerSPMainControllerRef, rootControllers: rootControllers, accountData: _data }} /> }
+                }} />
             </div>
         </div>
         <CustomerSPMainControllerWidget ref={customerSPMainControllerRef} $data={{ wid: 'customerSPMainControllerRef', refId: customerSPMainControllerRef, rootControllers: rootControllers }} />
