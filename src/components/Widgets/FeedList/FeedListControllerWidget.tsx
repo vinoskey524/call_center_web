@@ -66,6 +66,10 @@ const FeedListControllerWidget = (props: propsType, ref: any) => {
 
     const feedListLoaderRef = useRef<any>(undefined);
 
+    const flwTopLoadingRef = useRef<any>(undefined);
+
+    const flwBottomLoadingRef = useRef<any>(undefined);
+
     /* - */
 
     const emptyRef = useRef(undefined);
@@ -81,6 +85,8 @@ const FeedListControllerWidget = (props: propsType, ref: any) => {
         switch (wid) {
             case 'feedMainSubContainerRef': { feedMainSubContainerRef.current = refId.current } break;
             case 'feedListLoaderRef': { feedListLoaderRef.current = refId.current } break;
+            case 'flwTopLoadingRef': { flwTopLoadingRef.current = refId.current } break;
+            case 'flwBottomLoadingRef': { flwBottomLoadingRef.current = refId.current } break;
             default: { };
         };
     };
@@ -105,9 +111,34 @@ const FeedListControllerWidget = (props: propsType, ref: any) => {
         feedListLoaderRef.current.showLoaderFunc({ show: x.show });
     };
 
+    /* Shoe loading */
+    const showLoadingFunc = (x: { show: boolean, position: 'top' | 'bottom' }) => {
+        const show = x.show, position = x.position;
+        switch (position) {
+            case 'top': { flwTopLoadingRef.current.showLoadingFunc({ show: show }) } break;
+            case 'bottom': { flwBottomLoadingRef.current.showLoadingFunc({ show: show }) } break;
+            default: { console.error(`Position "${position}", doesn't exists !`) }
+        };
+    };
+
+    /* Display message */
+    const displayMessageFunc = (x: { text: string, position: 'top' | 'bottom' }) => {
+        const flw_top_msg_container_id = parentRef.current.flw_top_msg_container_id;
+        const flw_bottom_msg_container_id = parentRef.current.flw_bottom_msg_container_id;
+        switch (x.position) {
+            case 'top': { $(`#${flw_top_msg_container_id}`).text(x.text) } break;
+            case 'bottom': { $(`#${flw_bottom_msg_container_id}`).text(x.text) } break;
+            default: { console.error(`Position "${x.position}", doesn't exists !`) }
+        };
+    };
+
+    /* Set message into loader */
+    const setMessageFunc = (x: { text: string, type?: 'message' | 'warning' | 'error' }) => { feedListLoaderRef.current.setMessageFunc(x) };
+
     /* Set data */
     const setDataFunc = (x: { data: any[], position: 'top' | 'bottom' }) => {
-        const data = x.data, position = x.position;
+        const data = (typeof x.data === 'object' && Array.isArray(x.data)) ? x.data : [x.data];
+        const position = x.position;
         if (data.length > 0) {
             const len = subContainerMap.current.length;
             if (len === 0) {
@@ -131,8 +162,11 @@ const FeedListControllerWidget = (props: propsType, ref: any) => {
         subContainerMap.current = tab;
     };
 
-    /* Set message */
-    const setMessageFunc = (x: { text: string, type?: 'message' | 'warning' | 'error' }) => { feedListLoaderRef.current.setMessageFunc(x) };
+    /* Reset */
+    const resetListFunc = () => {
+        subContainerMap.current = [];
+        feedMainSubContainerRef.current.resetListFunc();
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -142,9 +176,12 @@ const FeedListControllerWidget = (props: propsType, ref: any) => {
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
         showLoaderFunc(x: any) { showLoaderFunc(x) },
+        showLoadingFunc(x: any) { showLoadingFunc(x) },
+        displayMessageFunc(x: any) { displayMessageFunc(x) },
         setDataFunc(x: any) { setDataFunc(x) },
         setSubContainerFunc(x: any) { setSubContainerFunc(x) },
-        setMessageFunc(x: any) { setMessageFunc(x) }
+        setMessageFunc(x: any) { setMessageFunc(x) },
+        resetListFunc() { resetListFunc() }
     }), []);
 
     /* On mount */

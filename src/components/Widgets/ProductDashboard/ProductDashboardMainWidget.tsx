@@ -10,6 +10,7 @@ import { refIdType } from '../../Tools/type';
 import { _defaultLanguage_ } from '../../Tools/constants';
 import ProductFeedWidget from './ProductFeedWidget';
 import ProductDashboardControllerWidget from './ProductDashboardControllerWidget';
+import FeedListWidget from '../FeedList/FeedListWidget';
 
 /* Widget */
 type propsType = {
@@ -67,7 +68,13 @@ const ProductDashboardMainWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const productFeedListRef = useRef<any>(undefined);
+
+    const productFeedSearchListRef = useRef<any>(undefined);
+
     const productDashboardControllerRef = useRef(undefined);
+
+    const prodmw_feed_search_list_id = useRef(generateIdFunc()).current;
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -99,8 +106,10 @@ const ProductDashboardMainWidget = (props: propsType, ref: any) => {
     /* Show */
     const showFunc = (x: { show: boolean }) => { $(`#${prodmw_scaffold_id}`).css({ 'z-index': x.show ? 1 : 0 }) };
 
-
-    /* ------------------------------------ jQuery ------------------------------------- */
+    /* Show search list container */
+    const showSearchListFunc = (x: { show: boolean }) => {
+        $(`#${prodmw_feed_search_list_id}`).css({ transform: `translateX(${x.show ? '0%' : '100%'})` });
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -110,7 +119,8 @@ const ProductDashboardMainWidget = (props: propsType, ref: any) => {
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
         setLanguageFunc(x: any) { setLanguageFunc(x) },
-        showFunc(x: any) { showFunc(x) }
+        showFunc(x: any) { showFunc(x) },
+        showSearchListFunc(x: any) { showSearchListFunc(x) },
     }), []);
 
     /* On mount */
@@ -133,21 +143,29 @@ const ProductDashboardMainWidget = (props: propsType, ref: any) => {
 
     const component = <>
         <div id={prodmw_scaffold_id} className='prodmw_scaffold'>
-            <div /* List */ className='prodmw_feed_list_container'>
-                <div className='prodmw_feed_default_list'>
-                    <div className='prodmw_top_space' />
-                    {Array(20).fill(undefined).map((_, i) => <ProductFeedWidget key={i} ref={emptyRef} $data={{ wid: 'emptyRef', refId: emptyRef, controllerRef: { current: undefined }, rootControllers: rootControllers }} />)}
+            <div className='prodmw_feed_list_container'>
+                <div /* main list */ className='prodmw_feed_default_list'>
+                    <FeedListWidget ref={productFeedListRef} $data={{
+                        wid: 'productFeedListRef', refId: productFeedListRef, controllerRef: controllerRef, rootControllers: rootControllers, paddingTop: 60,
+                        widget: ({ _key, _refId, _data }: any) => { return <ProductFeedWidget key={_key} ref={_refId} $data={{ refId: _refId, controllerRef: controllerRef, rootControllers: rootControllers, feed: _data }} /> }
+                    }} />
                 </div>
 
-                <div className='prodmw_feed_search_list'>
-                    <div className='prodmw_top_space' />
+                <div /* search list */ id={prodmw_feed_search_list_id} className='prodmw_feed_search_list'>
+                    <FeedListWidget ref={productFeedSearchListRef} $data={{
+                        wid: 'productFeedSearchListRef', refId: productFeedSearchListRef, controllerRef: controllerRef, rootControllers: rootControllers, paddingTop: 60,
+                        widget: ({ _key, _refId, _data }: any) => { return <ProductFeedWidget key={_key} ref={_refId} $data={{ refId: _refId, controllerRef: controllerRef, rootControllers: rootControllers, feed: _data }} /> }
+                    }} />
                 </div>
+
+                <div className='prodmw_right_bar' />
             </div>
 
-            <div /* Preview */ className='prodmw_feed_preview'>
+            <div /* preview */ id='prodmw_feed_preview'>
+                <div id='prodmw_feed_preview_wrapper' className='enable_select'></div>
             </div>
         </div>
-        <ProductDashboardControllerWidget ref={productDashboardControllerRef} $data={{ wid: 'productDashboardControllerRef', refId: productDashboardControllerRef, rootControllers: rootControllers }} />
+        {/* <ProductDashboardControllerWidget ref={productDashboardControllerRef} $data={{ wid: 'productDashboardControllerRef', refId: productDashboardControllerRef, rootControllers: rootControllers }} /> */}
     </>;
     return (render.current ? component : <></>);
 };

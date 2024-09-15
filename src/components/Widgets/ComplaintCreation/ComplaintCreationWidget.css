@@ -5,11 +5,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    top: 100vh;
     left: 0px;
+    transform: translateY(-100%);
     background-color: rgba(0, 0, 0, 0.3);
-    z-index: 200;
     opacity: 0;
+    z-index: 200;
 }
 
 /* Container */

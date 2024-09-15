@@ -8,8 +8,9 @@ import { generateIdFunc } from '../../../Tools/methodForest';
 import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
 import { _defaultLanguage_ } from '../../../Tools/constants';
-import DashBoardWidget from '../../Dashboard/DashBoardWidget';
-import CustomerDashboardMainWidget from '../Dashboard/CustomerDashboardMainWidget';
+import CustomerHomeDashboardWidget from '../Dashboard/CustomerHomeDashboardWidget';
+import CustomerProductDashboardWidget from '../Dashboard/CustomerProductDashboardWidget';
+import CustomerComplaintDashboardWidget from '../Dashboard/CustomerComplaintDashboardWidget';
 
 /* Widget */
 type propsType = {
@@ -65,6 +66,12 @@ const CustomerMainContainerWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const customerHomeDashboardRef = useRef<any>(undefined);
+
+    const customerProductDashboardRef = useRef<any>(undefined);
+
+    const customerComplaintDashboardRef = useRef<any>(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -91,9 +98,6 @@ const CustomerMainContainerWidget = (props: propsType, ref: any) => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
     };
-
-
-    /* ------------------------------------ jQuery ------------------------------------- */
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -125,7 +129,9 @@ const CustomerMainContainerWidget = (props: propsType, ref: any) => {
 
     const component = <>
         <div id='ctmmcw_scaffold'>
-            <CustomerDashboardMainWidget ref={emptyRef} $data={{ refId: emptyRef, controllerRef: { current: undefined }, rootControllers: rootControllers }} />
+            <CustomerHomeDashboardWidget ref={customerHomeDashboardRef} $data={{ wid: 'customerHomeDashboardRef', refId: customerHomeDashboardRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+            <CustomerProductDashboardWidget ref={customerProductDashboardRef} $data={{ wid: 'customerProductDashboardRef', refId: customerProductDashboardRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+            <CustomerComplaintDashboardWidget ref={customerComplaintDashboardRef} $data={{ wid: 'customerComplaintDashboardRef', refId: customerComplaintDashboardRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
         </div>
     </>;
     return (render.current ? component : <></>);

@@ -3,25 +3,25 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
-import './CustomerDashboardMainWidget.css';
+import './CustomerHomeDashboardWidget.css';
 import { generateIdFunc } from '../../../Tools/methodForest';
 import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
 import { _defaultLanguage_ } from '../../../Tools/constants';
 import search_icon from '../../../Assets/png/search_0.png';
 import StatsDashboardMainWidget from '../../StatsDashboard/StatsDashboardMainWidget';
-import ProductDashboardMainWidget from '../../ProductDashboard/ProductDashboardMainWidget';
-import ComplaintDashboardMainWidget from '../../ComplaintDashboard/ComplaintDashboardMainWidget';
 
 /* Widget */
 type propsType = {
     $data: {
+        /** Every change made to "wid" affect controller */
+        wid: string,
         refId: refIdType,
         controllerRef: refIdType,
         rootControllers: any
     }
 };
-const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
+const CustomerHomeDashboardWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
@@ -45,6 +45,8 @@ const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
 
     const data = props.$data;
 
+    const wid = data.wid;
+
     const refId = data.refId;
 
     const controllerRef = data.controllerRef; /* callCMainControllerRef */
@@ -63,6 +65,8 @@ const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const currentUserData = dataStoreControllerRef.current.currentUserData;
+
     const ctmdmw_home_btn_container_id = useRef(generateIdFunc()).current;
     const ctmdmw_home_btn_title_id = useRef(generateIdFunc()).current;
 
@@ -72,9 +76,7 @@ const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
     const ctmdmw_complaint_btn_container_id = useRef(generateIdFunc()).current;
     const ctmdmw_complaint_btn_title_id = useRef(generateIdFunc()).current;
 
-    const ctmdmw_scaffold_id = useRef(generateIdFunc()).current;
-
-    const accountType: refIdType = dataStoreControllerRef.current.accountType;
+    const ctmhdw_scaffold_id = useRef(generateIdFunc()).current;
 
     const didAddBtnTouched = useRef(false);
 
@@ -87,6 +89,8 @@ const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
     const currentMenuSelected = useRef<'home' | 'product' | 'complaint'>('home');
 
     const isComplaintFilterVisible = useRef(false);
+
+    const scaffold_id = useRef(generateIdFunc()).current;
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -238,8 +242,10 @@ const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
         }
     };
 
-
-    /* ------------------------------------ jQuery ------------------------------------- */
+    /* Show | Hide */
+    const showFunc = (x: { show: boolean }) => {
+        $(`#${scaffold_id}`).css({ transform: `translateY(${x.show ? '0%' : '-100%'})` });
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -248,13 +254,16 @@ const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
+        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        showFunc(x: any) { showFunc(x) }
     }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            controllerRef.current.showDashboardFunc({ type: 'home' });
         }
     }, []);
 
@@ -263,63 +272,28 @@ const CustomerDashboardMainWidget = (props: propsType, ref: any) => {
     //     window.addEventListener('resize', onWindowSizeChangeFunc);
     //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
     // }, []);
+    {/* <StatsDashboardMainWidget ref={statsDashboardMainRef} $data={{ wid: 'statsDashboardMainRef', refId: statsDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} /> */ }
 
 
     /* Return */
 
 
     const component = <>
-        <div id={ctmdmw_scaffold_id} className='ctmdmw_scaffold'>
-            <div /* Header */ className='ctmdmw_header'>
-                <div className='ctmdmw_header_backdrop glass' />
-                <div className='ctmdmw_header_container'>
-                    <h1 className='ctmdmw_enterprise_title'>Pebco</h1>
+        <div id={scaffold_id} className='ctmhdw_scaffold just_column'>
+            <div id='ctmhdw_top_container' className='just_row'>
+                <div id='ctmhdw_agence_list_container'>
 
-                    <div id={ctmdmw_home_btn_container_id} className='ctmdmw_h_btn_container btn_opacity' style={{ backgroundColor: '#007aff' }} onClick={onHomeSelectFunc}>
-                        <div id={ctmdmw_home_btn_title_id} className='ctmdmw_h_btn_title' style={{ color: 'white' }}>Acceuil</div>
-                    </div>
+                </div>
 
-                    <div id={ctmdmw_complaint_btn_container_id} className='ctmdmw_h_btn_container'>
-                        <div id={ctmdmw_complaint_btn_title_id} className='ctmdmw_h_btn_title btn_opacity' onClick={onComplaintSelectFunc}>Plaintes</div>
-                        <div id='ctmdmw_complaint_filter_selector' className='glass'>
-                            <div className='ctmdmw_complaint_filter_option btn_opacity' onClick={() => setComplaintFilterFunc({ filter: 'non_traites' })}>Non traités <p className='ctmdmw_complaint_filter_opt_count'>(20)</p></div>
-                            <div className='ctmdmw_complaint_filter_option btn_opacity' onClick={() => setComplaintFilterFunc({ filter: 'en_traitement' })}>En traitement <p className='ctmdmw_complaint_filter_opt_count'>(10)</p></div>
-                            <div className='ctmdmw_complaint_filter_option btn_opacity' onClick={() => setComplaintFilterFunc({ filter: 'traites' })}>Traités <p className='ctmdmw_complaint_filter_opt_count'>(8)</p></div>
-                        </div>
-                    </div>
+                <div id='ctmhdw_circular_stats_container'>
 
-                    <div id={ctmdmw_product_btn_container_id} className='ctmdmw_h_btn_container btn_opacity' style={accountType.current !== 'customer' ? { backgroundColor: '#007aff' } : {}} onClick={onProductSelectFunc}>
-                        <div id={ctmdmw_product_btn_title_id} className='ctmdmw_h_btn_title' style={accountType.current !== 'customer' ? { color: 'white' } : {}}>Produits</div>
-                    </div>
-
-                    <div className='ctmdmw_hv_separator' />
-
-                    <div id='ctmdmw_h_search_container'>
-                        <img id='ctmdmw_h_search_icon' src={search_icon} />
-                        <input id='ctmdmw_h_search_bar' type='text' placeholder='Search' />
-                    </div>
-
-                    <div className='ctmdmw_hv_separator' />
-
-                    <div id='ctmdmw_add_btn_container'>
-                        <div id='ctmdmw_add_btn_title' className='btn_opacity' onClick={onAddProduitComplaintFunc}>+ Ajouter</div>
-                        <div id='ctmdmw_add_option_container'>
-                            <div className='ctmdmw_add_option_title btn_opacity' onClick={addProductFunc}>Produit</div>
-                            <div className='ctmdmw_title_separator' />
-                            <div className='ctmdmw_add_option_title btn_opacity' onClick={addComplaintFunc}>Plainte</div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            <div /* Body */ className='ctmdmw_body'>
-                <StatsDashboardMainWidget ref={statsDashboardMainRef} $data={{ wid: 'statsDashboardMainRef', refId: statsDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
-                <ProductDashboardMainWidget ref={productDashboardMainRef} $data={{ wid: 'productDashboardMainRef', refId: productDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
-                <ComplaintDashboardMainWidget ref={complaintDashboardMainRef} $data={{ wid: 'complaintDashboardMainRef', refId: complaintDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
-            </div>
+            <div id='ctmhdw_bottom_container' className='just_row'></div>
         </div>
     </>;
     return (render.current ? component : <></>);
 };
 
-export default forwardRef(CustomerDashboardMainWidget);
+export default forwardRef(CustomerHomeDashboardWidget);

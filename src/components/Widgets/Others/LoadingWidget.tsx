@@ -93,8 +93,8 @@ const LoadingWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            visible && $(`#${loadw_img_id}`).css({ width: dim, height: dim });
             (controllerRef?.current !== undefined) && controllerRef?.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            visible && $(`#${loadw_img_id}`).css({ width: dim, height: dim });
         }
     }, []);
 

@@ -8,8 +8,9 @@ import { generateIdFunc } from '../../../Tools/methodForest';
 import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
 import { _defaultLanguage_ } from '../../../Tools/constants';
-import DashBoardWidget from '../../Dashboard/DashBoardWidget';
 import CallCDashboardMainWidget from '../Dashboard/CallCDashboardMainWidget';
+import headphone_icon from '../../../Assets/png/c1.png';
+import FeedListWidget from '../../FeedList/FeedListWidget';
 
 /* Widget */
 type propsType = {
@@ -65,6 +66,8 @@ const CallCMainContainerWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const callCenterDashboardFeedListRef = useRef(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -91,9 +94,6 @@ const CallCMainContainerWidget = (props: propsType, ref: any) => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
     };
-
-
-    /* ------------------------------------ jQuery ------------------------------------- */
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -125,7 +125,18 @@ const CallCMainContainerWidget = (props: propsType, ref: any) => {
 
     const component = <>
         <div id='ccmcw_scaffold'>
-            <CallCDashboardMainWidget ref={emptyRef} $data={{ refId: emptyRef, controllerRef: { current: undefined }, rootControllers: rootControllers }} />
+            <div id='ccmcw_background_image_container'>
+                <div id='ccmcw_main_title'>Solution de Gestion de la Clientèle</div>
+                <img width={300} height={300 / 1.1986} src={headphone_icon} />
+                <div id='ccmcw_subtitle'>Chaque appel compte, et votre travail fait la différence.</div>
+            </div>
+
+            <div id='ccmcw_body'>
+                <FeedListWidget ref={callCenterDashboardFeedListRef} $data={{
+                    wid: 'callCenterDashboardFeedListRef', refId: callCenterDashboardFeedListRef, controllerRef: controllerRef, rootControllers: rootControllers, paddingTop: 0,
+                    widget: ({ _key, _refId, _data }: any) => { return <CallCDashboardMainWidget key={_key} ref={_refId} $data={{ refId: _refId, controllerRef: controllerRef, rootControllers: rootControllers, customerData: _data }} /> }
+                }} />
+            </div>
         </div>
     </>;
     return (render.current ? component : <></>);

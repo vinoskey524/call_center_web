@@ -109,14 +109,7 @@ input {
     border-width: 0px;
     padding-inline: 5px;
     flex-shrink: 0;
-}
-
-input:-webkit-autofill {
-    -webkit-text-fill-color: inherit !important;
-    -webkit-box-shadow: 0 0 0px 1000px inherit inset !important;
-    color: inherit !important;
-    background-color: inherit !important;
-    /* transition: background-color 5s ease-in-out 0s; */
+    background-color: transparent;
 }
 
 textarea {

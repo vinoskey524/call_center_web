@@ -154,8 +154,17 @@ const AuthLoginControllerWidget = (props: propsType, ref: any) => {
                 const hasFoundUser = Object.keys(data).length > 0 ? true : false;
                 if (hasFoundUser) {
                     $('#al_logo').removeClass('floating');
-                    dataStoreControllerRef.current.setDataFunc({ type: 'currentUserData', data: data });
-                    mainControllerRef.current.loginUserFunc();
+
+                    const isCustomerAdmin = Object.hasOwn(data, 'customerData');
+
+                    /* Store currentUserData */
+                    dataStoreControllerRef.current.setDataFunc({ type: 'currentUserData', data: isCustomerAdmin ? data.adminData : data });
+
+                    /* Store currentCustomerData */
+                    isCustomerAdmin && dataStoreControllerRef.current.setDataFunc({ type: 'currentCustomerData', data: data.customerData });
+
+                    /* Login user */
+                    setTimeout(() => { mainControllerRef.current.loginUserFunc() }, 300); /* Login user */
 
                 } else {
                     setTimeout(() => {

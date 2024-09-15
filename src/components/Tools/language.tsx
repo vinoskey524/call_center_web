@@ -76,5 +76,10 @@ export const language: any = {
         't0034': 'Raison sociale',
         't0035': 'Raison social déjà existant.',
         't0036': 'Téléphone déjà existant.',
+        't0037': 'La taille du fichier choisi excède 3Mb.',
+        't0038': `Nom déjà existant`,
+        't0039': 'Ajouter une description depuis un fichier word. (3 Mb max)',
+        't0040': 'Aucun résultat trouvé',
+        't0041': 'Importer (.docx)',
     }
 }

@@ -6,6 +6,7 @@ import $ from 'jquery';
 import ws from '../Database/ws/init';
 import { refIdType } from '../Tools/type';
 import { pg_mainFunc } from '../Database/psql/methods';
+import { uploadFileFunc } from '../Upload/init';
 import { _success_, _error_, _requestFailed_, _pgReqFailed_, _cipherFailed_, _decipherFailed_, _noUserFound_, _wsAddress_, _dev_ } from '../Tools/constants';
 import { catchErrorFunc, cipherFunc, decipherFunc } from '../Tools/methodForest';
 
@@ -154,6 +155,93 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
         } catch (e: any) { return catchErrorFunc({ err: e.message }) }
     };
 
+    /* Fetch customers accounts */
+    const fetchCustomerAccountFunc = async (x: { state: 'new' | 'old', timestamp_ms: number }) => {
+        try {
+            const data = x;
+
+            /* Cipher */
+            const ciphedData = await cipherFunc({ data: JSON.stringify(data) });
+            if (ciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _cipherFailed_, data: ciphedData.data }));
+
+            /* Request to pg */
+            const req = await pg_mainFunc({ func: 'fetchCustomerAccountFunc', data: ciphedData.data });
+            if (req.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: req.data }));
+
+            /* Decipher */
+            const deciphedData = await decipherFunc({ data: req.data });
+            if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
+
+            /* - */
+            return { status: _success_, data: JSON.parse(deciphedData.data) };
+
+        } catch (e: any) { return catchErrorFunc({ err: e.message }) }
+    };
+
+    /* Create product */
+    const createProductFunc = async (x: { data: any }) => {
+        try {
+            const data = x.data;
+            const fileData = data.fileData;
+            const file = data.fileSource;
+
+            /* Append file to FormData() */
+            const formData = new FormData();
+            formData.append('mojave', file);
+
+            /* Cipher */
+            const ciphedData = await cipherFunc({ data: JSON.stringify(fileData) });
+            if (ciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _cipherFailed_, data: ciphedData.data }));
+
+            /* Append file meta data to FormData() */
+            formData.append('func', 'createProductFunc');
+            formData.append('data', ciphedData.data);
+
+            /* Upload file */
+            const req = await uploadFileFunc({ formData: formData });
+            if (req.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: req.data }));
+
+            /* Decipher */
+            const deciphedData = await decipherFunc({ data: req.data });
+            if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
+
+            /* - */
+            return { status: _success_, data: JSON.parse(deciphedData.data) };
+
+        } catch (e: any) { return catchErrorFunc({ err: e.message }) }
+    };
+
+    /* Fetch product */
+    const fetchProductFunc = async (x: { data: { domain: string, timestamp_ms: number, state: 'new' | 'old' } }) => {
+        try {
+            const data = x.data;
+
+            /* Cipher */
+            const ciphedData = await cipherFunc({ data: JSON.stringify(data) });
+            if (ciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _cipherFailed_, data: ciphedData.data }));
+
+            /* Request to pg */
+            const req = await pg_mainFunc({ func: 'fetchProductFunc', data: ciphedData.data });
+            if (req.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: req.data }));
+
+            /* Decipher */
+            const deciphedData = await decipherFunc({ data: req.data });
+            if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
+
+            /* - */
+            return { status: _success_, data: JSON.parse(deciphedData.data) };
+
+        } catch (e: any) { return catchErrorFunc({ err: e.message }) }
+    };
+
+    /* Fetch complaint */
+    const fetchComplaintFunc = async (x: { data: any }) => {
+        try {
+            const data = x.data;
+
+        } catch (e: any) { return catchErrorFunc({ err: e.message }) }
+    };
+
     /* Function Prototype */
     // const prototypeFunc = async (x: { data: any }) => {
     //     const data = x.data;
@@ -171,7 +259,7 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
     //         if (deciphedData.status !== _success_) throw new Error(JSON.stringify({ status: _decipherFailed_, data: deciphedData.data }));
 
     //         /* - */
-    //         return { status: _success_, data: undefined };
+    //         return { status: _success_, data: JSON.parse(deciphedData.data) };
 
     //     } catch (e: any) { return catchErrorFunc({ err: e.message }) }
     // };
@@ -188,9 +276,16 @@ const RequestControllerWidget = (props: propsType, ref: any) => {
         checkRefs() { checkRefs() },
         addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
+
         loginFunc(x: any) { return loginFunc(x) },
         createAccountFunc(x: any) { return createAccountFunc(x) },
-        fetchAccountFunc(x: any) { return fetchAccountFunc(x) }
+        fetchAccountFunc(x: any) { return fetchAccountFunc(x) },
+
+        fetchCustomerAccountFunc(x: any) { return fetchCustomerAccountFunc(x) },
+        createProductFunc(x: any) { return createProductFunc(x) },
+
+        fetchProductFunc(x: any) { return fetchProductFunc(x) },
+        fetchComplaintFunc(x: any) { fetchComplaintFunc(x) },
     }), []);
 
     /* On mount */

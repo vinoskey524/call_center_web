@@ -1,6 +1,6 @@
 #ccmmcw_scaffold {
     width: 100%;
-    flex: 1;
+    height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
@@ -46,15 +46,29 @@
 
 /* Feed list */
 
-#ccmmcw_feed_list {
+#ccmmcw_feed_list_container {
     width: 100%;
-    flex: 1;
+    height: 100%;
     overflow-x: hidden;
     overflow-y: visible;
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding-top: 95px;
     padding-bottom: 120px;
+    z-index: 1;
+}
+
+#ccmmcw_search_feed_list_container {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 100%;
+    background-color: #333A45;
+    padding-bottom: 120px;
+    z-index: 2;
 }

@@ -117,6 +117,7 @@ const MainControllerWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         authLoginRef: authLoginRef,
         panelMainRef: panelMainRef,
+
         accountCreationRef: accountCreationRef,
         productCreationMainRef: productCreationMainRef,
         complaintCreationRef: complaintCreationRef,

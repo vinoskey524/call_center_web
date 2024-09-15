@@ -5,15 +5,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    top: 100vh;
     left: 0px;
+    transform: translateY(-100%);
     background-color: rgba(0, 0, 0, 0.3);
     opacity: 0;
     z-index: 200;
 }
 
 #prcrw_container {
-    width: 390px;
+    width: 380px;
     height: auto;
     max-height: 75%;
     overflow-x: hidden;
@@ -41,6 +41,17 @@
     margin-bottom: 4px;
 }
 
+#prcrw_error_msg_container {
+    width: 90%;
+    height: auto;
+    position: relative;
+    display: none;
+    text-align: center;
+    color: #fa315a;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
 #prcrw_form_container {
     width: 94%;
     height: auto;
@@ -55,7 +66,7 @@
 /* btn */
 
 #prcrw_btn_container {
-    width: 92.3%;
+    width: 94%;
     height: 26px;
     overflow: hidden;
     position: relative;

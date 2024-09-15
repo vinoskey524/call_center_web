@@ -140,6 +140,13 @@ const FeedSubContainerWidget = (props: propsType, ref: any) => {
         } else { _dev_ && console.error(`A middle subcontainer can't render a container !`) }
     };
 
+    /* Reset */
+    const resetListFunc = () => {
+        feedData.current = [];
+        render.current = false;
+        refreshFunc();
+    };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
@@ -149,7 +156,8 @@ const FeedSubContainerWidget = (props: propsType, ref: any) => {
         renderFunc(x: any) { renderFunc(x) },
         setLanguageFunc(x: any) { setLanguageFunc(x) },
         renderFeedFunc(x: any) { renderFeedFunc(x) },
-        renderContainerFunc(x: any) { renderContainerFunc(x) }
+        renderContainerFunc(x: any) { renderContainerFunc(x) },
+        resetListFunc() { resetListFunc() }
     }), []);
 
     /* On mount */

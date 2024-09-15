@@ -7,4 +7,4 @@ export type refIdType = React.MutableRefObject<any>;
 export type pageDataType = { title: string, routeName: string, refId: refIdType, isDefault: boolean };
 
 /** pg main function type */
-export type postgresMainFuncType = 'loginFunc' | 'createAccountFunc' | 'fetchAccountFunc';
+export type postgresMainFuncType = 'loginFunc' | 'createAccountFunc' | 'fetchAccountFunc' | 'fetchCustomerAccountFunc' | 'fetchProductFunc';

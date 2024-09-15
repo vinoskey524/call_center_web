@@ -24,7 +24,9 @@ import CallCMenuMainContainerWidget from '../../Widgets/CallCenterPanel/Menu/Cal
 import CallCMainContainerWidget from '../../Widgets/CallCenterPanel/Container/CallCMainContainerWidget';
 import CallCMainControllerWidget from '../../Widgets/CallCenterPanel/CallCMainControllerWidget';
 
+import CustomerMenuMainWidget from '../../Widgets/CustomerPanel/Menu/CustomerMenuMainWidget';
 import CustomerMainContainerWidget from '../../Widgets/CustomerPanel/Container/CustomerMainContainerWidget';
+import CustomerMainControllerWidget from '../../Widgets/CustomerPanel/CustomerMainControllerWidget';
 
 import NotificationMainContainerWidget from '../../Widgets/Notification/NotificationMainContainerWidget';
 import { generateIdFunc } from '../../Tools/methodForest';
@@ -92,7 +94,9 @@ const PanelMainPage = (props: propsType, ref: any) => {
     const callCMainContainerRef = useRef(undefined);
     const callCMainControllerRef = useRef(undefined);
 
-    const CustomerMainContainerRef = useRef(undefined);
+    const customerMenuMainRef = useRef(undefined);
+    const customerMainContainerRef = useRef(undefined);
+    const customerMainControllerRef = useRef(undefined);
 
     const notificationMainContainerRef = useRef(undefined);
 
@@ -145,6 +149,7 @@ const PanelMainPage = (props: propsType, ref: any) => {
     /* Display Disconnection */
     const displayDisconnectionFunc = () => {
         const current = isDisconnectionVisible.current;
+        current && $(`#${pm_disconnect_container_id}`).css({ scale: 1.00001 });
         $(`#${pm_disconnect_container_id}`).animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $(`#${pm_disconnect_container_id}`).css({ 'display': 'none' }) });
         !current && $(`#${pm_disconnect_container_id}`).css({ 'display': 'flex' });
         isDisconnectionVisible.current = !isDisconnectionVisible.current; /* update | Must be last line */
@@ -153,6 +158,7 @@ const PanelMainPage = (props: propsType, ref: any) => {
     /* Display notification */
     const displayNotificationFunc = () => {
         const current = isNotificationVisible.current;
+        current && $(`#${pm_notification_container_id}`).css({ scale: 1.00001 });
         $(`#${pm_notification_container_id}`).animate(current ? { opacity: 0, scale: 0.95 } : { opacity: 1, scale: 1 }, 100, () => { current && $(`#${pm_notification_container_id}`).css({ 'display': 'none' }) });
         !current && $(`#${pm_notification_container_id}`).css({ 'display': 'flex' });
         isNotificationVisible.current = !isNotificationVisible.current; /* update | Must be last line */
@@ -189,60 +195,59 @@ const PanelMainPage = (props: propsType, ref: any) => {
     const component = <>
         {currentUserData !== undefined && <>
             <div id='pm_scaffold'>
-                {(accountType !== 'customer_admin') &&
-                    <div id='pm_menu'>
-                        <div id='pm_logo_container' className='prevent_select menu_glass'>
-                            <img id='pm_logo_icon' src={logo_f_icon} />
-                            <p id='pm_app_name'>Call Center</p>
-                        </div>
+                <div id='pm_menu'>
+                    <div id='pm_logo_container' className='prevent_select menu_glass'>
+                        <img id='pm_logo_icon' src={logo_f_icon} />
+                        <p id='pm_app_name'>SGC</p>
+                    </div>
 
-                        {accountType === 'main_admin' && <AdminMainMenuWidget ref={adminMainMenuRef} $data={{ wid: 'adminMainMenuRef', refId: adminMainMenuRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />}
-                        {accountType === 'call_center' && <CallCMenuMainContainerWidget ref={callCMenuMainContainerRef} $data={{ wid: 'callCMenuMainContainerRef', refId: callCMenuMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
+                    {accountType === 'main_admin' && <AdminMainMenuWidget ref={adminMainMenuRef} $data={{ wid: 'adminMainMenuRef', refId: adminMainMenuRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />}
+                    {accountType === 'call_center' && <CallCMenuMainContainerWidget ref={callCMenuMainContainerRef} $data={{ wid: 'callCMenuMainContainerRef', refId: callCMenuMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
+                    {accountType === 'customer_admin' && <CustomerMenuMainWidget ref={customerMenuMainRef} $data={{ wid: 'customerMenuMainRef', refId: customerMenuMainRef, controllerRef: customerMainControllerRef, rootControllers: rootControllers }} />}
 
-                        <div id='pm_footer'>
-                            <div id='pm_footer_backdrop' className='menu_glass' />
-                            <div id='pm_footer_wrapper'>
-                                <div className='pm_footer_top'>
-                                    <div className='pm_footer_btn_container'>
-                                        <div className='pm_footer_btn_wrapper btn_opacity' title='Deconnexion' onClick={displayDisconnectionFunc}>
-                                            <img className='pm_footer_btn_icon' src={off_icon} />
-                                        </div>
-                                        <div id={pm_disconnect_container_id} className='pm_disconnect_container floating_container_glass'>
-                                            <img className='pm_disconnect_logo' src={door_icon} />
-                                            <div className='pm_disconnect_msg'>Etes vous sûr de vouloir continuer ?</div>
-                                            <div className='pm_disconnect_yes btn_opacity'>Yes</div>
-                                            <div className='pm_disconnect_no btn_opacity'>No</div>
-                                        </div>
+                    <div id='pm_footer'>
+                        <div id='pm_footer_backdrop' className='menu_glass' />
+                        <div id='pm_footer_wrapper'>
+                            <div className='pm_footer_top'>
+                                <div className='pm_footer_btn_container'>
+                                    <div className='pm_footer_btn_wrapper btn_opacity' title='Deconnexion' onClick={displayDisconnectionFunc}>
+                                        <img className='pm_footer_btn_icon' src={off_icon} />
                                     </div>
-
-                                    <div className='pm_footer_username ellipsis_line_2'>{currentUserData.fullname}</div>
-
-                                    <div className='pm_footer_btn_container'>
-                                        <div className='pm_footer_btn_wrapper btn_opacity' title='Notification' onClick={displayNotificationFunc}>
-                                            <img className='pm_footer_btn_icon' src={notification_icon} />
-                                        </div>
-                                        <div id={pm_notification_container_id} className='pm_notification_container'>
-                                            <NotificationMainContainerWidget ref={notificationMainContainerRef} $data={{ wid: 'notificationMainContainerRef', refId: notificationMainContainerRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
-                                        </div>
+                                    <div id={pm_disconnect_container_id} className='pm_disconnect_container floating_container_glass'>
+                                        <img className='pm_disconnect_logo' src={door_icon} />
+                                        <div className='pm_disconnect_msg'>Etes vous sûr de vouloir continuer ?</div>
+                                        <div className='pm_disconnect_yes btn_opacity'>Yes</div>
+                                        <div className='pm_disconnect_no btn_opacity'>No</div>
                                     </div>
                                 </div>
-                                <div className='pm_footer_separator' />
-                                <div className='pm_footer_bottom'>© 2024 Call center. All rights reserved.</div>
+
+                                <div className='pm_footer_username ellipsis_line_2'>{currentUserData.fullname}</div>
+
+                                <div className='pm_footer_btn_container'>
+                                    <div className='pm_footer_btn_wrapper btn_opacity' title='Notification' onClick={displayNotificationFunc}>
+                                        <img className='pm_footer_btn_icon' src={notification_icon} />
+                                    </div>
+                                    <div id={pm_notification_container_id} className='pm_notification_container'>
+                                        <NotificationMainContainerWidget ref={notificationMainContainerRef} $data={{ wid: 'notificationMainContainerRef', refId: notificationMainContainerRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                                    </div>
+                                </div>
                             </div>
+                            <div className='pm_footer_separator' />
+                            <div className='pm_footer_bottom'>© 2024 Call center. All rights reserved.</div>
                         </div>
                     </div>
-                }
+                </div>
 
-                {(accountType !== 'customer_admin') ?
-                    <div id='pm_container'>
-                        {accountType === 'main_admin' && <AdminMainContainerWidget ref={adminMainContainerRef} $data={{ wid: 'adminMainContainerRef', refId: adminMainContainerRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers }} />}
-                        {accountType === 'call_center' && <CallCMainContainerWidget ref={callCMainContainerRef} $data={{ wid: 'callCMainContainerRef', refId: callCMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
-                    </div> :
-                    <CustomerMainContainerWidget ref={CustomerMainContainerRef} $data={{ wid: 'CustomerMainContainerRef', refId: CustomerMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />
-                }
+                <div id='pm_container'>
+                    {accountType === 'main_admin' && <AdminMainContainerWidget ref={adminMainContainerRef} $data={{ wid: 'adminMainContainerRef', refId: adminMainContainerRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers }} />}
+                    {accountType === 'call_center' && <CallCMainContainerWidget ref={callCMainContainerRef} $data={{ wid: 'callCMainContainerRef', refId: callCMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
+                    {accountType === 'customer_admin' && <CustomerMainContainerWidget ref={customerMainContainerRef} $data={{ wid: 'customerMainContainerRef', refId: customerMainContainerRef, controllerRef: customerMainControllerRef, rootControllers: rootControllers }} />}
+                </div>
             </div>
+
             {accountType === 'main_admin' && <AdminMainControllerWidget ref={adminMainControllerRef} $data={{ wid: 'adminMainControllerRef', refId: adminMainControllerRef, rootControllers: rootControllers }} />}
             {accountType === 'call_center' && <CallCMainControllerWidget ref={callCMainControllerRef} $data={{ wid: 'callCMainControllerRef', refId: callCMainControllerRef, rootControllers: rootControllers }} />}
+            {accountType === 'customer_admin' && <CustomerMainControllerWidget ref={customerMainControllerRef} $data={{ wid: 'customerMainControllerRef', refId: customerMainControllerRef, rootControllers: rootControllers }} />}
         </>}
     </>;
     return (render.current ? component : <></>);

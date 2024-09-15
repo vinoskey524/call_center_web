@@ -17,7 +17,8 @@ type propsType = {
     $data: {
         refId: refIdType,
         controllerRef: refIdType,
-        rootControllers: any
+        rootControllers: any,
+        customerData: any,
     }
 };
 const CallCDashboardMainWidget = (props: propsType, ref: any) => {
@@ -50,6 +51,8 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
 
     const rootControllers = data.rootControllers;
 
+    const customerData = data.customerData;
+
     /* Root controllers */
 
     const mainControllerRef: refIdType = rootControllers.mainControllerRef;
@@ -69,6 +72,16 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     const ccdhmw_complaint_btn_title_id = useRef(generateIdFunc()).current;
 
     const ccdhmw_scaffold_id = useRef(generateIdFunc()).current;
+
+    const ccdhmw_complaint_filter_selector_id = useRef(generateIdFunc()).current;
+
+    const ccdhmw_h_search_container_id = useRef(generateIdFunc()).current;
+    const ccdhmw_h_search_icon_id = useRef(generateIdFunc()).current;
+    const ccdhmw_h_search_bar_id = useRef(generateIdFunc()).current;
+
+    const ccdhmw_add_btn_container_id = useRef(generateIdFunc()).current;
+    const ccdhmw_add_btn_title_id = useRef(generateIdFunc()).current;
+    const ccdhmw_add_option_container_id = useRef(generateIdFunc()).current;
 
     const didAddBtnTouched = useRef(false);
 
@@ -112,8 +125,13 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     /* On add product or complaint */
     const onAddProduitComplaintFunc = () => {
         const current = didAddBtnSubOptionShown.current;
-        $('#ccdhmw_add_option_container').animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $('#ccdhmw_add_option_container').css({ 'display': 'none' }) });
-        !current && $('#ccdhmw_add_option_container').css({ 'display': 'flex' });
+
+        current && $(`#${ccdhmw_add_option_container_id}`).css({ scale: 1.00001 });
+        $(`#${ccdhmw_add_option_container_id}`).animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => {
+            current && $(`#${ccdhmw_add_option_container_id}`).css({ 'display': 'none' });
+        });
+
+        !current && $(`#${ccdhmw_add_option_container_id}`).css({ 'display': 'flex' });
         didAddBtnSubOptionShown.current = !didAddBtnSubOptionShown.current; /* update | Must be last line */
     };
 
@@ -149,7 +167,7 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
         $(`#${ccdhmw_complaint_btn_title_id}`).removeAttr('style');
 
         /* Change placeholder */
-        $('#ccdhmw_h_search_bar').attr({ 'placeholder': 'Search products' });
+        $(`#${ccdhmw_h_search_bar_id}`).attr({ 'placeholder': 'Search products' });
 
         /* Show */
         complaintDashboardMainRef.current.showFunc({ show: false });
@@ -171,15 +189,16 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
             $(`#${ccdhmw_product_btn_container_id}`).removeAttr('style');
 
             /* Change placeholder */
-            $('#ccdhmw_h_search_bar').attr({ 'placeholder': 'Search complaints' });
+            $(`#${ccdhmw_h_search_bar_id}`).attr({ 'placeholder': 'Search complaints' });
 
             /* Show */
             productDashboardMainRef.current.showFunc({ show: false });
             complaintDashboardMainRef.current.showFunc({ show: true });
         } else {
             const current = isComplaintFilterVisible.current;
-            $('#ccdhmw_complaint_filter_selector').animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $('#ccdhmw_complaint_filter_selector').css({ 'display': 'none' }) });
-            !current && $('#ccdhmw_complaint_filter_selector').css({ 'display': 'flex' });
+            current && $(`#${ccdhmw_complaint_filter_selector_id}`).css({ scale: 1.00001 });
+            $(`#${ccdhmw_complaint_filter_selector_id}`).animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $(`#${ccdhmw_complaint_filter_selector_id}`).css({ 'display': 'none' }) });
+            !current && $(`#${ccdhmw_complaint_filter_selector_id}`).css({ 'display': 'flex' });
             isComplaintFilterVisible.current = !isComplaintFilterVisible.current; /* update | Must be last line */
         }
     };
@@ -188,13 +207,17 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     const setComplaintFilterFunc = (x: { filter: 'tout' | 'non_traites' | 'en_traitement' | 'traites' }) => {
         if (currentMenuSelected.current === 'complaint') {
             const current = isComplaintFilterVisible.current;
-            $('#ccdhmw_complaint_filter_selector').animate({ opacity: 0, scale: 0.8 }, 200, () => { current && $('#ccdhmw_complaint_filter_selector').css({ 'display': 'none' }) });
+            current && $(`#${ccdhmw_complaint_filter_selector_id}`).css({ scale: 1.00001 });
+            $(`#${ccdhmw_complaint_filter_selector_id}`).animate({ opacity: 0, scale: 0.8 }, 200, () => { current && $(`#${ccdhmw_complaint_filter_selector_id}`).css({ 'display': 'none' }) });
             isComplaintFilterVisible.current = !isComplaintFilterVisible.current; /* update | Must be last line */
         }
     };
 
-
-    /* ------------------------------------ jQuery ------------------------------------- */
+    /* Show | hide */
+    const showFunc = (x: { show: boolean }) => {
+        const $target = $(`#${ccdhmw_scaffold_id}`);
+        $target.css({ transform: `translateY(${x.show ? '0%' : '-100%'})` });
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -203,13 +226,15 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
+        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        showFunc(x: any) { showFunc(x) }
     }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
+            (controllerRef.current !== undefined) && controllerRef.current.setDashboardRefIdFunc({ customerId: customerData.id, refId: refId });
         }
     }, []);
 
@@ -228,7 +253,7 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
             <div /* Header */ className='ccdhmw_header'>
                 <div className='ccdhmw_header_backdrop glass' />
                 <div className='ccdhmw_header_container'>
-                    <h1 className='ccdhmw_enterprise_title'>Pebco</h1>
+                    <div className='ccdhmw_enterprise_title'>{customerData.company_name}</div>
 
                     <div id={ccdhmw_product_btn_container_id} className='ccdhmw_h_btn_container btn_opacity' style={{ backgroundColor: '#007aff' }} onClick={onProductSelectFunc}>
                         <div id={ccdhmw_product_btn_title_id} className='ccdhmw_h_btn_title' style={{ color: 'white' }}>Produits</div>
@@ -236,7 +261,7 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
 
                     <div id={ccdhmw_complaint_btn_container_id} className='ccdhmw_h_btn_container'>
                         <div id={ccdhmw_complaint_btn_title_id} className='ccdhmw_h_btn_title btn_opacity' onClick={onComplaintSelectFunc}>Plaintes</div>
-                        <div id='ccdhmw_complaint_filter_selector' className='glass'>
+                        <div id={ccdhmw_complaint_filter_selector_id} className='ccdhmw_complaint_filter_selector glass'>
                             <div className='ccdhmw_complaint_filter_option btn_opacity' onClick={() => setComplaintFilterFunc({ filter: 'non_traites' })}>Non traités <p className='ccdhmw_complaint_filter_opt_count'>(20)</p></div>
                             <div className='ccdhmw_complaint_filter_option btn_opacity' onClick={() => setComplaintFilterFunc({ filter: 'en_traitement' })}>En traitement <p className='ccdhmw_complaint_filter_opt_count'>(10)</p></div>
                             <div className='ccdhmw_complaint_filter_option btn_opacity' onClick={() => setComplaintFilterFunc({ filter: 'traites' })}>Traités <p className='ccdhmw_complaint_filter_opt_count'>(8)</p></div>
@@ -245,16 +270,16 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
 
                     <div className='ccdhmw_hv_separator' />
 
-                    <div id='ccdhmw_h_search_container'>
-                        <img id='ccdhmw_h_search_icon' src={search_icon} />
-                        <input id='ccdhmw_h_search_bar' type='text' placeholder='Search' />
+                    <div id={ccdhmw_h_search_container_id} className='ccdhmw_h_search_container'>
+                        <img id={ccdhmw_h_search_icon_id} className='ccdhmw_h_search_icon' src={search_icon} />
+                        <input id={ccdhmw_h_search_bar_id} className='ccdhmw_h_search_bar' type='text' placeholder='Search' />
                     </div>
 
                     <div className='ccdhmw_hv_separator' />
 
-                    <div id='ccdhmw_add_btn_container'>
-                        <div id='ccdhmw_add_btn_title' className='btn_opacity' onClick={onAddProduitComplaintFunc}>+ Ajouter</div>
-                        <div id='ccdhmw_add_option_container'>
+                    <div id={ccdhmw_add_btn_container_id} className='ccdhmw_add_btn_container'>
+                        <div id={ccdhmw_add_btn_title_id} className='ccdhmw_add_btn_title btn_opacity' onClick={onAddProduitComplaintFunc}>+ Ajouter</div>
+                        <div id={ccdhmw_add_option_container_id} className='ccdhmw_add_option_container'>
                             <div className='ccdhmw_add_option_title btn_opacity' onClick={addProductFunc}>Produit</div>
                             <div className='ccdhmw_title_separator' />
                             <div className='ccdhmw_add_option_title btn_opacity' onClick={addComplaintFunc}>Plainte</div>

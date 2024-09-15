@@ -23,12 +23,14 @@ type propsType = {
         title: string,
         type: 'text' | 'textarea' | 'select' | 'email' | 'date' | 'password' | 'number',
         defaultValue?: string,
+        inputWidth?: string,
         readonly?: boolean,
         className?: string,
         placeholder?: string,
         marginBottom?: number,
         enableDescImport?: boolean,
         desc?: string,
+        immutableDesc?: boolean,
         onDescBtnClickFunc?: any,
         isOptional?: boolean
     }
@@ -69,6 +71,8 @@ const FormInputWidget = (props: propsType, ref: any) => {
 
     const inputType = data.type;
 
+    const inputWidth = data.inputWidth;
+
     const defaultValue = data.defaultValue || 'no default value';
 
     const readonly = useRef(data.readonly || false);
@@ -80,6 +84,8 @@ const FormInputWidget = (props: propsType, ref: any) => {
     const enableDescImport = data.enableDescImport || false;
 
     const desc = data.desc;
+
+    const immutableDesc = data.immutableDesc || false;
 
     const onDescBtnClickFunc = data.onDescBtnClickFunc;
 
@@ -97,7 +103,7 @@ const FormInputWidget = (props: propsType, ref: any) => {
 
     const descImportBtnIcon = useRef(import_icon);
 
-    const descImportBtnTitle = useRef('Importer (.docx or .html)');
+    const descImportBtnTitle = useRef(traduction['t0041']);
 
     const previewDescFile = useRef(false);
 
@@ -153,8 +159,14 @@ const FormInputWidget = (props: propsType, ref: any) => {
         previewDescFile.current = true;
         previewDescIcon.current = (fileData.extension !== '.html') ? word_icon : html_icon;
         descImportBtnTitle.current = 'Remove';
+
         descImportBtnIcon.current = trash_0_icon;
         $(`#${formiw_input_import_desc_id}`).css({ 'background-color': '#fa315a' });
+
+        /* Remove error message */
+        $(`#${formiw_input_error_id}`).css({ display: 'none' });
+        $(`#${formiw_input_error_id}`).text('');
+
         refreshFunc();
     };
 
@@ -165,6 +177,7 @@ const FormInputWidget = (props: propsType, ref: any) => {
         descImportBtnTitle.current = 'Importer (.docx or .html)';
         descImportBtnIcon.current = import_icon;
         $(`#${formiw_input_import_desc_id}`).css({ 'background-color': '#007aff' });
+        refId.current.setInputStateFunc({ state: 'empty' });
         refreshFunc();
     };
 
@@ -185,13 +198,23 @@ const FormInputWidget = (props: propsType, ref: any) => {
     const setTextFunc = (x: { text: string }) => { $(`#${formiw_input_box_id}`).val(x.text) };
 
     /* Clear text */
-    const clearTextFunc = () => { $(`#${formiw_input_box_id}`).val('') };
+    const clearTextFunc = () => {
+        $(`#${formiw_input_box_id}`).val('');
+        refId.current.setInputStateFunc({ state: isOptional ? 'optional' : 'empty' });
+    };
 
     /* Set error message */
-    const setErrorMsgFunc = (x: { msg: string, value: string }) => {
+    const setErrorMsgFunc = (x: { msg: string }) => {
         refId.current.setInputStateFunc({ state: 'error' });
         $(`#${formiw_input_error_id}`).text(x.msg);
         $(`#${formiw_input_error_id}`).css({ display: 'flex' });
+    };
+
+    /* Remove error ms */
+    const removeErrorMsgFunc = () => {
+        refId.current.setInputStateFunc({ state: isOptional ? 'optional' : 'empty' });
+        $(`#${formiw_input_error_id}`).css({ display: 'none' });
+        $(`#${formiw_input_error_id}`).text('');
     };
 
     /* Update readonly state */
@@ -207,6 +230,7 @@ const FormInputWidget = (props: propsType, ref: any) => {
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        descFileData: descFileData,
         refreshFunc() { refreshFunc() },
         setLanguageFunc(x: any) { setLanguageFunc(x) },
         setInputStateFunc(x: any) { setInputStateFunc(x) },
@@ -215,8 +239,9 @@ const FormInputWidget = (props: propsType, ref: any) => {
         setTextFunc(x: any) { setTextFunc(x) },
         clearTextFunc() { clearTextFunc() },
         setErrorMsgFunc(x: any) { setErrorMsgFunc(x) },
+        removeErrorMsgFunc() { removeErrorMsgFunc() },
         updateReadonlyStateFunc(x: any) { updateReadonlyStateFunc(x) }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {
@@ -235,30 +260,26 @@ const FormInputWidget = (props: propsType, ref: any) => {
     //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
     // }, []);
 
-    /* jQuery */
-    useEffect(() => {
-    }, []);
-
 
     /* Return */
 
 
     const component = <>
-        <div className='formiw_input_container' title={isOptional ? 'Optional' : ''} style={Object.assign({ marginBottom: marginBottom }, isTextarea && { alignItems: 'start' })}>
-            <div className='just_row center_all'>
+        <div className='formiw_input_container' title={isOptional ? 'Optional' : ''} style={Object.assign({ marginBottom: marginBottom })}>
+            <div className={`just_row ${isTextarea ? '' : 'center_all'}`}>
                 <div id={formiw_input_state_id} className='formiw_input_state' style={Object.assign({ backgroundColor: defaultInputStateColor }, isTextarea && { marginTop: 10 })} />
 
-                <div className='formiw_input_title ellipsis_line_1'>{title}</div>
+                <div className='formiw_input_title ellipsis_line_1' style={isTextarea ? { alignItems: 'start' } : {}}>{title}</div>
                 <div className='formiw_input_vdot'>:</div>
 
-                <div className='formiw_input_content'>
+                <div className='formiw_input_content' style={inputWidth ? { width: inputWidth, minWidth: inputWidth } : {}}>
                     {readonly.current && <div className='formiw_input_box formiw_readonly_input'>{readonlyText.current}</div>}
 
                     {!readonly.current && <>
                         {!previewDescFile.current && <>
-                            {(!isTextarea && !isSelect) && <input /* Input */ id={formiw_input_box_id} className={`formiw_input_box ${className}`} type={inputType} placeholder={placeholder} onChange={onChangeFunc} />}
+                            {(!isTextarea && !isSelect) && <input /* Input */ id={formiw_input_box_id} className={`formiw_input_box ${className}`} placeholder={placeholder} onChange={onChangeFunc} />}
 
-                            {isTextarea && <textarea /* Textarea */ id={formiw_input_box_id} className={`formiw_textarea_input_box ${className}`} placeholder={placeholder} onChange={onChangeFunc} />}
+                            {isTextarea && <textarea /* Textarea */ id={formiw_input_box_id} className={`formiw_textarea_input_box ${className}`} placeholder={placeholder} onChange={onChangeFunc} readOnly={immutableDesc} />}
 
                             {isSelect && <select /* Select */ id={formiw_input_box_id} className={`formiw_input_box ${className}`} onSelect={onSelectFunc}>
                                 <option>a</option>
@@ -272,7 +293,7 @@ const FormInputWidget = (props: propsType, ref: any) => {
                             <div className='formiw_input_desc_preview_container'>
                                 <img className='formiw_input_desc_preview_icon' src={previewDescIcon.current} />
                                 <div className='formiw_input_desc_preview_info_container'>
-                                    <p className='formiw_input_desc_preview_info_title'>{descFileData.current.name}</p>
+                                    <p className='formiw_input_desc_preview_info_title'>{descFileData.current.filename}</p>
                                     <p className='formiw_input_desc_preview_info_size'>{descFileData.current.formatedSize}</p>
                                 </div>
                             </div>
@@ -288,7 +309,7 @@ const FormInputWidget = (props: propsType, ref: any) => {
                 </div>
             </div>
 
-            <div id='formiw_bottom_desc_container'>
+            <div id='formiw_bottom_desc_container' style={inputWidth ? { width: inputWidth, minWidth: inputWidth } : {}}>
                 {desc && <p className='formiw_input_desc'>{desc}</p>}
                 <div id={formiw_input_error_id} className='formiw_input_error'></div>
             </div>

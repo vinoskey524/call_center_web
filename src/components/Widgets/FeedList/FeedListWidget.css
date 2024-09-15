@@ -10,3 +10,10 @@
     /* background-color: red; */
     z-index: 1;
 }
+
+.flw_top_msg_container {
+    width: auto;
+    height: auto;
+    color: #9e9e9e;
+    font-size: 13px;
+}

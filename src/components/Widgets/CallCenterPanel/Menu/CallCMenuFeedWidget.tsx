@@ -13,10 +13,11 @@ import { _defaultLanguage_ } from '../../../Tools/constants';
 type propsType = {
     $data: {
         /** Every change made to "wid" affect controller */
-        wid: string,
+        wid?: string,
         refId: refIdType,
         controllerRef: refIdType,
-        rootControllers: any
+        rootControllers: any,
+        accountData: any,
     }
 };
 const CallCMenuFeedWidget = (props: propsType, ref: any) => {
@@ -43,13 +44,15 @@ const CallCMenuFeedWidget = (props: propsType, ref: any) => {
 
     const data = props.$data;
 
-    const wid = data.wid;
+    const wid = data.wid || generateIdFunc();
 
     const refId = data.refId;
 
     const controllerRef = data.controllerRef;
 
     const rootControllers = data.rootControllers;
+
+    const accountData = useRef(data.accountData);
 
     /* Root controllers */
 
@@ -62,6 +65,8 @@ const CallCMenuFeedWidget = (props: propsType, ref: any) => {
     /* - */
 
     const emptyRef = useRef(undefined);
+
+    const ccmfwi_title_id = useRef(generateIdFunc()).current;
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -90,8 +95,8 @@ const CallCMenuFeedWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
-
-    /* ------------------------------------ jQuery ------------------------------------- */
+    /* On press */
+    const onPressFunc = () => { controllerRef.current.showPageFunc({ data: accountData }) };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -108,6 +113,14 @@ const CallCMenuFeedWidget = (props: propsType, ref: any) => {
         if (!isMounted.current) {
             isMounted.current = true;
             (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+
+            /* Highlight */
+            const searchString: string = controllerRef.current.searchString.current;
+            if (searchString.length > 0) {
+                const reg = new RegExp(`(${searchString})`, 'gi'); /* Use a regular expression to find the search term */
+                const highlightedText = (accountData.current.company_name).replace(reg, '<strong style="color: #007aff" >$1</strong>'); /* Replace the search term with bold HTML tags */
+                $(`#${ccmfwi_title_id}`).html(highlightedText); /* Update */
+            }
         }
     }, []);
 
@@ -122,10 +135,10 @@ const CallCMenuFeedWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div className='ccmfwi_scaffold btn_opacity'>
+        <div className='ccmfwi_scaffold btn_opacity' onClick={onPressFunc}>
             <img className='ccmfwi_logo' src='logo192.png' />
             <div className='ccmfwi_container'>
-                <div className='ccmfwi_title ellipsis_line_1'>Nom de l'entreprise</div>
+                <span id={ccmfwi_title_id} className='ccmfwi_title ellipsis_line_1'>{accountData.current.company_name}</span>
                 <div className='ccmfwi_bottom_line' />
             </div>
         </div>

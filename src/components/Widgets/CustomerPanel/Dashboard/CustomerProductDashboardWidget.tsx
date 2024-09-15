@@ -3,11 +3,15 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import $ from 'jquery';
 
 /* Custom packages */
-import './ProductFeedContainerWidget.css';
+import './CustomerProductDashboardWidget.css';
 import { generateIdFunc } from '../../../Tools/methodForest';
+import { _success_, _error_, _requestFailed_ } from '../../../Tools/constants';
 import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
 import { _defaultLanguage_ } from '../../../Tools/constants';
+import ProductDashboardMainWidget from '../../ProductDashboard/ProductDashboardMainWidget';
+import search_icon from '../../../Assets/png/search_0.png';
+import add_icon from '../../../Assets/png/add.png';
 
 /* Widget */
 type propsType = {
@@ -19,7 +23,7 @@ type propsType = {
         rootControllers: any
     }
 };
-const ProductFeedContainerWidget = (props: propsType, ref: any) => {
+const CustomerProductDashboardWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
     const parentProps = props;
@@ -63,6 +67,12 @@ const ProductFeedContainerWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const productDashboardMainRef = useRef<any>(undefined);
+
+    const scaffold_id = useRef(generateIdFunc()).current;
+
+    const ctmpdw_h_input_box_id = useRef(generateIdFunc()).current;
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -90,8 +100,19 @@ const ProductFeedContainerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Show | Hide */
+    const showFunc = (x: { show: boolean }) => {
+        $(`#${scaffold_id}`).css({ transform: `translateY(${x.show ? '0%' : '-100%'})` });
+    };
 
-    /* ------------------------------------ jQuery ------------------------------------- */
+    /* Add product */
+    const addProductFunc = () => { controllerRef.current.addProductFunc() };
+
+    /* On change */
+    const onChangeFunc = () => {
+        const val = $('#ctmpdw_h_input_box_id').val();
+        controllerRef.current.setTextValueFunc({ wid: 'ctmpdw_h_input_box_id', text: val });
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -100,7 +121,8 @@ const ProductFeedContainerWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
+        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        showFunc(x: any) { showFunc(x) },
     }), []);
 
     /* On mount */
@@ -122,9 +144,29 @@ const ProductFeedContainerWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
-        <div></div>
+        <div id={scaffold_id} className='ctmpdw_scaffold'>
+            <div className='ctmpdw_header'>
+                <div className='ctmpdw_h_back_blur glass' />
+                <div className='ctmpdw_h_container'>
+
+                    <div className='ctmpdw_h_subcontainer'>
+                        <div className='crmpdw_h_input_container'>
+                            <img className='ctmpdw_h_input_icon' src={search_icon} />
+                            <input id='ctmpdw_h_input_box_id' className='ctmpdw_h_input_box' placeholder='Search...' onChange={onChangeFunc} />
+                        </div>
+
+                        <div className='ctmpdw_h_add_btn_container btn' onClick={addProductFunc}>
+                            <img className='ctmpdw_h_add_btn_icon' src={add_icon} />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <ProductDashboardMainWidget ref={productDashboardMainRef} $data={{ wid: 'productDashboardMainRef', refId: productDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+        </div>
     </>;
     return (render.current ? component : <></>);
 };
 
-export default forwardRef(ProductFeedContainerWidget);
+export default forwardRef(CustomerProductDashboardWidget);

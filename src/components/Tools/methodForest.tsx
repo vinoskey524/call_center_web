@@ -1,4 +1,6 @@
 /** Standard packages */
+import axios from 'axios';
+import { _databaseAddress_, _requestFailed_ } from './constants';
 import $ from 'jquery';
 
 /** Custom packages */
@@ -19,19 +21,20 @@ export const animateModalFunc = (x: { scaffold: string, container: string, show:
     const container = x.container;
     const show = x.show;
     if (show) {
-        const d = (_browserName_ === 'Safari') ? 90 : 60;
+        const d = (_browserName_ === 'Chrome') ? 60 : 90;
         $(`${scaffold}`).animate({ 'opacity': 1 }, d);
         $(`${container}`).animate({}, d);
         $(`${container}`).animate({ 'scale': 1 }, d);
-        $(`${scaffold}`).css({ 'top': 0 });
+        $(`${scaffold}`).css({ transform: 'translateY(0%)' });
+        // console.log(d)
     } else {
-        const d = (_browserName_ === 'Safari') ? 80 : 50;
+        const d = (_browserName_ === 'Chrome') ? 50 : 80;
         $(`${container}`).css({ 'scale': 1.00001 });
         $(`${container}`).animate({}, d);
         $(`${container}`).animate({ 'scale': 0.85 }, d);
         $(`${scaffold}`).animate({}, d);
         $(`${scaffold}`).animate({ 'opacity': 0 }, d, () => {
-            $(`${scaffold}`).css({ 'top': '100vh' });
+            $(`${scaffold}`).css({ transform: 'translateY(-100%)' });
             $(`${container}`).css({ 'scale': 1.3 });
         });
     }
@@ -67,7 +70,7 @@ export const catchErrorFunc = (x: { err: any, prefix?: string }) => {
     const err = x.err, prefix = x.prefix || '';
     const isJson: any = isJsonFunc({ data: err });
     const res = (isJson.status === _success_) ? isJson.data.parsedData : err;
-    _dev_ && console.error((prefix === '' ? '' : `${prefix} ::`), res);
+    _dev_ && console.error((prefix === '' ? '' : `${prefix} ::`), res, isJson);
     return res;
 };
 
@@ -90,6 +93,12 @@ export const getTimeFunc = (x: { milliseconds: number }) => {
 
 /** Get number of lines */
 export const lineCounterFunc = (x: string) => { return (x.split(/\r?\n|\r|\n/g)).length };
+
+/** sort string */
+export const sortStringFunc = (x: { a: string, b: string }) => {
+    const la = x.a.toLowerCase(), lb = x.b.toLowerCase();
+    return (la < lb) ? -1 : (la > lb) ? 1 : 0;
+};
 
 
 
@@ -117,6 +126,19 @@ export const checkPhoneNumberFunc = (x: { phone: number, iso: string }) => {
 
     // } catch (e: any) { return { status: _error_, data: e.message } }
 };
+
+/** Upload file | 30s of timeout */
+// type uploadType = 'createProductFunc' | 'createComplaintFunc';
+// const tmout = 30000;
+// const upload = axios.create({ baseURL: _databaseAddress_, timeout: tmout, headers: { 'Content-Type': 'multipart/form-data' } });
+// export const uploadFileFunc = async (x: { func: uploadType, data: any, timeout?: number }): Promise<{ status: string, data: any }> => {
+//     try {
+//         return await upload.post('/butterfly', { func: x.func, data: x.data }, { timeout: x.timeout || tmout })
+//             .then((res: any) => { return res.data })
+//             .catch((e: any) => { throw new Error(JSON.stringify({ status: _requestFailed_, data: e })) })
+
+//     } catch (e: any) { return catchErrorFunc({ err: e }) }
+// };
 
 
 

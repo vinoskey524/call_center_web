@@ -31,9 +31,13 @@ export const _phoneExists_ = 'phoneExists';
 export const _fullnameExists_ = 'fullnameExists';
 export const _usernameExists_ = 'usernameExists';
 
-/**  */
+export const _productNameExists_ = 'productNameExists';
+
 export const _noUserFound_ = 'no user found';
 export const _incorrectCredentials_ = 'incorrect credentials';
+
+/** - */
+export const _maxProductDescFileSize_ = 3000900; /* 3mb */
 
 /** Server address */
 export const _serverAddress_ = 'localhost';

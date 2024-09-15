@@ -118,8 +118,6 @@ const CustomerSPMainControllerWidget = (props: propsType, ref: any) => {
 
             /* On pg req success */
             const data: { adminData: any[], customerData: any[] } = req.data;
-            console.log(req.data);
-
             const adminData: any[] = data.adminData;
             const customerData: any[] = data.customerData;
             if (adminData.length > 0 && customerData.length > 0) {

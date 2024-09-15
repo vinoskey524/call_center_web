@@ -1,0 +1,56 @@
+.ctmhdw_scaffold {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 0;
+    left: 0;
+    justify-content: center;
+    background-color: #23272F;
+    z-index: 0;
+}
+
+/* top container */
+
+#ctmhdw_top_container {
+    width: 98%;
+    height: 56%;
+    overflow: hidden;
+    position: relative;
+}
+
+#ctmhdw_agence_list_container {
+    width: 350px;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    border-radius: 12px;
+    background-color: rgba(79, 88, 109, 0.2);
+}
+
+#ctmhdw_circular_stats_container {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    border-radius: 12px;
+    background-color: rgba(79, 88, 109, 0.2);
+    margin-left: 1%;
+}
+
+/* bottom container */
+
+#ctmhdw_bottom_container {
+    width: 98%;
+    height: 40%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 12px;
+    background-color: rgba(79, 88, 109, 0.2);
+    margin-top: 1%;
+}

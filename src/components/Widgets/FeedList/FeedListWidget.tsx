@@ -157,14 +157,15 @@ const FeedListWidget = (props: propsType, ref: any) => {
 
     /* Return */
 
+
     const component = <>
         <div id={flw_scaffold_id} className='flw_scaffold' style={{ paddingTop: paddingTop }}>
             <LoadingWidget ref={flwTopLoadingRef} $data={{ wid: 'flwTopLoadingRef', refId: flwTopLoadingRef, controllerRef: feedListControllerRef }} />
-            <div id={flw_top_msg_container_id} className='flw_top_mesg_container'></div>
+            <div id={flw_top_msg_container_id} className='flw_top_msg_container'></div>
 
             <FeedSubContainerWidget ref={feedMainSubContainerRef} $data={{ wid: 'feedMainSubContainerRef', refId: feedMainSubContainerRef, controllerRef: feedListControllerRef, rootControllers: rootControllers, widget: widget, position: 'top' }} />
 
-            <div id={flw_bottom_msg_container_id} className='flw_top_mesg_container'></div>
+            <div id={flw_bottom_msg_container_id} className='flw_top_msg_container'></div>
             <LoadingWidget ref={flwBottomLoadingRef} $data={{ wid: 'flwBottomLoadingRef', refId: flwBottomLoadingRef, controllerRef: feedListControllerRef }} />
         </div>
 

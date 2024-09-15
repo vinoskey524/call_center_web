@@ -131,7 +131,6 @@
     flex-direction: row;
     border-radius: 6px;
     background-color: #333A45;
-    margin-top: 6px;
 }
 
 .formiw_input_desc_preview_icon {
@@ -183,6 +182,7 @@
     min-width: 59.5%;
     height: auto;
     display: flex;
+    flex-direction: column;
     align-self: flex-end;
 }
 

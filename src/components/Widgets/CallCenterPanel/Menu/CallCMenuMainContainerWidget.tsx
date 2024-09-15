@@ -4,12 +4,13 @@ import $ from 'jquery';
 
 /* Custom packages */
 import './CallCMenuMainContainerWidget.css';
-import { generateIdFunc } from '../../../Tools/methodForest';
+import { generateIdFunc, replaceConsecutiveSpacesByOneFunc } from '../../../Tools/methodForest';
 import search_icon from '../../../Assets/png/search_0.png';
 import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
 import { _defaultLanguage_ } from '../../../Tools/constants';
 import CallCMenuFeedWidget from './CallCMenuFeedWidget';
+import FeedListWidget from '../../FeedList/FeedListWidget';
 
 /* Widget */
 type propsType = {
@@ -65,6 +66,10 @@ const CallCMenuMainContainerWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
+    const callCMenuCustomerFeedListRef = useRef<any>(undefined);
+
+    const callCMenuCustomerSearchFeedListRef = useRef<any>(undefined);
+
 
     /* ------------------------------------ Methods ------------------------------------- */
 
@@ -83,13 +88,30 @@ const CallCMenuMainContainerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* On search menu input change */
+    const onMenuSearchInputChangeFunc = () => {
+        const $input = $('#ccmmcw_input');
+        const val = String($input.val());
+        const parsedValue = (val !== undefined) ? replaceConsecutiveSpacesByOneFunc(val).trimStart() : '';
+
+        /* Update input */
+        $input.val(parsedValue);
+
+        /* - */
+        controllerRef.current.setMenuSearchTextFunc({ text: parsedValue });
+    };
+
+    /* Show search menu container */
+    const showSearchMenuContainerFunc = (x: { show: boolean }) => { $('#ccmmcw_search_feed_list_container').css({ left: x.show ? '0%' : '100%' }) };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
+        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        showSearchMenuContainerFunc(x: any) { showSearchMenuContainerFunc(x) }
     }), [refresh]);
 
     /* On mount */
@@ -114,11 +136,21 @@ const CallCMenuMainContainerWidget = (props: propsType, ref: any) => {
         <div id='ccmmcw_scaffold'>
             <div /* Search bar */ id='ccmmcw_input_container' className='glass'>
                 <img id='ccmmcw_icon' src={search_icon} />
-                <input id='ccmmcw_input' type='text' placeholder='Search' />
+                <input id='ccmmcw_input' type='text' placeholder='Search' onChange={onMenuSearchInputChangeFunc} />
             </div>
 
-            <div id='ccmmcw_feed_list'>
-                {Array(100).fill(undefined).map(() => <CallCMenuFeedWidget ref={emptyRef} $data={{ wid: 'emptyRef', refId: emptyRef, controllerRef: controllerRef, rootControllers: rootControllers }} />)}
+            <div id='ccmmcw_feed_list_container'>
+                <FeedListWidget ref={callCMenuCustomerFeedListRef} $data={{
+                    wid: 'callCMenuCustomerFeedListRef', refId: callCMenuCustomerFeedListRef, controllerRef: controllerRef, rootControllers: rootControllers, paddingTop: 97,
+                    widget: ({ _key, _refId, _data }: any) => { return <CallCMenuFeedWidget key={_key} ref={_refId} $data={{ refId: _refId, controllerRef: controllerRef, rootControllers: rootControllers, accountData: _data }} /> }
+                }} />
+            </div>
+
+            <div id='ccmmcw_search_feed_list_container'>
+                <FeedListWidget ref={callCMenuCustomerSearchFeedListRef} $data={{
+                    wid: 'callCMenuCustomerSearchFeedListRef', refId: callCMenuCustomerSearchFeedListRef, controllerRef: controllerRef, rootControllers: rootControllers, paddingTop: 97,
+                    widget: ({ _key, _refId, _data }: any) => { return <CallCMenuFeedWidget key={_key} ref={_refId} $data={{ refId: _refId, controllerRef: controllerRef, rootControllers: rootControllers, accountData: _data }} /> }
+                }} />
             </div>
         </div>
     </>;

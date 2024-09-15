@@ -135,6 +135,7 @@ const ComplaintDashboardMainWidget = (props: propsType, ref: any) => {
     /* Show modification history */
     const onShowModificationHistoryFunc = () => {
         const current = isModificationHistoryVisible.current;
+        current && $(`#${comdmw_dock_history_container_id}`).css({ scale: 1.00001 });
         $(`#${comdmw_dock_history_container_id}`).animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $(`#${comdmw_dock_history_container_id}`).css({ 'display': 'none' }) });
         !current && $(`#${comdmw_dock_history_container_id}`).css({ 'display': 'flex' });
         isModificationHistoryVisible.current = !isModificationHistoryVisible.current; /* update | Must be last line */
@@ -143,6 +144,7 @@ const ComplaintDashboardMainWidget = (props: propsType, ref: any) => {
     /* Show state container */
     const onShowStateContainerFunc = () => {
         const current = isStateContainerVisible.current;
+        current && $(`#${comdmw_dock_state_container_id}`).css({ scale: 1.00001 });
         $(`#${comdmw_dock_state_container_id}`).animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $(`#${comdmw_dock_state_container_id}`).css({ 'display': 'none' }) });
         !current && $(`#${comdmw_dock_state_container_id}`).css({ 'display': 'flex' });
         isStateContainerVisible.current = !isStateContainerVisible.current; /* update | Must be last line */
@@ -151,6 +153,7 @@ const ComplaintDashboardMainWidget = (props: propsType, ref: any) => {
     /* Show delete container */
     const onShowDeleteContainerFunc = () => {
         const current = isDeleteContainerVisible.current;
+        current && $(`#${comdmw_dock_del_confirm_container_id}`).css({ scale: 1.00001 });
         $(`#${comdmw_dock_del_confirm_container_id}`).animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $(`#${comdmw_dock_del_confirm_container_id}`).css({ 'display': 'none' }) });
         !current && $(`#${comdmw_dock_del_confirm_container_id}`).css({ 'display': 'flex' });
         isDeleteContainerVisible.current = !isDeleteContainerVisible.current; /* update | Must be last line */
@@ -263,7 +266,7 @@ const ComplaintDashboardMainWidget = (props: propsType, ref: any) => {
     /* Component */
     const component = <>
         <div id={comdmw_scaffold_id} className='comdmw_scaffold'>
-            <div /* List */ className='comdmw_feed_list_container'>
+            <div /* list */ className='comdmw_feed_list_container'>
                 <div className='comdmw_feed_container'>
                     <div className='comdmw_feed_default_list'>
                         <div className='comdmw_top_space' />

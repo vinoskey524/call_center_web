@@ -8,10 +8,10 @@ import './ProductCreationWidget.css';
 import { generateIdFunc, animateModalFunc } from '../../Tools/methodForest';
 import { language } from '../../Tools/language';
 import { refIdType } from '../../Tools/type';
-import { _defaultLanguage_ } from '../../Tools/constants';
+import { _defaultLanguage_, _dev_, _maxProductDescFileSize_ } from '../../Tools/constants';
 import ProductCreationControllerWidget from './ProductCreationControllerWidget';
 import FormInputWidget from '../Others/FormInputWidget';
-// import LoadingWidget from '../../Widgets/Others/LoadingWidget';
+import LoadingWidget from '../../Widgets/Others/LoadingWidget';
 
 /* Widget */
 type propsType = {
@@ -73,8 +73,6 @@ const ProductCreationWidget = (props: propsType, ref: any) => {
 
     const file_selector_input_id = useRef(generateIdFunc({ length: 12 })).current;
 
-    const productDesc = 'Ajouter une description depuis un fichier word or html.';
-
     const loadingRef = useRef<any>(undefined);
 
 
@@ -96,7 +94,10 @@ const ProductCreationWidget = (props: propsType, ref: any) => {
     };
 
     /* Show */
-    const showFunc = (x: { show: boolean }) => { animateModalFunc({ scaffold: '#prcrw_scaffold', container: '#prcrw_container', show: x.show }) };
+    const showFunc = (x: { show: boolean, currentControllerRef?: refIdType, customerId?: string, customerDomain?: string }) => {
+        animateModalFunc({ scaffold: '#prcrw_scaffold', container: '#prcrw_container', show: x.show });
+        (x.currentControllerRef !== undefined) && productCreationControllerRef.current.setCurrentCustomerDataFunc({ currentControllerRef: x.currentControllerRef, id: x.customerId, domain: x.customerDomain });
+    };
 
     /* On desc btn click */
     const onDescBtnClickFunc = () => { productCreationControllerRef.current.onDescBtnClickFunc() };
@@ -106,15 +107,36 @@ const ProductCreationWidget = (props: propsType, ref: any) => {
         const files = $(`#${file_selector_input_id}`).prop('files');
         if (files.length > 0) {
             const file = files[0];
-            const filename: string = file.name;
-            const lastDotIndex = filename.lastIndexOf('.');
-            const fileData = { id: generateIdFunc(), name: filename, extension: filename.substring(lastDotIndex), size: file.size, formatedSize: prettyBytes(file.size), tempUrl: URL.createObjectURL(file) };
-            productCreationControllerRef.current.setDescriptionFileFunc({ fileData: fileData });
+            const size = file.size;
+
+            /* Check file size */
+            if (size <= _maxProductDescFileSize_) {
+                const filename: string = file.name;
+                const lastDotIndex = filename.lastIndexOf('.');
+
+                /*  */
+                const ext = filename.substring(lastDotIndex);
+                // const tempUrl = URL.createObjectURL(file);
+
+                /* - */
+                const fileData = { id: generateIdFunc(), filename: filename, extension: ext, formatedSize: prettyBytes(file.size), file: file };
+                productCreationControllerRef.current.setDescriptionFileFunc({ fileData: fileData });
+            } else productCreationControllerRef.current.fileToolargeSelectedFunc();
         }
     };
 
+    /* Create Product */
+    const createProductFunc = () => {
+        const check = productCreationControllerRef.current.checkFormFunc();
+        if (check) productCreationControllerRef.current.createProductFunc();
+        else { _dev_ && console.warn('incomplete form') }
+    };
+
     /* On Cancel */
-    const onCancelFunc = () => { refId.current.showFunc({ show: false }) };
+    const onCancelFunc = () => {
+        refId.current.showFunc({ show: false });
+        productCreationControllerRef.current.resetFunc();
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -148,23 +170,27 @@ const ProductCreationWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
+        <ProductCreationControllerWidget ref={productCreationControllerRef} $data={{ wid: 'productCreationControllerRef', refId: productCreationControllerRef, rootControllers: rootControllers, parentRef: refId }} />
         <div id='prcrw_scaffold'>
             <div id='prcrw_container'>
                 <div id='prcrw_header_title'>Nouveau produit</div>
-                {/* <LoadingWidget ref={loadingRef} $data={{ wid: 'loadingRef', refId: loadingRef, controllerRef: productCreationControllerRef }} /> */}
+                <div id='prcrw_error_msg_container'>{traduction['t0016']}</div>
+                <LoadingWidget ref={loadingRef} $data={{ wid: 'loadingRef', refId: loadingRef, controllerRef: productCreationControllerRef }} />
+
                 <div id='prcrw_form_container'>
-                    <FormInputWidget /* Name */ ref={productNameFormInputRef} $data={{ wid: 'productNameFormInputRef', refId: productNameFormInputRef, controllerRef: productCreationControllerRef, title: 'Name', type: 'text' }} />
-                    <FormInputWidget /* Description */ ref={productDescFormInputRef} $data={{ wid: 'productDescFormInputRef', refId: productDescFormInputRef, controllerRef: productCreationControllerRef, title: 'Description', type: 'textarea', enableDescImport: true, desc: productDesc, onDescBtnClickFunc: onDescBtnClickFunc }} />
+                    <FormInputWidget /* Name */ ref={productNameFormInputRef} $data={{ wid: 'productNameFormInputRef', refId: productNameFormInputRef, controllerRef: productCreationControllerRef, title: 'Name', type: 'text', inputWidth: '65%' }} />
+
+                    <FormInputWidget /* Description */ ref={productDescFormInputRef} $data={{ wid: 'productDescFormInputRef', refId: productDescFormInputRef, controllerRef: productCreationControllerRef, title: 'Description', type: 'textarea', inputWidth: '65%', enableDescImport: true, desc: traduction['t0039'], immutableDesc: true, onDescBtnClickFunc: onDescBtnClickFunc }} />
+
                     <div id='prcrw_btn_container'>
-                        <div style={{ width: '34%', height: 1 }} />
-                        <button id='prcrw_create_btn' className='btn_opacity'>Create</button>
+                        <button id='prcrw_create_btn' className='btn_opacity' style={{ marginLeft: '35%' }} onClick={createProductFunc}>Create</button>
                         <button id='prcrw_cancel_btn' className='btn_opacity' onClick={onCancelFunc}>Cancel</button>
                     </div>
                 </div>
+
             </div>
         </div>
-        <input /* File selector input */ id={file_selector_input_id} style={{ width: 0, height: 0, display: 'none' }} type='file' accept='.doc,.docx,.html' onChange={onFileSelectedFunc} />
-        <ProductCreationControllerWidget ref={productCreationControllerRef} $data={{ wid: 'productCreationControllerRef', refId: productCreationControllerRef, rootControllers: rootControllers, parentRef: refId }} />
+        <input /* File selector input */ id={file_selector_input_id} style={{ width: 0, height: 0, display: 'none' }} name='mojave' type='file' accept='.docx' onChange={onFileSelectedFunc} />
     </>;
     return (render.current ? component : <></>);
 };

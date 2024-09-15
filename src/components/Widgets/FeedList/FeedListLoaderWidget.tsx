@@ -91,7 +91,7 @@ const FeedListLoaderWidget = (props: propsType, ref: any) => {
 
     /* Show loading */
     const showLoadingFunc = (x: { show: boolean }) => {
-        fllwLoadingRef.current.showLoadingFunc({ show: x.show });
+        fllwLoadingRef?.current?.showLoadingFunc({ show: x.show });
     };
 
     /* Set msg */
