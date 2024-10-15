@@ -9,9 +9,10 @@ import { _dev_, _error_, _success_, _browserName_ } from './constants';
 /** Id generator */
 export const generateIdFunc = (x?: { length: number }) => {
     const val = '0aW9zXe8CrVt1By5NuA46iZ3oEpRmTlYkUjIhOgPfMdQsSqDwFxGcHvJbKnL';
+    const val1 = 'oZd0p3mbcxnvwlMaTGFfYJLERKkHP';
     const length = (x?.length !== undefined) ? x.length : val.length;
     let id = '';
-    for (var i = 0; i < length; i++) id += (val.charAt(Math.floor(Math.random() * 36)) + val.charAt(Math.floor(Math.random() * 36)));
+    for (var i = 0; i < length; i++) id += (val.charAt(Math.floor(Math.random() * 36)) + val1.charAt(Math.floor(Math.random() * 36)));
     return id;
 };
 
@@ -63,6 +64,16 @@ export const isJsonFunc = (x: { data: any }) => {
         return { status: _success_, data: { parsedData: parse, type: type } }
 
     } catch (e: any) { return { status: _error_, data: 'not a json type' } }
+};
+
+/* Get month day length */
+export const getMonthDayLength = (x: { year: number }) => {
+    const year = x.year;
+    return [
+        31,
+        (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28,
+        31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    ];
 };
 
 /** Catch error */

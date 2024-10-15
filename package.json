@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mantine/charts": "^7.13.0",
+    "@mantine/core": "^7.13.0",
+    "@mantine/hooks": "^7.13.0",
+    "@nivo/core": "^0.87.0",
+    "@nivo/pie": "^0.87.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -12,13 +17,16 @@
     "@types/react-dom": "^18.3.0",
     "axios": "^1.7.3",
     "bcryptjs": "^2.4.3",
+    "canvas": "^2.11.2",
     "jquery": "^3.7.1",
     "pretty-bytes": "^6.1.1",
     "pretty-ms": "^9.0.0",
+    "radial": "^0.0.1",
     "react": "^18.3.1",
     "react-device-detect": "^2.2.3",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
+    "recharts": "2",
     "typescript": "^4.9.5",
     "victory": "^37.0.2",
     "web-vitals": "^2.1.4",
@@ -51,6 +59,9 @@
   "devDependencies": {
     "@types/bcryptjs": "^2",
     "@types/jquery": "^3.5.30",
-    "babel-plugin-transform-remove-console": "^6.9.4"
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "postcss": "^8.4.47",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1"
   }
 }

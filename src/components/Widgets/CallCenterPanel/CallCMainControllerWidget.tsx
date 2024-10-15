@@ -4,71 +4,51 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 /* Custom packages */
 import { refIdType } from '../../Tools/type';
 import { _success_, _error_, _requestFailed_, _dev_, _defaultLanguage_ } from '../../Tools/constants';
-import { catchErrorFunc, sortStringFunc } from '../../Tools/methodForest';
-import { language } from '../../Tools/language';
+import { catchErrorFunc, sortStringFunc, replaceConsecutiveSpacesByOneFunc } from '../../Tools/methodForest';
 
-/* Widget */
-type propsType = {
-    $data: {
-        /** Every change made to "wid" affect controller */
-        wid: string,
-        refId: refIdType,
-        controllerRef?: refIdType,
-        rootControllers: any
-    }
-};
+/** Every change made to "wid" affect controller */
+type propsType = { $data: { wid: string, controllerRef?: refIdType, rootControllers: any } };
 const CallCMainControllerWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId: refIdType = ref;
 
     const windowWidth = useRef(window.innerWidth);
-
     const windowHeight = useRef(window.innerHeight);
 
     const isMounted = useRef(false);
-
+    const mountCount = useRef(0);
     const render = useRef(false);
 
-    const lang = useRef(_defaultLanguage_);
+    const emptyRef = useRef(undefined);
 
-    const traduction = language[lang.current];
+    const broadcastIndex = useRef(-1);
 
     /* $data */
-
-    const data = props.$data;
-
-    const wid = data.wid;
-
-    const refId = data.refId;
-
-    const controllerRef = data.controllerRef;
-
-    const rootControllers = data.rootControllers;
-
-    /* Root controllers */
-
-    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
-
-    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
-
-    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
+    const $data = props.$data;
+    const wid = $data.wid;
+    const controllerRef = $data.controllerRef;
+    const rootControllers = $data.rootControllers;
 
     /* Refs */
-
+    const refIdStore = useRef<any>({});
     const callCMenuMainContainerRef = useRef<any>(undefined);
-
     const callCMainContainerRef = useRef<any>(undefined);
-
     const callCMenuCustomerFeedListRef = useRef<any>(undefined);
-
+    const callCMenuCustomerFeedListControllerRef = useRef<any>(undefined);
     const callCMenuCustomerSearchFeedListRef = useRef<any>(undefined);
-
+    const callCMenuCustomerSearchFeedListControllerRef = useRef<any>(undefined);
     const callCenterDashboardFeedListRef = useRef<any>(undefined);
+    const callCenterDashboardFeedListControllerRef = useRef<any>(undefined);
+
+    /* Root controllers */
+    const mainRootControllerRef: refIdType = rootControllers?.current?.mainRootControllerRef;
+    const requestRootControllerRef: refIdType = rootControllers?.current?.requestRootControllerRef;
+    const dataStoreRootControllerRef: refIdType = rootControllers?.current?.dataStoreRootControllerRef;
 
     /* - */
 
-    const emptyRef = useRef(undefined);
+    const traduction = useRef(dataStoreRootControllerRef.current.traduction.current);
 
     const isMenuSearchContainerVisible = useRef(false);
 
@@ -88,22 +68,33 @@ const CallCMainControllerWidget = (props: propsType, ref: any) => {
 
     /* ------------------------------------ Methods ------------------------------------- */
 
-    /* Add widget ref */
-    const addWidgetRefFunc = (x: { wid: string, refId: any }) => {
+    /* Add ref id */
+    const addRefIdFunc = (x: { wid: string, refId: any }) => {
         const wid = x.wid, refId = x.refId;
+        refIdStore.current[wid] = refId;
         switch (wid) {
             case 'callCMenuMainContainerRef': { callCMenuMainContainerRef.current = refId.current } break;
             case 'callCMainContainerRef': { callCMainContainerRef.current = refId.current } break;
             case 'callCMenuCustomerFeedListRef': { callCMenuCustomerFeedListRef.current = refId.current } break;
+            case 'callCMenuCustomerFeedListControllerRef': { callCMenuCustomerFeedListControllerRef.current = refId.current } break;
             case 'callCMenuCustomerSearchFeedListRef': { callCMenuCustomerSearchFeedListRef.current = refId.current } break;
+            case 'callCMenuCustomerSearchFeedListControllerRef': { callCMenuCustomerSearchFeedListControllerRef.current = refId.current } break;
             case 'callCenterDashboardFeedListRef': { callCenterDashboardFeedListRef.current = refId.current } break;
+            case 'callCenterDashboardFeedListControllerRef': { callCenterDashboardFeedListControllerRef.current = refId.current } break;
             default: { };
         };
     };
 
+    /* Delete refId */
+    const deleteRefIdFunc = (x: { wid: string | string[] }) => {
+        const wid = (typeof x.wid === 'string') ? [x.wid] : x.wid;
+        for (let i = 0; i < wid.length; i++) { delete refIdStore.current[wid[i]] }
+    };
+
     /* Set text value from inputs */
     const setTextValueFunc = (x: { wid: string, text: string }) => {
-        const wid = x.wid, text = x.text;
+        const wid = x.wid, t = (x.text).replaceAll("'", '’').trimStart(), text = replaceConsecutiveSpacesByOneFunc(t), len = text.length;
+        const lowerText = text.toLowerCase(), upperText = text.toUpperCase();
         switch (wid) {
             case '': { } break;
             default: { };
@@ -116,6 +107,17 @@ const CallCMainControllerWidget = (props: propsType, ref: any) => {
         windowHeight.current = window.innerHeight;
     };
 
+    /* Unmount */
+    const unmountFunc = () => {
+        /* Prevent from first unmounting caused by "strictMode" */
+        mountCount.current += 1; if (mountCount.current === 1) return;
+
+        /* unmount logic */
+        mainRootControllerRef?.current?.deleteFromBroadcastDomainFunc({ index: broadcastIndex.current });
+        mainRootControllerRef?.current?.deleteRefIdFunc({ wid: wid });
+        (controllerRef?.current !== undefined) && controllerRef.current.deleteRefIdFunc({ wid: wid, refId: refId });
+    };
+
     /* Init */
     const initFunc = async () => {
         try {
@@ -126,21 +128,23 @@ const CallCMainControllerWidget = (props: propsType, ref: any) => {
 
             /* Fetch account from db */
             if (checkDb) {
-                const timestamp_ms = dataStoreControllerRef.current.customerAccountNewerTimestamp_ms.current;
+                const timestamp_ms = dataStoreRootControllerRef.current.customerAccountNewerTimestamp_ms.current;
 
                 /* - */
-                const req = await requestControllerRef.current.fetchCustomerAccountFunc({ state: 'new', timestamp_ms: timestamp_ms });
+                const req = await requestRootControllerRef.current.fetchCustomerAccountFunc({ state: 'new', timestamp_ms: timestamp_ms });
                 if (req.status !== _success_) throw new Error(JSON.stringify(req)); /* If error */
+
+                console.log('.... ::', req);
 
                 /* Render */
                 const customerData: any[] = req.data.customerData;
                 const total_customer_count = req.data.total_customer_count;
                 if (customerData.length > 0) {
                     /* Store data into dataStoreController */
-                    dataStoreControllerRef.current.setDataFunc({ type: 'customerAccount', data: customerData });
+                    dataStoreRootControllerRef.current.setDataFunc({ type: 'customerAccount', data: customerData });
 
                     /* Render */
-                    callCMenuCustomerFeedListRef.current.setDataFunc({ data: customerData, position: 'top' });
+                    callCMenuCustomerFeedListControllerRef.current.setDataFunc({ data: customerData, position: 'top' });
 
                 } else {
                     /* If no data found */
@@ -155,53 +159,47 @@ const CallCMainControllerWidget = (props: propsType, ref: any) => {
 
     /* Set menu search text */
     const setMenuSearchTextFunc = async (x: { text: string }) => {
+        clearTimeout(timer.current);
+        callCMenuCustomerSearchFeedListControllerRef.current.resetListFunc();
+
         const text = (x.text).toLowerCase(), len = text.length;
 
-        callCMenuCustomerSearchFeedListRef.current.displayMessageFunc({ text: '', position: 'top' });
-        searchString.current = text;
-        clearTimeout(timer.current);
+        callCMenuCustomerSearchFeedListControllerRef.current.displayMessageFunc({ text: '', position: 'top' });
+        len > 0 && callCMenuCustomerSearchFeedListControllerRef.current.showLoadingFunc({ show: true, position: 'top' });
 
-        if (len > 0) {
-
-            /* Show menu search container */
-            if (!isMenuSearchContainerVisible.current) {
-                isMenuSearchContainerVisible.current = true;
-                callCMenuMainContainerRef.current.showSearchMenuContainerFunc({ show: true });
-            }
-
-            /* show top loading */
-            callCMenuCustomerSearchFeedListRef.current.showLoadingFunc({ show: true, position: 'top' });
-
-            /* Filter data */
-            const data: any[] = dataStoreControllerRef.current.customerAccountData.current;
-            const res = data.filter((e: any, i: number) => ((e.company_name).toLowerCase()).includes(text) === true);
-            if (res.length > 0) {
-                const tab = (res.length > 1) ? res.sort((a: any, b: any) => sortStringFunc({ a: a.company_name, b: b.company_name })) : res;
-                callCMenuCustomerSearchFeedListRef.current.resetListFunc();
-                setTimeout(() => { callCMenuCustomerSearchFeedListRef.current.setDataFunc({ data: tab, position: 'top' }) }, 60);
-
-                /* Hide top loading */
-                timer.current = setTimeout(() => { callCMenuCustomerSearchFeedListRef.current.showLoadingFunc({ show: false, position: 'top' }) }, 300);
-            } else {
-                callCMenuCustomerSearchFeedListRef.current.resetListFunc();
-                setTimeout(() => {
-                    callCMenuCustomerSearchFeedListRef.current.showLoadingFunc({ show: false, position: 'top' });
-                    callCMenuCustomerSearchFeedListRef.current.displayMessageFunc({ text: traduction['t0040'], position: 'top' });
-                }, 60);
-                _dev_ && console.log('nothing found');
-            }
-
-        } else {
-            /* Hide menu search container */
-            if (isMenuSearchContainerVisible.current) {
-                isMenuSearchContainerVisible.current = false;
-                callCMenuMainContainerRef.current.showSearchMenuContainerFunc({ show: false });
-            }
-
-            /* - */
-            callCMenuCustomerSearchFeedListRef.current.displayMessageFunc({ text: '', position: 'top' });
-            callCMenuCustomerSearchFeedListRef.current.resetListFunc();
+        /* - */
+        if (len === 0) {
+            isMenuSearchContainerVisible.current = false;
+            callCMenuMainContainerRef.current.showSearchMenuContainerFunc({ show: false });
+            return;
         }
+
+        /* Show menu search container */
+        if (!isMenuSearchContainerVisible.current) {
+            isMenuSearchContainerVisible.current = true;
+            callCMenuMainContainerRef.current.showSearchMenuContainerFunc({ show: true });
+        }
+
+        /* - */
+        timer.current = setTimeout(() => {
+            searchString.current = text;
+            if (len > 0) {
+                /* Filter data */
+                const data: any[] = dataStoreRootControllerRef.current.customerAccountData.current;
+                const res = data.filter((e: any, i: number) => ((e.company_name).toLowerCase()).includes(text) === true);
+
+                if (res.length > 0) {
+                    const tab = (res.length > 1) ? res.sort((a: any, b: any) => sortStringFunc({ a: a.company_name, b: b.company_name })) : res;
+                    callCMenuCustomerSearchFeedListControllerRef.current.setDataFunc({ data: tab, position: 'top' });
+                    callCMenuCustomerSearchFeedListControllerRef.current.showLoadingFunc({ show: false, position: 'top' });
+
+                } else {
+                    callCMenuCustomerSearchFeedListControllerRef.current.showLoadingFunc({ show: false, position: 'top' });
+                    setTimeout(() => { callCMenuCustomerSearchFeedListControllerRef.current.displayMessageFunc({ text: traduction.current['t0040'], position: 'top' }); }, 320);
+                    _dev_ && console.log('nothing found');
+                }
+            }
+        }, 600);
     };
 
     /* Show page */
@@ -229,9 +227,10 @@ const CallCMainControllerWidget = (props: propsType, ref: any) => {
                     currentDashboardPageRef.current = target.current;
 
                 } else {
+                    console.log('ll ::', callCenterDashboardFeedListControllerRef, customerData);
                     /* render selected page */
                     dashBoardPageIdTab.current.push(customerId);
-                    callCenterDashboardFeedListRef.current.setDataFunc({ data: customerData, position: 'bottom' });
+                    callCenterDashboardFeedListControllerRef.current.setDataFunc({ data: customerData, position: 'bottom' });
 
                     /* hide current page */
                     (currentDashboardPageRef.current !== undefined) && currentDashboardPageRef.current.showFunc({ show: false });
@@ -255,8 +254,10 @@ const CallCMainControllerWidget = (props: propsType, ref: any) => {
 
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
+        refIdStore: refIdStore,
         searchString: searchString,
-        addWidgetRefFunc(x: any) { addWidgetRefFunc(x) },
+        addRefIdFunc(x: any) { addRefIdFunc(x) },
+        deleteRefIdFunc(x: any) { deleteRefIdFunc(x) },
         setTextValueFunc(x: any) { setTextValueFunc(x) },
         prepareMenuSearchingFunc() { prepareMenuSearchingFunc() },
         setMenuSearchTextFunc(x: any) { setMenuSearchTextFunc(x) },
@@ -269,23 +270,21 @@ const CallCMainControllerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
-
-            /* - */
-            setTimeout(() => { initFunc() }, 100);
+            broadcastIndex.current = mainRootControllerRef.current.addToBroadcastDomainFunc({ wid: wid, refId: refId });
+            mainRootControllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
+            controllerRef?.current?.addRefIdFunc({ wid: wid, refId: refId });
         }
+        return () => unmountFunc();
     }, []);
 
     /* On window size change */
     useEffect(() => {
-        window.addEventListener('resize', onWindowSizeChangeFunc);
-        return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+        // window.addEventListener('resize', onWindowSizeChangeFunc);
+        // return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
     });
 
 
     /* Return */
-
-
     return (<></>);
 };
 

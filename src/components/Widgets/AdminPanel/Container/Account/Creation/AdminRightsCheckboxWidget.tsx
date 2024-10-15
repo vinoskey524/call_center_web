@@ -16,72 +16,63 @@ type propsType = {
         wid: string,
         refId: refIdType,
         controllerRef: refIdType,
+        rootControllers: any,
         scaffoldWidth: number | string,
         optionHeight: number,
         mainOption: { id: string, title: string, isChecked: boolean, color?: string, fontSize?: number },
         subOptions?: Array<{ id: string, subId: string, title: string, isChecked: boolean, color?: string }>
     }
 };
-const AdminRightsCheckboxWidget = (props: propsType, ref: any) => {
+const AdminRightsCheckboxWidget = forwardRef((props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId = ref;
 
     const windowWidth = useRef(window.innerWidth);
-
     const windowHeight = useRef(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
-
+    const mountCount = useRef(0);
     const render = useRef(!false);
 
-    const lang = useRef(_defaultLanguage_);
-
-    const traduction = language[lang.current];
+    const broadcastIndex = useRef(-1);
 
     /* $data */
+    const $data = props.$data;
+    const wid = useRef($data.wid || generateIdFunc()).current;
+    const controllerRef = $data.controllerRef;
+    const rootControllers = $data.rootControllers || { current: undefined };
+    const scaffoldWidth = $data.scaffoldWidth;
+    const optionHeight = $data.optionHeight;
+    const mainOption = $data.mainOption;
+    const subOptions = $data.subOptions || [];
 
-    const data = props.$data;
-
-    const wid = data.wid;
-
-    const refId = data.refId;
-
-    const controllerRef = data.controllerRef;
-
-    const scaffoldWidth = data.scaffoldWidth;
-
-    const optionHeight = data.optionHeight;
-
-    const mainOption = data.mainOption;
-
-    const subOptions = data.subOptions || [];
+    /* Root controllers */
+    const mainRootControllerRef: refIdType = rootControllers?.current?.mainRootControllerRef;
+    const requestRootControllerRef: refIdType = rootControllers?.current?.requestRootControllerRef;
+    const dataStoreRootControllerRef: refIdType = rootControllers?.current?.dataStoreRootControllerRef;
 
     /* - */
 
-    const arcw_scaffold_id = useRef(generateIdFunc({ length: 8 })).current;
+    const traduction = useRef(dataStoreRootControllerRef.current.traduction.current);
 
+    const arcw_scaffold_id = useRef(generateIdFunc({ length: 8 })).current;
     const arcw_main_option_id = useRef(generateIdFunc({ length: 8 })).current;
 
     const sub_options_class_name = useRef(generateIdFunc({ length: 8 })).current;
 
     const admin_sub_option_id = (subOptions.length > 0) ? subOptions[subOptions.findIndex((e) => e.subId === 'admin')].id : '';
-
     const call_center_sub_option_id = (subOptions.length > 0) ? subOptions[subOptions.findIndex((e) => e.subId === 'callCenter')].id : '';
-
     const customer_sub_option_id = (subOptions.length > 0) ? subOptions[subOptions.findIndex((e) => e.subId === 'customer')].id : '';
 
     /* - */
 
     const isMainOptionChecked = useRef(false);
-
     const isAdminSubOptionChecked = useRef(false);
-
     const isCallCenterSubOptionChecked = useRef(false);
-
     const isCustomerSubOptionChecked = useRef(false);
 
     const checkboxSize = (optionHeight * 66) / 100;
@@ -94,13 +85,30 @@ const AdminRightsCheckboxWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => {
-        refresher.current = refresher.current ? false : true;
-        setRefresh(refresher.current);
-    };
+    const refreshFunc = () => { refresher.current = !refresher.current; setRefresh(refresher.current) };
+
+    /* Render */
+    const renderFunc = (x: { render: boolean }) => { render.current = x.render; refreshFunc() };
 
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
+    const setTraductionFunc = (x: { traduction: any }) => { traduction.current = x.traduction; refreshFunc() };
+
+    /* On window size change */
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
+
+    /* Unmount */
+    const unmountFunc = () => {
+        /* Prevent from first unmounting caused by "strictMode" */
+        mountCount.current += 1; if (mountCount.current === 1) return;
+
+        /* unmount logic */
+        mainRootControllerRef?.current?.deleteFromBroadcastDomainFunc({ index: broadcastIndex.current });
+        // mainRootControllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
+        controllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
+    };
 
     /* On click main option */
     const onClickMainOptionFunc = () => {
@@ -170,21 +178,22 @@ const AdminRightsCheckboxWidget = (props: propsType, ref: any) => {
     /* Make methods inside, callable directly from parent component via ref */
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
-        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        setTraductionFunc(x: any) { setTraductionFunc(x) },
         checkAllFunc(x: any) { checkAllFunc(x) }
-    }), [refresh]);
+    }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            broadcastIndex.current = mainRootControllerRef.current.addToBroadcastDomainFunc({ wid: wid, refId: refId });
+            (controllerRef.current !== undefined) && controllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
         }
+        return () => unmountFunc();
     }, []);
 
 
     /* Return */
-
 
     /* Create sub options */
     const subChildrenComponents = useRef<any>([]);
@@ -194,6 +203,7 @@ const AdminRightsCheckboxWidget = (props: propsType, ref: any) => {
             <div className={`arcw_title one_line`} style={{ color: subOptions[i].color ? subOptions[i].color : 'white', fontSize: mainOption.fontSize ? mainOption.fontSize : 14 }}>{subOptions[i].title}</div>
         </div>
     );
+
     /* - */
     const component = <>
         <div id={arcw_scaffold_id} className={`arcw_scaffold ${scaffoldWidth}`} style={{ height: optionHeight }}>
@@ -205,7 +215,6 @@ const AdminRightsCheckboxWidget = (props: propsType, ref: any) => {
             {subChildrenComponents.current}
         </div>
     </>;
-    return (render.current ? component : <></>);
-};
+    return (<>{render.current && component}</>);
 
-export default forwardRef(AdminRightsCheckboxWidget);
+}); export default (AdminRightsCheckboxWidget);

@@ -175,12 +175,11 @@ const ProductCreationWidget = (props: propsType, ref: any) => {
             <div id='prcrw_container'>
                 <div id='prcrw_header_title'>Nouveau produit</div>
                 <div id='prcrw_error_msg_container'>{traduction['t0016']}</div>
-                <LoadingWidget ref={loadingRef} $data={{ wid: 'loadingRef', refId: loadingRef, controllerRef: productCreationControllerRef }} />
+                <LoadingWidget ref={loadingRef} $data={{ wid: 'loadingRef', controllerRef: productCreationControllerRef }} />
 
                 <div id='prcrw_form_container'>
-                    <FormInputWidget /* Name */ ref={productNameFormInputRef} $data={{ wid: 'productNameFormInputRef', refId: productNameFormInputRef, controllerRef: productCreationControllerRef, title: 'Name', type: 'text', inputWidth: '65%' }} />
-
-                    <FormInputWidget /* Description */ ref={productDescFormInputRef} $data={{ wid: 'productDescFormInputRef', refId: productDescFormInputRef, controllerRef: productCreationControllerRef, title: 'Description', type: 'textarea', inputWidth: '65%', enableDescImport: true, desc: traduction['t0039'], immutableDesc: true, onDescBtnClickFunc: onDescBtnClickFunc }} />
+                    <FormInputWidget /* Name */ ref={productNameFormInputRef} $data={{ wid: 'productNameFormInputRef', refId: productNameFormInputRef, controllerRef: productCreationControllerRef, rootControllers: rootControllers, title: 'Name', type: 'text', inputWidth: '65%' }} />
+                    <FormInputWidget /* Description */ ref={productDescFormInputRef} $data={{ wid: 'productDescFormInputRef', refId: productDescFormInputRef, controllerRef: productCreationControllerRef, rootControllers: rootControllers, title: 'Description', type: 'textarea', inputWidth: '65%', enableDescImport: true, desc: traduction['t0039'], immutableDesc: true, onDescBtnClickFunc: onDescBtnClickFunc }} />
 
                     <div id='prcrw_btn_container'>
                         <button id='prcrw_create_btn' className='btn_opacity' style={{ marginLeft: '35%' }} onClick={createProductFunc}>Create</button>
@@ -190,7 +189,7 @@ const ProductCreationWidget = (props: propsType, ref: any) => {
 
             </div>
         </div>
-        <input /* File selector input */ id={file_selector_input_id} style={{ width: 0, height: 0, display: 'none' }} name='mojave' type='file' accept='.docx' onChange={onFileSelectedFunc} />
+        <input /* File selector input */ id={file_selector_input_id} style={{ width: 0, height: 0, display: 'none' }} name='mojave' type='file' accept='.pdf' onChange={onFileSelectedFunc} />
     </>;
     return (render.current ? component : <></>);
 };

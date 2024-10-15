@@ -10,8 +10,42 @@ import { refIdType } from '../../Tools/type';
 import { _defaultLanguage_ } from '../../Tools/constants';
 import import_icon from '../../Assets/png/import.png';
 import trash_0_icon from '../../Assets/png/trash_0.png';
-import word_icon from '../../Assets/png/word.png';
+import pdf_icon from '../../Assets/png/pdf.png';
 import html_icon from '../../Assets/png/html.png';
+
+/* Select option list widget */
+const SelectOptionListWidget = forwardRef((props: { $data: { initData: string[] } }, ref: any) => {
+    const refresher = useRef(false);
+    const [refresh, setRefresh] = useState(refresher.current);
+    const initData = props.$data.initData || [];
+    const feed = useRef<string[]>(['...', ...initData]);
+
+    /* Refresh component */
+    const refreshFunc = () => {
+        refresher.current = refresher.current ? false : true;
+        setRefresh(refresher.current);
+    };
+
+    /* set data & update list */
+    const setDataFunc = (x: { data: string[] }) => {
+        feed.current = ['...', ...x.data];
+        refreshFunc();
+    };
+
+    /* Make methods inside, callable directly from parent component via ref */
+    useImperativeHandle(ref, () => ({
+        refreshFunc() { refreshFunc() },
+        setDataFunc(x: any) { setDataFunc(x) }
+    }), []);
+
+    /* create options */
+    let tab = [];
+    for (let i = 0; i < feed.current.length; i++) tab.push(<option key={i} value={feed.current[i]}>{feed.current[i]}</option>);
+
+    /* return */
+    const component = <>{tab}</>;
+    return (component);
+});
 
 /* Widget */
 type propsType = {
@@ -20,6 +54,7 @@ type propsType = {
         wid: string,
         refId: refIdType,
         controllerRef: refIdType,
+        rootControllers: any,
         title: string,
         type: 'text' | 'textarea' | 'select' | 'email' | 'date' | 'password' | 'number',
         defaultValue?: string,
@@ -35,79 +70,67 @@ type propsType = {
         isOptional?: boolean
     }
 };
-const FormInputWidget = (props: propsType, ref: any) => {
+const FormInputWidget = forwardRef((props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId: refIdType = ref;
 
     const windowWidth = useRef(window.innerWidth);
-
     const windowHeight = useRef(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
-
+    const mountCount = useRef(0);
     const render = useRef(true);
 
-    const lang = useRef(_defaultLanguage_);
+    const emptyRef = useRef<any>(undefined);
+    const consumerRef = useRef<any>(undefined);
+    const prototypeControllerRef = useRef<any>(undefined);
 
-    const traduction = language[lang.current];
+    const broadcastIndex = useRef(-1);
 
     /* $data */
+    const $data = props.$data;
+    const wid = useRef($data.wid || generateIdFunc()).current;
+    const controllerRef = $data.controllerRef;
+    const rootControllers = $data.rootControllers || { current: undefined };
+    const title = $data.title;
+    const className = $data.className || '';
+    const inputType = $data.type;
+    const inputWidth = $data.inputWidth;
+    const defaultValue = $data.defaultValue || 'no default value';
+    const readonly = useRef($data.readonly || false);
+    const placeholder = $data.placeholder || '';
+    const marginBottom = $data.marginBottom || 8;
+    const enableDescImport = $data.enableDescImport || false;
+    const desc = $data.desc;
+    const immutableDesc = $data.immutableDesc || false;
+    const onDescBtnClickFunc = $data.onDescBtnClickFunc;
+    const isOptional = $data.isOptional || false;
 
-    const data = props.$data;
-
-    const wid = data.wid;
-
-    const refId = data.refId;
-
-    const controllerRef = data.controllerRef;
-
-    const title = data.title;
-
-    const className = data.className || '';
-
-    const inputType = data.type;
-
-    const inputWidth = data.inputWidth;
-
-    const defaultValue = data.defaultValue || 'no default value';
-
-    const readonly = useRef(data.readonly || false);
-
-    const placeholder = data.placeholder || '';
-
-    const marginBottom = data.marginBottom || 8;
-
-    const enableDescImport = data.enableDescImport || false;
-
-    const desc = data.desc;
-
-    const immutableDesc = data.immutableDesc || false;
-
-    const onDescBtnClickFunc = data.onDescBtnClickFunc;
-
-    const isOptional = data.isOptional || false;
+    /* Root controllers */
+    const mainRootControllerRef: refIdType = rootControllers?.current?.mainRootControllerRef;
+    const requestRootControllerRef: refIdType = rootControllers?.current?.requestRootControllerRef;
+    const dataStoreRootControllerRef: refIdType = rootControllers?.current?.dataStoreRootControllerRef;
 
     /* - */
 
+    const traduction = useRef(dataStoreRootControllerRef.current.traduction.current);
+
+    const selectOptionListRef = useRef<any>(undefined);
+
     const formiw_input_import_desc_id = useRef(generateIdFunc({ length: 8 })).current;
-
     const formiw_input_state_id = useRef(generateIdFunc({ length: 8 })).current;
-
     const formiw_input_box_id = useRef(generateIdFunc({ length: 8 })).current;
-
     const formiw_input_error_id = useRef(generateIdFunc({ length: 8 })).current;
 
     const descImportBtnIcon = useRef(import_icon);
-
-    const descImportBtnTitle = useRef(traduction['t0041']);
+    const descImportBtnTitle = useRef(traduction.current['t0041']);
 
     const previewDescFile = useRef(false);
-
-    const previewDescIcon = useRef(word_icon);
+    const previewDescIcon = useRef(pdf_icon);
 
     const descFileData = useRef<any>({});
 
@@ -121,7 +144,6 @@ const FormInputWidget = (props: propsType, ref: any) => {
     const defaultInputStateColor = inputStateColor[isOptional ? 'optional' : 'empty'];
 
     const isTextarea = inputType === 'textarea' ? true : false;
-
     const isSelect = inputType === 'select' ? true : false;
 
     const readonlyText = useRef(defaultValue);
@@ -130,18 +152,29 @@ const FormInputWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => {
-        refresher.current = refresher.current ? false : true;
-        setRefresh(refresher.current);
-    };
+    const refreshFunc = () => { refresher.current = !refresher.current; setRefresh(refresher.current) };
+
+    /* Render */
+    const renderFunc = (x: { render: boolean }) => { render.current = x.render; refreshFunc() };
 
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; refreshFunc() };
+    const setTraductionFunc = (x: { traduction: any }) => { traduction.current = x.traduction; refreshFunc() };
 
     /* On window size change */
     const onWindowSizeChangeFunc = () => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
+    };
+
+    /* Unmount */
+    const unmountFunc = () => {
+        /* Prevent from first unmounting caused by "strictMode" */
+        mountCount.current += 1; if (mountCount.current === 1) return;
+
+        /* unmount logic */
+        mainRootControllerRef?.current?.deleteFromBroadcastDomainFunc({ index: broadcastIndex.current });
+        mainRootControllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
+        (controllerRef?.current !== undefined) && controllerRef.current.deleteRefIdFunc({ wid: wid, refId: refId });
     };
 
     /* Set input state */
@@ -157,7 +190,7 @@ const FormInputWidget = (props: propsType, ref: any) => {
         const fileData = x.fileData;
         descFileData.current = fileData;
         previewDescFile.current = true;
-        previewDescIcon.current = (fileData.extension !== '.html') ? word_icon : html_icon;
+        previewDescIcon.current = (fileData.extension !== '.html') ? pdf_icon : html_icon;
         descImportBtnTitle.current = 'Remove';
 
         descImportBtnIcon.current = trash_0_icon;
@@ -191,15 +224,12 @@ const FormInputWidget = (props: propsType, ref: any) => {
         $(`#${formiw_input_error_id}`).text('');
     };
 
-    /* On select */
-    const onSelectFunc = () => { };
-
     /* Set text */
     const setTextFunc = (x: { text: string }) => { $(`#${formiw_input_box_id}`).val(x.text) };
 
     /* Clear text */
     const clearTextFunc = () => {
-        $(`#${formiw_input_box_id}`).val('');
+        (inputType === 'select') ? $(`#${formiw_input_box_id} option:first`).prop('selected', true) : $(`#${formiw_input_box_id}`).val('');
         refId.current.setInputStateFunc({ state: isOptional ? 'optional' : 'empty' });
     };
 
@@ -225,6 +255,9 @@ const FormInputWidget = (props: propsType, ref: any) => {
         refreshFunc();
     };
 
+    /* Update select option list */
+    const updateSelectOptionListFunc = (x: { data: string[] }) => { selectOptionListRef?.current?.setDataFunc({ data: x.data }) };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
@@ -232,7 +265,7 @@ const FormInputWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         descFileData: descFileData,
         refreshFunc() { refreshFunc() },
-        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        setTraductionFunc(x: any) { setTraductionFunc(x) },
         setInputStateFunc(x: any) { setInputStateFunc(x) },
         setDescriptionFileFunc(x: any) { setDescriptionFileFunc(x) },
         deleteDescFileFunc() { deleteDescFileFunc() },
@@ -240,18 +273,22 @@ const FormInputWidget = (props: propsType, ref: any) => {
         clearTextFunc() { clearTextFunc() },
         setErrorMsgFunc(x: any) { setErrorMsgFunc(x) },
         removeErrorMsgFunc() { removeErrorMsgFunc() },
-        updateReadonlyStateFunc(x: any) { updateReadonlyStateFunc(x) }
+        updateReadonlyStateFunc(x: any) { updateReadonlyStateFunc(x) },
+        updateSelectOptionListFunc(x: any) { updateSelectOptionListFunc(x) }
     }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            broadcastIndex.current = mainRootControllerRef.current.addToBroadcastDomainFunc({ wid: wid, refId: refId });
+            mainRootControllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
+            controllerRef?.current?.addRefIdFunc({ wid: wid, refId: refId });
 
             /* - */
             readonly.current && refId.current.setInputStateFunc({ state: 'correct' });
         }
+        return () => unmountFunc();
     }, []);
 
     /* On window size change */
@@ -277,15 +314,12 @@ const FormInputWidget = (props: propsType, ref: any) => {
 
                     {!readonly.current && <>
                         {!previewDescFile.current && <>
-                            {(!isTextarea && !isSelect) && <input /* Input */ id={formiw_input_box_id} className={`formiw_input_box ${className}`} placeholder={placeholder} onChange={onChangeFunc} />}
+                            {(!isTextarea && !isSelect) && <input /* Input */ id={formiw_input_box_id} className={`formiw_input_box ${className}`} type={inputType} autoCorrect='off' placeholder={placeholder} onChange={onChangeFunc} />}
 
-                            {isTextarea && <textarea /* Textarea */ id={formiw_input_box_id} className={`formiw_textarea_input_box ${className}`} placeholder={placeholder} onChange={onChangeFunc} readOnly={immutableDesc} />}
+                            {isTextarea && <textarea /* Textarea */ id={formiw_input_box_id} autoCorrect='off' className={`formiw_textarea_input_box ${className}`} placeholder={placeholder} onChange={onChangeFunc} readOnly={immutableDesc} />}
 
-                            {isSelect && <select /* Select */ id={formiw_input_box_id} className={`formiw_input_box ${className}`} onSelect={onSelectFunc}>
-                                <option>a</option>
-                                <option>b</option>
-                                <option>c</option>
-                                <option>d</option>
+                            {isSelect && <select /* Select */ id={formiw_input_box_id} className={`formiw_input_box ${className}`} onChange={onChangeFunc}>
+                                <SelectOptionListWidget ref={selectOptionListRef} $data={{ initData: ['...'] }} />
                             </select>}
                         </>}
 
@@ -316,6 +350,5 @@ const FormInputWidget = (props: propsType, ref: any) => {
         </div>
     </>;
     return (render.current ? component : <></>);
-};
 
-export default forwardRef(FormInputWidget);
+}); export default (FormInputWidget);

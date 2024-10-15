@@ -6,66 +6,46 @@ import $ from 'jquery';
 import './CustomerProductDashboardWidget.css';
 import { generateIdFunc } from '../../../Tools/methodForest';
 import { _success_, _error_, _requestFailed_ } from '../../../Tools/constants';
-import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
 import { _defaultLanguage_ } from '../../../Tools/constants';
 import ProductDashboardMainWidget from '../../ProductDashboard/ProductDashboardMainWidget';
 import search_icon from '../../../Assets/png/search_0.png';
 import add_icon from '../../../Assets/png/add.png';
 
-/* Widget */
-type propsType = {
-    $data: {
-        /** Every change made to "wid" affect controller */
-        wid: string,
-        refId: refIdType,
-        controllerRef: refIdType,
-        rootControllers: any
-    }
-};
-const CustomerProductDashboardWidget = (props: propsType, ref: any) => {
+
+/** Every change made to "wid" affect controller */
+type propsType = { $data: { wid: string, controllerRef: refIdType, rootControllers: any } };
+const CustomerProductDashboardWidget = forwardRef((props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId: refIdType = ref;
 
     const windowWidth = useRef(window.innerWidth);
-
     const windowHeight = useRef(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
-
+    const mountCount = useRef(0);
     const render = useRef(true);
 
-    const lang = useRef(_defaultLanguage_);
-
-    const traduction = language[lang.current];
+    const broadcastIndex = useRef(-1);
 
     /* $data */
-
-    const data = props.$data;
-
-    const wid = data.wid;
-
-    const refId = data.refId;
-
-    const controllerRef = data.controllerRef;
-
-    const rootControllers = data.rootControllers;
+    const $data = props.$data;
+    const wid = $data.wid;
+    const controllerRef = $data.controllerRef;
+    const rootControllers = $data.rootControllers;
 
     /* Root controllers */
-
-    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
-
-    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
-
-    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
+    const mainRootControllerRef: refIdType = rootControllers?.current?.mainRootControllerRef;
+    const requestRootControllerRef: refIdType = rootControllers?.current?.requestRootControllerRef;
+    const dataStoreRootControllerRef: refIdType = rootControllers?.current?.dataStoreRootControllerRef;
 
     /* - */
 
-    const emptyRef = useRef(undefined);
+    const traduction = useRef(dataStoreRootControllerRef.current.traduction.current);
 
     const productDashboardMainRef = useRef<any>(undefined);
 
@@ -77,27 +57,29 @@ const CustomerProductDashboardWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => {
-        refresher.current = !refresher.current;
-        setRefresh(refresher.current);
-    };
+    const refreshFunc = () => { refresher.current = !refresher.current; setRefresh(refresher.current) };
 
     /* Render */
-    const renderFunc = (x: { render: boolean }) => {
-        render.current = x.render;
-        refreshFunc();
-    };
+    const renderFunc = (x: { render: boolean }) => { render.current = x.render; refreshFunc() };
 
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => {
-        lang.current = x.lang;
-        refreshFunc();
-    };
+    const setTraductionFunc = (x: { traduction: any }) => { traduction.current = x.traduction; /* refreshFunc() */ };
 
     /* On window size change */
     const onWindowSizeChangeFunc = () => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
+    };
+
+    /* Unmount */
+    const unmountFunc = () => {
+        /* Prevent from first unmounting caused by "strictMode" */
+        mountCount.current += 1; if (mountCount.current === 1) return;
+
+        /* unmount logic */
+        mainRootControllerRef?.current?.deleteFromBroadcastDomainFunc({ index: broadcastIndex.current });
+        mainRootControllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
+        controllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
     };
 
     /* Show | Hide */
@@ -121,7 +103,7 @@ const CustomerProductDashboardWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        setTraductionFunc(x: any) { setTraductionFunc(x) },
         showFunc(x: any) { showFunc(x) },
     }), []);
 
@@ -129,8 +111,11 @@ const CustomerProductDashboardWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            broadcastIndex.current = mainRootControllerRef.current.addToBroadcastDomainFunc({ wid: wid, refId: refId });
+            mainRootControllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
+            controllerRef?.current?.addRefIdFunc({ wid: wid, refId: refId });
         }
+        return () => unmountFunc();
     }, []);
 
     /* On window size change */
@@ -141,7 +126,6 @@ const CustomerProductDashboardWidget = (props: propsType, ref: any) => {
 
 
     /* Return */
-
 
     const component = <>
         <div id={scaffold_id} className='ctmpdw_scaffold'>
@@ -163,10 +147,9 @@ const CustomerProductDashboardWidget = (props: propsType, ref: any) => {
                 </div>
             </div>
 
-            <ProductDashboardMainWidget ref={productDashboardMainRef} $data={{ wid: 'productDashboardMainRef', refId: productDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+            <ProductDashboardMainWidget ref={productDashboardMainRef} $data={{ wid: 'productDashboardMainRef', controllerRef: controllerRef, rootControllers: rootControllers }} />
         </div>
     </>;
     return (render.current ? component : <></>);
-};
 
-export default forwardRef(CustomerProductDashboardWidget);
+}); export default (CustomerProductDashboardWidget);

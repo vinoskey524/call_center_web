@@ -76,10 +76,15 @@ export const language: any = {
         't0034': 'Raison sociale',
         't0035': 'Raison social déjà existant.',
         't0036': 'Téléphone déjà existant.',
-        't0037': 'La taille du fichier choisi excède 3Mb.',
+        't0037': 'La taille du fichier choisi excède 5Mb.',
         't0038': `Nom déjà existant`,
-        't0039': 'Ajouter une description depuis un fichier word. (3 Mb max)',
+        't0039': 'Ajouter une description depuis un fichier pdf. (5 Mb max)',
         't0040': 'Aucun résultat trouvé',
-        't0041': 'Importer (.docx)',
+        't0041': 'Importer (.pdf)',
+        't0042': `Êtes-vous sûr de vouloir continuer ?`,
+        't0043': `Les objets créés s'afficheront ici.`,
+        't0044': `Objet déjà existant`,
+        't0045': `Agence déjà existant`,
+        't0046': `Les agences créées s'afficheront ici.`,
     }
 }

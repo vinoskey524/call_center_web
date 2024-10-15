@@ -47,7 +47,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 30px;
     margin-left: 0px;
 }
 
@@ -61,7 +60,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 30px;
 }
 
 /* Feed preview */
@@ -78,12 +76,12 @@
 .comdmw_feed_preview_wrapper {
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: visible;
+    overflow: visible;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 
@@ -476,4 +474,397 @@
     height: 40%;
     background-color: red;
     /* background-color: rgba(85, 89, 95, 0.6); */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ----------------------------------------------------- Preview ----------------------------------------------------- */
+
+.cfeprw_scaffold {
+    width: 85%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #23272F;
+}
+
+.cfeprw_spacer {
+    width: 1px;
+    height: calc(var(--dashboard_header_height) + 5px);
+}
+
+/* data */
+
+.cfeprw_data_table {
+    width: auto;
+    max-width: 92%;
+    height: auto;
+    overflow: visible;
+    position: relative;
+    transition: width 400ms ease-out;
+}
+
+.cfeprw_data_table th {
+    width: auto;
+    max-width: 200px;
+    height: auto;
+    overflow: hidden;
+    text-align: right;
+    vertical-align: top;
+    white-space: nowrap;
+    color: #007aff;
+    font-size: 13px;
+    /* animation: scroll_th 3s infinite linear; */
+}
+
+@keyframes scroll_th {
+    from {
+        transform: translateX(0%);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.cfeprw_data_table td {
+    width: auto;
+    height: auto;
+    position: relative;
+    overflow: hidden;
+
+    /* break word */
+    word-break: break-all;
+    overflow-wrap: break-word;
+
+    text-align: start;
+    vertical-align: top;
+    color: white;
+    font-size: 14px;
+    padding-left: 6px;
+}
+
+.cfeprw_blurable {
+    filter: blur(0px);
+    transition: filter 0.2s ease-in-out;
+}
+
+.cfeprw_blur_on {
+    filter: blur(20px);
+}
+
+.cfeprw_blur_off {
+    filter: blur(0px);
+}
+
+
+/* input & textarea */
+
+.cfeprw_data_input {
+    width: 250px;
+    height: 19px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    color: white;
+    font-size: 14px;
+    border-radius: 4px;
+    padding-inline: 4px;
+    background-color: #333A45;
+}
+
+.cfeprw_data_textarea {
+    width: 500px;
+    height: 350px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    color: white;
+    font-size: 13px;
+    border-radius: 4px;
+    padding-inline: 4px;
+    background-color: #333A45;
+}
+
+/* Action */
+
+.cfeprw_data_action_btn {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+}
+
+.cfeprw_data_done_btn {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: white;
+    background-color: #007aff;
+    padding-inline: 10px;
+    padding-block: 1px;
+    border-radius: 6px;
+}
+
+.cfeprw_data_cancel_btn {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #fa315a;
+    padding-inline: 10px;
+    padding-block: 1px;
+    border-radius: 6px;
+    margin-left: 4px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------ Feed ------------------------------------------------------ */
+
+.comfew_scaffold {
+    width: 96%;
+    height: auto;
+    min-height: 40px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 8px;
+    padding-inline: 4px;
+    padding-block: 10px;
+    margin-block: 3px;
+}
+
+.comfew_scaffold:hover {
+    background-color: rgba(149, 167, 189, 0.12);
+}
+
+/* Object */
+
+.comfew_object_container {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+
+.comfew_object_title {
+    flex: 1;
+    height: auto;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Actions */
+
+.comfew_action_container {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 100px;
+    padding-inline: 4px;
+    background-color: rgba(75, 77, 82, 0.8);
+    z-index: 5;
+}
+
+.comfew_action_separator {
+    width: 1px;
+    height: 60%;
+    background-color: rgba(158, 158, 158, 0.2);
+}
+
+.comfew_action_btn_wrapper {
+    width: 28px;
+    height: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.comfew_action_btn_icon {
+    width: 13.5px;
+    height: 13.5px;
+}
+
+/* - */
+
+.comfew_container {
+    width: auto;
+    height: auto;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-block: 0px;
+}
+
+.comfew_icon_container {
+    width: 20px;
+    height: auto;
+}
+
+.comfew_icon {
+    width: 12px;
+    height: 12px;
+}
+
+.comfew_agence_icon {
+    width: 13.5px;
+    height: 13.5px;
+    margin-left: -2px;
+}
+
+.comfew_Timestamp_icon {
+    width: 11px;
+    height: 11px;
+}
+
+.comfew_title {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    font-size: 13px;
+    color: #9e9e9e;
+}
+
+/* - */
+
+.comfew_bottom_line {
+    width: 30%;
+    height: 1px;
+    position: absolute;
+    bottom: 0px;
+    background-color: rgba(51, 58, 69, 0.9);
 }

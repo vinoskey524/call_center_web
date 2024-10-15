@@ -1,0 +1,215 @@
+.cuscdw_scaffold {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(-100%);
+    background-color: #23272F;
+    z-index: 0;
+}
+
+/* container */
+
+.cuscdw_container {
+    width: auto;
+    height: 100%;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    /* padding: 10px; */
+}
+
+.cuscdw_container_left {
+    width: auto;
+    height: 100%;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    padding-top: 60px;
+}
+
+.cuscdw_container_right {
+    flex: 1;
+    height: 100%;
+    overflow: visible;
+    display: flex;
+    flex-direction: row;
+}
+
+.cuscdw_feed_list_container {
+    width: 400px;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+/* input container */
+
+.cuscdw_input_conatainer {
+    width: 250px;
+    height: 100px;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2px;
+    padding-top: 60px;
+}
+
+.cuscdw_input_box {
+    width: 95%;
+    height: 30px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 10px;
+    padding-inline: 10px;
+    background-color: #3B3F47;
+    border: 1px solid #4B4E54;
+    color: #fff;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.cuscdw_error_container {
+    width: auto;
+    height: auto;
+    color: #fa315a;
+    font-size: 13px;
+}
+
+.cuscdw_input_submit_btn {
+    width: 95%;
+    height: 30px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    padding-inline: 10px;
+    background-color: #007aff;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: bold;
+    opacity: 0.5;
+    transition: opacity 0.2 ease-in-out;
+    margin-top: 8px;
+}
+
+.cuscdw_input_submit_btn:active {
+    opacity: 0.5 !important;
+}
+
+/* - */
+
+.cuscdw_lm_btn_container {
+    width: auto;
+    height: auto;
+    padding-inline: 15px;
+    padding-block: 2px;
+    font-size: 13px;
+    color: #fff;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.cuscdw_lm_btn_container:hover {
+    background-color: #4F586A;
+}
+
+/* - */
+
+.cuscdw_x_container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    /* background-color: red */
+}
+
+/* --------------------------------- Config widget --------------------------------- */
+
+.conf_feed_scaffold {
+    width: 99%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    padding-block: 5px;
+    padding-inline: 12px;
+    margin-bottom: 10px;
+    background-color: #313640;
+    border: 1px solid #3B3F47;
+}
+
+.conf_feed_title {
+    width: auto;
+    height: auto;
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.conf_feed_title2 {
+    width: auto;
+    height: auto;
+    color: #fff;
+    font-size: 14px;
+}
+
+.conf_feed_subtitle {
+    width: auto;
+    height: auto;
+    color: #007aff;
+    font-size: 12.5px;
+}
+
+.conf_feed_btn_container {
+    width: auto;
+    height: 40px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.conf_feed_circular_btn {
+    width: 36px;
+    height: 36px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    background-color: #3B3F47;
+    scale: 1;
+    transition: scale 0.4 ease-in-out;
+}
+
+.conf_feed_circular_btn:active {
+    scale: 0.85;
+}
+
+
+.conf_feed_circular_btn_icon {
+    width: 45%;
+    height: 45%;
+}

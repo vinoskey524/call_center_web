@@ -16,7 +16,7 @@ type propsType = {
         wid: string,
         refId: refIdType,
         controllerRef: refIdType,
-        rootControllers: any
+        rootControllers?: any
     }
 };
 const NotificationMainContainerWidget = (props: propsType, ref: any) => {
@@ -107,7 +107,7 @@ const NotificationMainContainerWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            (controllerRef.current !== undefined) && controllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
         }
     }, []);
 

@@ -1,5 +1,5 @@
 /* Standard packages */
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, memo, useEffect, forwardRef, useImperativeHandle } from 'react';
 import $ from 'jquery';
 
 /* Custom packages */
@@ -12,13 +12,12 @@ import call_center_icon from '../../Assets/png/call_center.png';
 import notification_icon from '../../Assets/png/notification.png';
 import off_icon from '../../Assets/png/off.png';
 import door_icon from '../../Assets/png/door.png';
-import { language } from '../../Tools/language';
 import { refIdType } from '../../Tools/type';
-import { _defaultLanguage_ } from '../../Tools/constants';
+import { _appEmitterType_, _defaultLanguage_, _dev_ } from '../../Tools/constants';
 
 import AdminMainMenuWidget from '../../Widgets/AdminPanel/Menu/AdminMainMenuWidget';
 import AdminMainContainerWidget from '../../Widgets/AdminPanel/Container/AdminMainContainerWidget';
-import AdminMainControllerWidget from '../../Widgets/AdminPanel/AdminMainControllerWidget';
+import AdminMainController from '../../Widgets/AdminPanel/AdminMainController';
 
 import CallCMenuMainContainerWidget from '../../Widgets/CallCenterPanel/Menu/CallCMenuMainContainerWidget';
 import CallCMainContainerWidget from '../../Widgets/CallCenterPanel/Container/CallCMainContainerWidget';
@@ -30,57 +29,46 @@ import CustomerMainControllerWidget from '../../Widgets/CustomerPanel/CustomerMa
 
 import NotificationMainContainerWidget from '../../Widgets/Notification/NotificationMainContainerWidget';
 import { generateIdFunc } from '../../Tools/methodForest';
+import logo_f from '../../Assets/png/logo_f.png';
 
-/* Widget */
-type propsType = {
-    $data: {
-        /** Every change made to "wid" affect controller */
-        wid: string,
-        refId: refIdType,
-        controllerRef?: refIdType,
-        rootControllers: any
-    }
-};
-const PanelMainPage = (props: propsType, ref: any) => {
+
+/** Every change made to "wid" affect controller */
+type propsType = { $data: { wid: string, controllerRef?: refIdType, rootControllers: any } };
+const PanelMainPage = forwardRef((props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId = ref;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const windowWidth = useRef(window.innerWidth);
+    const windowHeight = useRef(window.innerHeight);
 
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-
-    const [refresh, setRefresh] = useState(false);
+    const refresher = useRef(false);
+    const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
+    const render = useRef(true);
 
-    const render = useRef(false);
+    const emptyRef = useRef<any>(undefined);
+    const consumerRef = useRef<any>(undefined);
+    const controllerRef = useRef<any>(undefined);
 
-    const lang = useRef(_defaultLanguage_);
-
-    const traduction = language[lang.current];
+    const broadcastIndex = useRef(-1);
+    const mountCount = useRef(0);
 
     /* $data */
-
-    const data = props.$data;
-
-    const wid = data.wid;
-
-    const refId = data.refId;
-
-    const controllerRef = data.controllerRef;
-
-    const rootControllers = data.rootControllers;
+    const $data = props.$data;
+    const wid = useRef($data.wid || generateIdFunc()).current;
+    const parentControllerRef = $data.controllerRef;
+    const rootControllers = $data.rootControllers;
 
     /* Root controllers */
-
-    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
-
-    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
-
-    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
+    const mainRootControllerRef: refIdType = rootControllers?.current?.mainRootControllerRef;
+    const requestRootControllerRef: refIdType = rootControllers?.current?.requestRootControllerRef;
+    const dataStoreRootControllerRef: refIdType = rootControllers?.current?.dataStoreRootControllerRef;
 
     /* - */
+
+    const traduction = useRef(dataStoreRootControllerRef.current.traduction.current);
 
     const panelLogoRef = useRef(undefined);
     const panelHeaderRef = useRef(undefined);
@@ -102,57 +90,59 @@ const PanelMainPage = (props: propsType, ref: any) => {
 
     /* - */
 
-    const currentUserData = dataStoreControllerRef.current.currentUserData.current;
-
-    const accountType = currentUserData?.type;
+    const currentUserData = useRef(dataStoreRootControllerRef.current.currentUserData.current);
 
     const accountMenuData = {
-        container: { id: 'account', title: traduction['t0007'] },
+        container: { id: 'account', title: traduction.current['t0007'] },
         children: [
-            { id: 'admin_menu', iconUri: admin_icon, title: traduction['t0008'] },
-            { id: 'call_center_menu', iconUri: call_center_icon, title: traduction['t0009'] },
-            { id: 'customer_menu', iconUri: account_icon, title: traduction['t0010'] },
+            { id: 'admin_menu', iconUri: admin_icon, title: traduction.current['t0008'] },
+            { id: 'call_center_menu', iconUri: call_center_icon, title: traduction.current['t0009'] },
+            { id: 'customer_menu', iconUri: account_icon, title: traduction.current['t0010'] },
         ]
     };
 
     const pm_disconnect_container_id = useRef(generateIdFunc()).current;
+    const pm_disconnect_container_ref = useRef<any>(undefined);
 
     const pm_notification_container_id = useRef(generateIdFunc()).current;
 
     const isDisconnectionVisible = useRef(false);
-
     const isNotificationVisible = useRef(false);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => { setRefresh(!refresh) };
+    const refreshFunc = () => { refresher.current = !refresher.current; setRefresh(refresher.current) };
 
     /* Render */
     const renderFunc = (x: { render: boolean }) => {
+        currentUserData.current = dataStoreRootControllerRef.current.currentUserData.current;
         render.current = x.render;
         refreshFunc();
     };
 
-    /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
+    /* Set traduction */
+    const setTraductionFunc = (x: { traduction: any }) => { traduction.current = x.traduction; refreshFunc() };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
-
-    /* Init user data */
-    const initUSerData = () => {
-        currentUserData.current = (dataStoreControllerRef.current).currentUserData.current;
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
     };
 
     /* Display Disconnection */
     const displayDisconnectionFunc = () => {
         const current = isDisconnectionVisible.current;
+
         current && $(`#${pm_disconnect_container_id}`).css({ scale: 1.00001 });
         $(`#${pm_disconnect_container_id}`).animate(current ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }, 200, () => { current && $(`#${pm_disconnect_container_id}`).css({ 'display': 'none' }) });
+
         !current && $(`#${pm_disconnect_container_id}`).css({ 'display': 'flex' });
-        isDisconnectionVisible.current = !isDisconnectionVisible.current; /* update | Must be last line */
+
+        /* update | Must be last lines */
+        (!current) && $(`#${pm_disconnect_container_id}`).trigger('focus');
+        isDisconnectionVisible.current = !isDisconnectionVisible.current;
     };
 
     /* Display notification */
@@ -164,36 +154,54 @@ const PanelMainPage = (props: propsType, ref: any) => {
         isNotificationVisible.current = !isNotificationVisible.current; /* update | Must be last line */
     };
 
+    /* Unmount */
+    const unmountFunc = () => {
+        /* Prevent from first unmounting caused by "strictMode" */
+        mountCount.current += 1; if (mountCount.current === 1) return;
+
+        /* unmount logic */
+        mainRootControllerRef?.current?.deleteFromBroadcastDomainFunc({ index: broadcastIndex.current });
+        mainRootControllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
+    };
+
+    /* On disconnect modal blur */
+    const onDisconnectModalBlur = () => { console.log('oooo') };
+
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
-    /* Make methods inside, callable directly from parent component via ref */
+    /* Imperatif handler */
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
-    }), [refresh]);
+        setTraductionFunc(x: any) { setTraductionFunc(x) }
+    }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            broadcastIndex.current = mainRootControllerRef.current.addToBroadcastDomainFunc({ wid: wid, refId: refId });
+            mainRootControllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
         }
+        return () => unmountFunc();
     }, []);
 
     /* On window size change */
     useEffect(() => {
-        window.addEventListener('resize', onWindowSizeChangeFunc);
-        return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+        // window.addEventListener('resize', onWindowSizeChangeFunc);
+        // return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
     }, []);
 
 
     /* Return */
 
-
     const component = <>
-        {currentUserData !== undefined && <>
+        {currentUserData.current !== undefined && <>
+            {currentUserData.current.type === 'main_admin' && <AdminMainController ref={adminMainControllerRef} $data={{ wid: 'adminMainControllerRef', rootControllers: rootControllers }} />}
+            {currentUserData.current.type === 'call_center' && <CallCMainControllerWidget ref={callCMainControllerRef} $data={{ wid: 'callCMainControllerRef', rootControllers: rootControllers }} />}
+            {currentUserData.current.type === 'customer_admin' && <CustomerMainControllerWidget ref={customerMainControllerRef} $data={{ wid: 'customerMainControllerRef', rootControllers: rootControllers }} />}
+
             <div id='pm_scaffold'>
                 <div id='pm_menu'>
                     <div id='pm_logo_container' className='prevent_select menu_glass'>
@@ -201,19 +209,22 @@ const PanelMainPage = (props: propsType, ref: any) => {
                         <p id='pm_app_name'>SGC</p>
                     </div>
 
-                    {accountType === 'main_admin' && <AdminMainMenuWidget ref={adminMainMenuRef} $data={{ wid: 'adminMainMenuRef', refId: adminMainMenuRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />}
-                    {accountType === 'call_center' && <CallCMenuMainContainerWidget ref={callCMenuMainContainerRef} $data={{ wid: 'callCMenuMainContainerRef', refId: callCMenuMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
-                    {accountType === 'customer_admin' && <CustomerMenuMainWidget ref={customerMenuMainRef} $data={{ wid: 'customerMenuMainRef', refId: customerMenuMainRef, controllerRef: customerMainControllerRef, rootControllers: rootControllers }} />}
+                    {currentUserData.current.type === 'main_admin' && <AdminMainMenuWidget ref={adminMainMenuRef} $data={{ wid: 'adminMainMenuRef', controllerRef: adminMainControllerRef, rootControllers: rootControllers, menuData: accountMenuData }} />}
+                    {currentUserData.current.type === 'call_center' && <CallCMenuMainContainerWidget ref={callCMenuMainContainerRef} $data={{ wid: 'callCMenuMainContainerRef', controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
+                    {currentUserData.current.type === 'customer_admin' && <CustomerMenuMainWidget ref={customerMenuMainRef} $data={{ wid: 'customerMenuMainRef', controllerRef: customerMainControllerRef, rootControllers: rootControllers }} />}
 
                     <div id='pm_footer'>
                         <div id='pm_footer_backdrop' className='menu_glass' />
                         <div id='pm_footer_wrapper'>
                             <div className='pm_footer_top'>
+
+                                <div className='pm_footer_username ellipsis_line_2'>{currentUserData.current.fullname}</div>
+
                                 <div className='pm_footer_btn_container'>
                                     <div className='pm_footer_btn_wrapper btn_opacity' title='Deconnexion' onClick={displayDisconnectionFunc}>
                                         <img className='pm_footer_btn_icon' src={off_icon} />
                                     </div>
-                                    <div id={pm_disconnect_container_id} className='pm_disconnect_container floating_container_glass'>
+                                    <div ref={pm_disconnect_container_ref} tabIndex={0} id={pm_disconnect_container_id} className='pm_disconnect_container floating_container_glass' onBlur={displayDisconnectionFunc}>
                                         <img className='pm_disconnect_logo' src={door_icon} />
                                         <div className='pm_disconnect_msg'>Etes vous sûr de vouloir continuer ?</div>
                                         <div className='pm_disconnect_yes btn_opacity'>Yes</div>
@@ -221,16 +232,15 @@ const PanelMainPage = (props: propsType, ref: any) => {
                                     </div>
                                 </div>
 
-                                <div className='pm_footer_username ellipsis_line_2'>{currentUserData.fullname}</div>
 
-                                <div className='pm_footer_btn_container'>
+                                {/* <div className='pm_footer_btn_container'>
                                     <div className='pm_footer_btn_wrapper btn_opacity' title='Notification' onClick={displayNotificationFunc}>
                                         <img className='pm_footer_btn_icon' src={notification_icon} />
                                     </div>
                                     <div id={pm_notification_container_id} className='pm_notification_container'>
-                                        <NotificationMainContainerWidget ref={notificationMainContainerRef} $data={{ wid: 'notificationMainContainerRef', refId: notificationMainContainerRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                                         <NotificationMainContainerWidget ref={notificationMainContainerRef} $data={{ wid: 'notificationMainContainerRef', refId: notificationMainContainerRef, controllerRef: mainRootControllerRef }} />
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                             <div className='pm_footer_separator' />
                             <div className='pm_footer_bottom'>© 2024 Call center. All rights reserved.</div>
@@ -239,18 +249,47 @@ const PanelMainPage = (props: propsType, ref: any) => {
                 </div>
 
                 <div id='pm_container'>
-                    {accountType === 'main_admin' && <AdminMainContainerWidget ref={adminMainContainerRef} $data={{ wid: 'adminMainContainerRef', refId: adminMainContainerRef, controllerRef: adminMainControllerRef, rootControllers: rootControllers }} />}
-                    {accountType === 'call_center' && <CallCMainContainerWidget ref={callCMainContainerRef} $data={{ wid: 'callCMainContainerRef', refId: callCMainContainerRef, controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
-                    {accountType === 'customer_admin' && <CustomerMainContainerWidget ref={customerMainContainerRef} $data={{ wid: 'customerMainContainerRef', refId: customerMainContainerRef, controllerRef: customerMainControllerRef, rootControllers: rootControllers }} />}
+                    {currentUserData.current.type === 'main_admin' && <AdminMainContainerWidget ref={adminMainContainerRef} $data={{ wid: 'adminMainContainerRef', controllerRef: adminMainControllerRef, rootControllers: rootControllers }} />}
+                    {currentUserData.current.type === 'call_center' && <CallCMainContainerWidget ref={callCMainContainerRef} $data={{ wid: 'callCMainContainerRef', controllerRef: callCMainControllerRef, rootControllers: rootControllers }} />}
+                    {currentUserData.current.type === 'customer_admin' && <CustomerMainContainerWidget ref={customerMainContainerRef} $data={{ wid: 'customerMainContainerRef', controllerRef: customerMainControllerRef, rootControllers: rootControllers }} />}
                 </div>
             </div>
-
-            {accountType === 'main_admin' && <AdminMainControllerWidget ref={adminMainControllerRef} $data={{ wid: 'adminMainControllerRef', refId: adminMainControllerRef, rootControllers: rootControllers }} />}
-            {accountType === 'call_center' && <CallCMainControllerWidget ref={callCMainControllerRef} $data={{ wid: 'callCMainControllerRef', refId: callCMainControllerRef, rootControllers: rootControllers }} />}
-            {accountType === 'customer_admin' && <CustomerMainControllerWidget ref={customerMainControllerRef} $data={{ wid: 'customerMainControllerRef', refId: customerMainControllerRef, rootControllers: rootControllers }} />}
         </>}
     </>;
-    return (render.current ? component : <></>);
-};
+    return (<>{render.current && component}</>);
 
-export default forwardRef(PanelMainPage);
+}); export default memo(PanelMainPage);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ----------------------------------------------------- Direct Children Components ----------------------------------------------------- */
+

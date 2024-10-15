@@ -1,3 +1,5 @@
+// @refresh reset
+
 /* Standard packages */
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import $ from 'jquery';
@@ -11,6 +13,8 @@ import { _defaultLanguage_ } from '../../Tools/constants';
 import ComplaintCreationControllerWidget from './ComplaintCreationControllerWidget';
 import FormInputWidget from '../Others/FormInputWidget';
 import ComplaintCreationFileWidget from './ComplaintCreationFileWidget';
+import FeedListWidget from '../FeedList/FeedListWidget';
+import LoadingWidget from '../Others/LoadingWidget';
 
 /* Widget */
 type propsType = {
@@ -66,23 +70,34 @@ const ComplaintCreationWidget = (props: propsType, ref: any) => {
 
     const emptyRef = useRef(undefined);
 
-    const complaintNameFormInputRef = useRef(undefined);
+    const complaintNameInputRef = useRef<any>(undefined);
 
-    const complaintPhoneFormInputRef = useRef(undefined);
+    const complaintPhoneInputRef = useRef<any>(undefined);
 
-    const complaintLocationFormInputRef = useRef(undefined);
+    const complaintLocationInputRef = useRef<any>(undefined);
 
-    const complaintObjectFormInputRef = useRef(undefined);
+    const complaintObjectInputRef = useRef<any>(undefined);
 
-    const complaintProductFormInputRef = useRef(undefined);
+    const complaintProductInputRef = useRef<any>(undefined);
 
-    const complaintAgenceFormInputRef = useRef(undefined);
+    const complaintAgencyInputRef = useRef<any>(undefined);
 
-    const complaintDescFormInputRef = useRef(undefined);
+    const complaintDescInputRef = useRef<any>(undefined);
 
-    const complaintCreationControllerRef = useRef(undefined);
+    const complaintCreationControllerRef = useRef<any>(undefined);
+
+    const searchFeedListRef = useRef<any>(undefined);
+
+    /* - */
 
     const file_selector_input_id = useRef(generateIdFunc()).current;
+
+    const inputWidth = '68%';
+
+    const objectTab = useRef<string[]>([]);
+    const agencyTab = useRef<string[]>([]);
+
+    const complaintTopLoadingRef = useRef<any>(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -112,22 +127,52 @@ const ComplaintCreationWidget = (props: propsType, ref: any) => {
     };
 
     /* Show */
-    const showFunc = (x: { show: boolean }) => { animateModalFunc({ scaffold: '#comcrw_scaffold', container: '#comcrw_container', show: x.show }) };
+    const showFunc = (x: { show: boolean, currentControllerRef?: refIdType, customerId?: string, customerDomain?: string }) => {
+        if (x.show) {
+            const objectData: any[] = dataStoreControllerRef.current.customerComplaintObjectNameTab.current;
+            const productData: any[] = dataStoreControllerRef.current.customerProductNameTab.current;
+            const agencyData: any[] = dataStoreControllerRef.current.customerAgencyNameTab.current;
+
+            complaintObjectInputRef.current.updateSelectOptionListFunc({ data: objectData });
+            complaintProductInputRef.current.updateSelectOptionListFunc({ data: productData });
+            complaintAgencyInputRef.current.updateSelectOptionListFunc({ data: agencyData });
+
+            complaintCreationControllerRef.current.setCustomerDataFunc({ currentControllerRef: x.currentControllerRef, customerId: x.customerId, customerDomain: x.customerDomain });
+        }
+
+        animateModalFunc({ scaffold: '#comcrw_scaffold', container: '#comcrw_container', show: x.show });
+    };
 
     /* On Create */
-    const onCreateFunc = () => { };
+    const onCreateFunc = () => { complaintCreationControllerRef.current.createComplaintFunc() };
 
     /* On cancel */
-    const onCancelFunc = () => { refId.current.showFunc({ show: false }) };
+    const onCancelFunc = () => {
+        refId.current.showFunc({ show: false });
+        complaintCreationControllerRef.current.resetFormFunc();
+    };
 
     /* Add files */
-    const onAddFilesFunc = () => { };
+    const onAddFilesFunc = () => {
+
+    };
 
     /* On file select */
     const onFileSelectedFunc = () => { };
 
+    /* On search cancel */
+    const onSearchCancelFunc = () => {
+        // const $main_part_id = $('#comcrw_main_part');
+        // const $search_part_id = $('#comcrw_search_part');
 
-    /* ------------------------------------ jQuery ------------------------------------- */
+        // setTimeout(() => {
+        //     $search_part_id.removeClass('comcrw_search_part_show');
+        //     $search_part_id.addClass('comcrw_search_part_hide');
+        // }, 60);
+
+        // $main_part_id.removeClass('comcrw_main_part_hide');
+        // $main_part_id.addClass('comcrw_main_part_show');
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -160,38 +205,58 @@ const ComplaintCreationWidget = (props: propsType, ref: any) => {
 
 
     const component = <>
+        <ComplaintCreationControllerWidget ref={complaintCreationControllerRef} $data={{ wid: 'complaintCreationControllerRef', refId: complaintCreationControllerRef, rootControllers: rootControllers }} />
         <div id='comcrw_scaffold'>
             <div id='comcrw_container'>
-                <div id='comcrw_header_title'>Nouvelle plainte</div>
-                <div id='comcrw_form_container'>
-                    <div className='comcrw_session_title'>Informations client</div>
-                    <FormInputWidget /* Name */ ref={complaintNameFormInputRef} $data={{ wid: 'complaintNameFormInputRef', refId: complaintNameFormInputRef, controllerRef: complaintCreationControllerRef, title: 'Name', type: 'text' }} />
-                    <FormInputWidget /* Phone */ ref={complaintPhoneFormInputRef} $data={{ wid: 'complaintPhoneFormInputRef', refId: complaintPhoneFormInputRef, controllerRef: complaintCreationControllerRef, title: 'Phone', type: 'number' }} />
-                    <FormInputWidget /* Location */ ref={complaintLocationFormInputRef} $data={{ wid: 'complaintLocationFormInputRef', refId: complaintLocationFormInputRef, controllerRef: complaintCreationControllerRef, title: 'Location', type: 'text', isOptional: true }} />
+                <div /* main part */ id='comcrw_main_part' className='comcrw_main_part_show'>
+                    <div id='comcrw_header_title'>Nouvelle plainte</div>
 
-                    <div className='comcrw_session_title'>Informations avancées</div>
-                    <FormInputWidget /* Object */ ref={complaintObjectFormInputRef} $data={{ wid: 'complaintObjectFormInputRef', refId: complaintObjectFormInputRef, controllerRef: complaintCreationControllerRef, title: 'Object', type: 'select' }} />
-                    <FormInputWidget /* Product */ ref={complaintProductFormInputRef} $data={{ wid: 'complaintProductFormInputRef', refId: complaintProductFormInputRef, controllerRef: complaintCreationControllerRef, title: 'Product', type: 'select' }} />
-                    <FormInputWidget /* Agence */ ref={complaintAgenceFormInputRef} $data={{ wid: 'complaintAgenceFormInputRef', refId: complaintAgenceFormInputRef, controllerRef: complaintCreationControllerRef, title: 'Agence', type: 'select' }} />
-                    <FormInputWidget /* Description */ ref={complaintDescFormInputRef} $data={{ wid: 'complaintDescFormInputRef', refId: complaintDescFormInputRef, controllerRef: complaintCreationControllerRef, title: 'Description', type: 'textarea' }} />
+                    <LoadingWidget ref={complaintTopLoadingRef} $data={{ wid: 'complaintTopLoadingRef', controllerRef: complaintCreationControllerRef }} />
 
-                    <div className='comcrw_files_container'>
-                        <div id='comcrw_files_title'>Pieces jointes</div>
-                        <ComplaintCreationFileWidget ref={emptyRef} $data={{ wid: 'emptyRef', refId: emptyRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers }} />
-                        <ComplaintCreationFileWidget ref={emptyRef} $data={{ wid: 'emptyRef', refId: emptyRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers }} />
-                    </div>
+                    <div id='comcrw_form_container'>
+                        <div className='comcrw_session_title'>Informations client</div>
+                        <FormInputWidget /* Name */ ref={complaintNameInputRef} $data={{ wid: 'complaintNameInputRef', refId: complaintNameInputRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers, title: 'Name', type: 'text', inputWidth: inputWidth }} />
+                        <FormInputWidget /* Phone */ ref={complaintPhoneInputRef} $data={{ wid: 'complaintPhoneInputRef', refId: complaintPhoneInputRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers, title: 'Phone', type: 'number', inputWidth: inputWidth }} />
+                        <FormInputWidget /* Location */ ref={complaintLocationInputRef} $data={{ wid: 'complaintLocationInputRef', refId: complaintLocationInputRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers, title: 'Location', type: 'text', placeholder: 'Ex: Cotonou, Benin (Optionel)', inputWidth: inputWidth, isOptional: true }} />
 
-                    <div id='comcrw_btn_container'>
-                        <button id='comcrw_create_btn' className='btn_opacity' onClick={onCreateFunc}>Create</button>
-                        <button id='comcrw_cancel_btn' className='btn_opacity' onClick={onCancelFunc}>Cancel</button>
-                        <div style={{ flex: 1 }} />
-                        <button id='comcrw_add_files_btn' className='btn_opacity' onClick={onAddFilesFunc}>Fichier</button>
+                        <div className='comcrw_session_title'>Informations avancées</div>
+                        <FormInputWidget /* Object */ ref={complaintObjectInputRef} $data={{ wid: 'complaintObjectInputRef', refId: complaintObjectInputRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers, title: 'Object', type: 'select', inputWidth: inputWidth }} />
+                        <FormInputWidget /* Product */ ref={complaintProductInputRef} $data={{ wid: 'complaintProductInputRef', refId: complaintProductInputRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers, title: 'Product', type: 'select', inputWidth: inputWidth }} />
+                        <FormInputWidget /* Agence */ ref={complaintAgencyInputRef} $data={{ wid: 'complaintAgencyInputRef', refId: complaintAgencyInputRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers, title: 'Agence', type: 'select', inputWidth: inputWidth }} />
+                        <FormInputWidget /* Description */ ref={complaintDescInputRef} $data={{ wid: 'complaintDescInputRef', refId: complaintDescInputRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers, title: 'Description', type: 'textarea', inputWidth: inputWidth }} />
+
+                        <div className='comcrw_files_container'>
+                            <div id='comcrw_files_title'>Pieces jointes (0/3)</div>
+                            {/* <ComplaintCreationFileWidget ref={emptyRef} $data={{ wid: 'emptyRef', refId: emptyRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers }} />
+                            <ComplaintCreationFileWidget ref={emptyRef} $data={{ wid: 'emptyRef', refId: emptyRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers }} /> */}
+                        </div>
+
+                        <div id='comcrw_btn_container'>
+                            <button id='comcrw_create_btn' className='comcrw_form_btn btn_opacity' onClick={onCreateFunc}>Create</button>
+                            <button id='comcrw_cancel_btn' className='comcrw_form_btn btn_opacity' onClick={onCancelFunc}>Cancel</button>
+                            <div style={{ flex: 1 }} />
+                            <button id='comcrw_add_files_btn' className='comcrw_form_btn btn_opacity' onClick={onAddFilesFunc}>Fichier</button>
+                        </div>
                     </div>
                 </div>
+
+                {/* <div  id='comcrw_search_part' className='comcrw_search_part_hide'>
+                    <div id='comcrw_search_wrapper'>
+                        <div id='comcrw_search_input_container'>
+                            <input id='comcrw_search_input_box' />
+                            <div id='comcrw_search_input_cancel_btn' className='btn_opacity' onClick={onSearchCancelFunc}>Annuler</div>
+                        </div>
+                        <div id='comcrw_search_list_contaier'>
+                            <FeedListWidget ref={searchFeedListRef} $data={{
+                                wid: 'searchFeedListRef', refId: searchFeedListRef, controllerRef: complaintCreationControllerRef, rootControllers: rootControllers,
+                                widget: ({ _key, _refId, _data }: any) => { return <></> }
+                            }} />
+                        </div>
+                    </div>
+                </div> */}
             </div>
         </div>
-        <input /* File selector input */ id={file_selector_input_id} style={{ width: 0, height: 0, display: 'none' }} type='file' accept='.doc,.docx,.pdf,.mp3' onChange={onFileSelectedFunc} />
-        <ComplaintCreationControllerWidget ref={complaintCreationControllerRef} $data={{ wid: 'complaintCreationControllerRef', refId: complaintCreationControllerRef, rootControllers: rootControllers }} />
+        <input /* File selector input */ id={file_selector_input_id} style={{ width: 0, height: 0, display: 'none' }} type='file' accept='.mp3' onChange={onFileSelectedFunc} />
     </>;
     return (render.current ? component : <></>);
 };

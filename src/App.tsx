@@ -1,12 +1,21 @@
+/* Standard packages */
 import { useRef } from "react";
-import MainPage from "./components/Pages/MainPage";
+import '@mantine/core/styles.css';
+import { createTheme, MantineProvider } from '@mantine/core';
 
-// import './components/Pages/MainPage.css';
+/* custom packages */
+import MainPage from "./components/Pages/MainPage";
+import { AppProvider } from "./components/Provider/AppProvider";
 
 /* App */
 function App() {
-  const mainPageRef = useRef(undefined);
-  return (<MainPage ref={mainPageRef} $data={{ wid: 'mainPageRef', refId: mainPageRef }} />)
-}
-
+  const mainPageRef = useRef<any>(undefined);
+  return (
+    <MantineProvider>
+      <AppProvider>
+        <MainPage ref={mainPageRef} $data={{ wid: 'mainPageRef' }} />
+      </AppProvider>
+    </MantineProvider>
+  );
+};
 export default App;

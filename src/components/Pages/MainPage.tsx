@@ -1,72 +1,59 @@
+// @refresh reset
+
 /* Standard packages */
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
+import $ from 'jquery';
 
 /* Custom packages */
 import './Base.css';
 import './MainPage.css';
 import { refIdType } from '../Tools/type';
-import MainControllerWidget from '../Widgets/MainControllerWidget';
-import RequestControllerWidget from '../Widgets/RequestControllerWidget';
-import DataStoreControllerWidget from '../Widgets/DataStoreControllerWidget';
+
+import MainRootController from '../RootControllers/MainRootController';
+import RequestRootController from '../RootControllers/RequestRootController';
+import DataStoreRootController from '../RootControllers/DataStoreRootController';
+
 import AuthLoginPage from './Auth/AuthLoginPage';
 import PanelMainPage from './Panel/PanelMainPage';
 import ProductCreationWidget from '../Widgets/ProductCreation/ProductCreationWidget';
 import ComplaintCreationWidget from '../Widgets/ComplaintCreation/ComplaintCreationWidget';
 import AccountCreationWidget from '../Widgets/AdminPanel/Container/Account/Creation/AccountCreationWidget';
+import { generateIdFunc } from '../Tools/methodForest';
 
-/* Widget */
-type propsType = {
-    $data: {
-        /** Every change made to "wid" affect controller */
-        wid: string,
-        refId: refIdType,
-    }
-};
-const MainPage = (props: propsType, ref: any) => {
+
+/** Every change made to "wid" affect controller */
+type propsType = { $data: { wid: string } };
+const MainPage = forwardRef((props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId: refIdType = ref;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const windowWidth = useRef(window.innerWidth);
+    const windowHeight = useRef(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
-
+    const mountCount = useRef(0);
     const render = useRef(false);
 
     /* $data */
-
-    const data = props.$data;
-
-    const wid = data.wid;
-
-    const refId = data.refId;
+    const $data = props.$data;
+    const wid = $data.wid;
 
     /* - */
 
-    const mainControllerRef = useRef(undefined);
-    const requestControllerRef = useRef(undefined);
-    const dataStoreControllerRef = useRef(undefined);
+    const mainRootControllerRef = useRef<any>(undefined);
+    const requestRootControllerRef = useRef<any>(undefined);
+    const dataStoreRootControllerRef = useRef<any>(undefined);
+    const rootControllers = useRef({ mainRootControllerRef: mainRootControllerRef, requestRootControllerRef: requestRootControllerRef, dataStoreRootControllerRef: dataStoreRootControllerRef });
 
-    const rootControllers = {
-        mainControllerRef: mainControllerRef,
-        requestControllerRef: requestControllerRef,
-        dataStoreControllerRef: dataStoreControllerRef
-    };
-
-    const authLoginRef = useRef(undefined);
-
-    const panelMainRef = useRef(undefined);
-
-    const accountCreationRef = useRef(undefined);
-
-    const productCreationMainRef = useRef(undefined);
-
-    const complaintCreationRef = useRef(undefined);
+    const authLoginRef = useRef<any>(undefined);
+    const panelMainRef = useRef<any>(undefined);
+    const accountCreationRef = useRef<any>(undefined);
+    const productCreationMainRef = useRef<any>(undefined);
+    const complaintCreationRef = useRef<any>(undefined);
 
 
     /* ------------------------------------ Methods ------------------------------------- */
@@ -83,8 +70,17 @@ const MainPage = (props: propsType, ref: any) => {
         refreshFunc();
     };
 
+    /* Set language */
+    const setLanguageFunc = (x: { traduction: any }) => {
+        // traduction.current = x.traduction;
+        // setRefresh(!refresh);
+    };
+
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
@@ -104,31 +100,29 @@ const MainPage = (props: propsType, ref: any) => {
 
     /* On window size change */
     useEffect(() => {
-        window.addEventListener('resize', onWindowSizeChangeFunc);
-        return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+        // window.addEventListener('resize', onWindowSizeChangeFunc);
+        // return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
     });
 
 
     /* Return */
 
-
     const component = <>
+        <MainRootController ref={mainRootControllerRef} $data={{ wid: 'mainRootControllerRef', parentRef: refId, requestRootControllerRef: requestRootControllerRef, dataStoreRootControllerRef: dataStoreRootControllerRef }} />
+        <RequestRootController ref={requestRootControllerRef} $data={{ wid: 'requestRootControllerRef', mainRootControllerRef: mainRootControllerRef, dataStoreRootControllerRef: dataStoreRootControllerRef }} />
+        <DataStoreRootController ref={dataStoreRootControllerRef} $data={{ wid: 'requestRootControllerRef', mainRootControllerRef: mainRootControllerRef, requestRootControllerRef: requestRootControllerRef }} />
+
         <div id='mp_scaffold'>
             {render.current && <>
-                <AuthLoginPage ref={authLoginRef} $data={{ wid: 'authLoginRef', refId: authLoginRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
-                <PanelMainPage ref={panelMainRef} $data={{ wid: 'panelMainRef', refId: panelMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <AuthLoginPage ref={authLoginRef} $data={{ wid: 'authLoginRef', rootControllers: rootControllers }} />
+                <PanelMainPage ref={panelMainRef} $data={{ wid: 'panelMainRef', rootControllers: rootControllers }} />
 
-                <AccountCreationWidget ref={accountCreationRef} $data={{ wid: 'accountCreationRef', refId: accountCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
-                <ProductCreationWidget ref={productCreationMainRef} $data={{ wid: 'productCreationMainRef', refId: productCreationMainRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
-                <ComplaintCreationWidget ref={complaintCreationRef} $data={{ wid: 'complaintCreationRef', refId: complaintCreationRef, controllerRef: mainControllerRef, rootControllers: rootControllers }} />
+                <AccountCreationWidget ref={accountCreationRef} $data={{ wid: 'accountCreationRef', controllerRef: mainRootControllerRef, rootControllers: rootControllers }} />
+                {/* <ProductCreationWidget ref={productCreationMainRef} $data={{ wid: 'productCreationMainRef', refId: productCreationMainRef, controllerRef: mainRootControllerRef }} /> */}
+                {/* <ComplaintCreationWidget ref={complaintCreationRef} $data={{ wid: 'complaintCreationRef', refId: complaintCreationRef, controllerRef: mainRootControllerRef }} /> */}
             </>}
         </div>
-
-        <MainControllerWidget ref={mainControllerRef} $data={{ wid: 'mainControllerRef', refId: mainControllerRef, parentRef: refId, requestControllerRef: requestControllerRef, dataStoreControllerRef: dataStoreControllerRef }} />
-        <RequestControllerWidget ref={requestControllerRef} $data={{ wid: 'requestControllerRef', refId: requestControllerRef, mainControllerRef: mainControllerRef, dataStoreControllerRef: dataStoreControllerRef }} />
-        <DataStoreControllerWidget ref={dataStoreControllerRef} $data={{ wid: 'dataStoreControllerRef', refId: dataStoreControllerRef, mainControllerRef: mainControllerRef, requestControllerRef: requestControllerRef }} />
     </>;
     return (component);
-};
 
-export default forwardRef(MainPage);
+}); export default (MainPage);

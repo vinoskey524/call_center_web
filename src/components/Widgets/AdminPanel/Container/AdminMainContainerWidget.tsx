@@ -5,62 +5,43 @@ import $ from 'jquery';
 /* Custom packages */
 import './AdminMainContainerWidget.css';
 import { generateIdFunc } from '../../../Tools/methodForest';
-import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
-import { _defaultLanguage_ } from '../../../Tools/constants';
+import { _appEmitterType_, _defaultLanguage_ } from '../../../Tools/constants';
 import AdminAccountMainSubPageWidget from './Account/AdminAccountMainSubPageWidget';
 
-/* Widget */
-type propsType = {
-    $data: {
-        /** Every change made to "wid" affect controller */
-        wid: string,
-        refId: refIdType,
-        controllerRef: refIdType,
-        rootControllers: any
-    }
-};
-const AdminMainContainerWidget = (props: propsType, ref: any) => {
+/** Every change made to "wid" affect controller */
+type propsType = { $data: { wid: string, controllerRef: refIdType, rootControllers: any } };
+const AdminMainContainerWidget = forwardRef((props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId = ref;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const windowWidth = useRef(window.innerWidth);
+    const windowHeight = useRef(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
-
+    const mountCount = useRef(0);
     const render = useRef(!false);
 
-    const lang = useRef(_defaultLanguage_);
-
-    const traduction = language[lang.current];
+    const broadcastIndex = useRef(-1);
 
     /* $data */
-
-    const data = props.$data;
-
-    const wid = data.wid;
-
-    const refId = data.refId;
-
-    const controllerRef = data.controllerRef; /* AdminMainControllerWidget */
-
-    const rootControllers = data.rootControllers;
+    const $data = props.$data;
+    const wid = useRef($data.wid || generateIdFunc()).current;
+    const parentControllerRef = $data.controllerRef;
+    const rootControllers = $data.rootControllers;
 
     /* Root controllers */
-
-    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
-
-    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
-
-    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
+    const mainRootControllerRef: refIdType = rootControllers?.current?.mainRootControllerRef;
+    const requestRootControllerRef: refIdType = rootControllers?.current?.requestRootControllerRef;
+    const dataStoreRootControllerRef: refIdType = rootControllers?.current?.dataStoreRootControllerRef;
 
     /* - */
+
+    const traduction = useRef(dataStoreRootControllerRef.current.traduction.current);
 
     const adminAccountMainSubPageRef = useRef(undefined);
 
@@ -69,49 +50,69 @@ const AdminMainContainerWidget = (props: propsType, ref: any) => {
 
     /* Refresh component */
     const refreshFunc = () => {
-        refresher.current = refresher.current ? false : true;
+        refresher.current = !refresher.current;
         setRefresh(refresher.current);
     };
 
+    /* Render */
+    const renderFunc = (x: { render: boolean }) => {
+        render.current = x.render;
+        refreshFunc();
+    };
+
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => { lang.current = x.lang; setRefresh(!refresh) };
+    const setTraductionFunc = (x: { traduction: any }) => { traduction.current = x.traduction; refreshFunc() };
 
     /* On window size change */
-    const onWindowSizeChangeFunc = () => { setWindowWidth(window.innerWidth); setWindowHeight(window.innerHeight) };
+    const onWindowSizeChangeFunc = () => {
+        windowWidth.current = window.innerWidth;
+        windowHeight.current = window.innerHeight;
+    };
+
+    /* Unmount */
+    const unmountFunc = () => {
+        /* Prevent from first unmounting caused by "strictMode" */
+        mountCount.current += 1; if (mountCount.current === 1) return;
+
+        /* unmount logic */
+        mainRootControllerRef?.current?.deleteFromBroadcastDomainFunc({ index: broadcastIndex.current });
+        parentControllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
+        renderFunc({ render: false });
+    };
 
 
     /* ------------------------------------ Hooks ------------------------------------- */
 
-    /* Make methods inside, callable directly from parent component via ref */
+    /* Imperatif handler */
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
-        setLanguageFunc(x: any) { setLanguageFunc(x) }
-    }), [refresh]);
+        setTraductionFunc(x: any) { setTraductionFunc(x) }
+    }), []);
 
     /* On mount */
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef?.current !== undefined) && controllerRef.current.addWidgetRefFunc({ wid: wid, refId: refId });
+            mainRootControllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
+            (parentControllerRef?.current !== undefined) && parentControllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
         }
+        return () => unmountFunc();
     }, []);
 
     /* On window size change */
-    // useEffect(() => {
-    //     window.addEventListener('resize', onWindowSizeChangeFunc);
-    //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
-    // }, []);
+    useEffect(() => {
+        // window.addEventListener('resize', onWindowSizeChangeFunc);
+        // return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+    }, []);
 
 
     /* Return */
 
-
     const component = <>
         <div id='amcw_scaffold'>
-            <AdminAccountMainSubPageWidget ref={adminAccountMainSubPageRef} $data={{ wid: 'adminAccountMainSubPageRef', refId: adminAccountMainSubPageRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+            <AdminAccountMainSubPageWidget ref={adminAccountMainSubPageRef} $data={{ wid: 'adminAccountMainSubPageRef', controllerRef: parentControllerRef, rootControllers: rootControllers }} />
         </div>
     </>;
-    return (render.current ? component : <></>);
-};
+    return (<>{render.current && component}</>);
 
-export default forwardRef(AdminMainContainerWidget);
+}); export default (AdminMainContainerWidget);

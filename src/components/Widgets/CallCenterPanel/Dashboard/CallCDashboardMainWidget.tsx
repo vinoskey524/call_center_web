@@ -5,65 +5,49 @@ import $ from 'jquery';
 /* Custom packages */
 import './CallCDashboardMainWidget.css';
 import { generateIdFunc } from '../../../Tools/methodForest';
-import { language } from '../../../Tools/language';
 import { refIdType } from '../../../Tools/type';
 import { _defaultLanguage_ } from '../../../Tools/constants';
 import search_icon from '../../../Assets/png/search_0.png';
 import ProductDashboardMainWidget from '../../ProductDashboard/ProductDashboardMainWidget';
-import ComplaintDashboardMainWidget from '../../ComplaintDashboard/ComplaintDashboardMainWidget';
 
 /* Widget */
-type propsType = {
-    $data: {
-        refId: refIdType,
-        controllerRef: refIdType,
-        rootControllers: any,
-        customerData: any,
-    }
-};
-const CallCDashboardMainWidget = (props: propsType, ref: any) => {
+type propsType = { $data: { wid?: string, controllerRef: refIdType, rootControllers: any, customerData: any } };
+const CallCDashboardMainWidget = forwardRef((props: propsType, ref: any) => {
     /* ------------------------------------ Constants ------------------------------------- */
 
-    const parentProps = props;
+    const refId: refIdType = ref;
 
     const windowWidth = useRef(window.innerWidth);
-
     const windowHeight = useRef(window.innerHeight);
 
     const refresher = useRef(false);
     const [refresh, setRefresh] = useState(refresher.current);
 
     const isMounted = useRef(false);
-
+    const mountCount = useRef(0);
     const render = useRef(true);
 
-    const lang = useRef(_defaultLanguage_);
+    const emptyRef = useRef<any>(undefined);
+    const consumerRef = useRef<any>(undefined);
+    const prototypeControllerRef = useRef<any>(undefined);
 
-    const traduction = language[lang.current];
+    const broadcastIndex = useRef(-1);
 
     /* $data */
-
-    const data = props.$data;
-
-    const refId = data.refId;
-
-    const controllerRef = data.controllerRef; /* callCMainControllerRef */
-
-    const rootControllers = data.rootControllers;
-
-    const customerData = data.customerData;
+    const $data = props.$data;
+    const wid = useRef($data.wid || generateIdFunc()).current;
+    const controllerRef = $data.controllerRef;
+    const rootControllers = $data.rootControllers;
+    const customerData = $data.customerData;
 
     /* Root controllers */
-
-    const mainControllerRef: refIdType = rootControllers.mainControllerRef;
-
-    const requestControllerRef: refIdType = rootControllers.requestControllerRef;
-
-    const dataStoreControllerRef: refIdType = rootControllers.dataStoreControllerRef;
+    const mainRootControllerRef: refIdType = rootControllers?.current?.mainRootControllerRef;
+    const requestRootControllerRef: refIdType = rootControllers?.current?.requestRootControllerRef;
+    const dataStoreRootControllerRef: refIdType = rootControllers?.current?.dataStoreRootControllerRef;
 
     /* - */
 
-    const emptyRef = useRef(undefined);
+    const traduction = useRef(dataStoreRootControllerRef.current.traduction.current);
 
     const ccdhmw_product_btn_container_id = useRef(generateIdFunc()).current;
     const ccdhmw_product_btn_title_id = useRef(generateIdFunc()).current;
@@ -99,27 +83,29 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     /* ------------------------------------ Methods ------------------------------------- */
 
     /* Refresh component */
-    const refreshFunc = () => {
-        refresher.current = !refresher.current;
-        setRefresh(refresher.current);
-    };
+    const refreshFunc = () => { refresher.current = !refresher.current; setRefresh(refresher.current) };
 
     /* Render */
-    const renderFunc = (x: { render: boolean }) => {
-        render.current = x.render;
-        refreshFunc();
-    };
+    const renderFunc = (x: { render: boolean }) => { render.current = x.render; refreshFunc() };
 
     /* Set language */
-    const setLanguageFunc = (x: { lang: 'en' | 'fr' }) => {
-        lang.current = x.lang;
-        refreshFunc();
-    };
+    const setTraductionFunc = (x: { traduction: any }) => { traduction.current = x.traduction; refreshFunc() };
 
     /* On window size change */
     const onWindowSizeChangeFunc = () => {
         windowWidth.current = window.innerWidth;
         windowHeight.current = window.innerHeight;
+    };
+
+    /* Unmount */
+    const unmountFunc = () => {
+        /* Prevent from first unmounting caused by "strictMode" */
+        mountCount.current += 1; if (mountCount.current === 1) return;
+
+        /* unmount logic */
+        mainRootControllerRef?.current?.deleteFromBroadcastDomainFunc({ index: broadcastIndex.current });
+        mainRootControllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
+        controllerRef?.current?.deleteRefIdFunc({ wid: wid, refId: refId });
     };
 
     /* On add product or complaint */
@@ -138,7 +124,7 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     /* Add product */
     const addProductFunc = () => {
         if (didAddBtnSubOptionShown.current) {
-            const productCreationMainRef: refIdType = mainControllerRef.current.productCreationMainRef;
+            const productCreationMainRef: refIdType = mainRootControllerRef.current.productCreationMainRef;
             productCreationMainRef.current.showFunc({ show: true });
             onAddProduitComplaintFunc();
         }
@@ -147,7 +133,7 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     /* Add complaint */
     const addComplaintFunc = () => {
         if (didAddBtnSubOptionShown.current) {
-            const complaintCreationRef: refIdType = mainControllerRef.current.complaintCreationRef;
+            const complaintCreationRef: refIdType = mainRootControllerRef.current.complaintCreationRef;
             complaintCreationRef.current.showFunc({ show: true });
             onAddProduitComplaintFunc();
         }
@@ -226,7 +212,7 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     useImperativeHandle(ref, () => ({
         refreshFunc() { refreshFunc() },
         renderFunc(x: any) { renderFunc(x) },
-        setLanguageFunc(x: any) { setLanguageFunc(x) },
+        setTraductionFunc(x: any) { setTraductionFunc(x) },
         showFunc(x: any) { showFunc(x) }
     }), []);
 
@@ -234,19 +220,22 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
     useEffect(() => {
         if (!isMounted.current) {
             isMounted.current = true;
-            (controllerRef.current !== undefined) && controllerRef.current.setDashboardRefIdFunc({ customerId: customerData.id, refId: refId });
+            broadcastIndex.current = mainRootControllerRef.current.addToBroadcastDomainFunc({ wid: wid, refId: refId });
+            mainRootControllerRef.current.addRefIdFunc({ wid: wid, refId: refId });
+            controllerRef?.current?.addRefIdFunc({ wid: wid, refId: refId });
+            controllerRef?.current?.setDashboardRefIdFunc({ customerId: customerData.id, refId: refId });
         }
+        return () => unmountFunc();
     }, []);
 
     /* On window size change */
-    // useEffect(() => {
-    //     window.addEventListener('resize', onWindowSizeChangeFunc);
-    //     return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
-    // }, []);
+    useEffect(() => {
+        // window.addEventListener('resize', onWindowSizeChangeFunc);
+        // return () => window.removeEventListener('resize', onWindowSizeChangeFunc);
+    }, []);
 
 
     /* Return */
-
 
     const component = <>
         <div id={ccdhmw_scaffold_id} className='ccdhmw_scaffold'>
@@ -289,12 +278,11 @@ const CallCDashboardMainWidget = (props: propsType, ref: any) => {
             </div>
 
             <div /* Body */ className='ccdhmw_body'>
-                <ProductDashboardMainWidget ref={productDashboardMainRef} $data={{ wid: 'productDashboardMainRef', refId: productDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
-                <ComplaintDashboardMainWidget ref={complaintDashboardMainRef} $data={{ wid: 'complaintDashboardMainRef', refId: complaintDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} />
+                {/* <ProductDashboardMainWidget ref={productDashboardMainRef} $data={{ wid: 'productDashboardMainRef', controllerRef: controllerRef, rootControllers: rootControllers }} /> */}
+                {/* <ComplaintDashboardMainWidget ref={complaintDashboardMainRef} $data={{ wid: 'complaintDashboardMainRef', refId: complaintDashboardMainRef, controllerRef: controllerRef, rootControllers: rootControllers }} /> */}
             </div>
         </div>
     </>;
-    return (render.current ? component : <></>);
-};
+    return (<>{render.current && component}</>);
 
-export default forwardRef(CallCDashboardMainWidget);
+}); export default (CallCDashboardMainWidget);

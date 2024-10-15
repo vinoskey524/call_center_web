@@ -124,7 +124,7 @@ const ProductCreationControllerWidget = (props: propsType, ref: any) => {
         const fileSelectorId = parentRef.current.file_selector_input_id;
         const files: any[] = $(`#${fileSelectorId}`).prop('files');
         if (files.length === 0) {
-            $(`#${fileSelectorId}`).prop({ accept: '.docx', name: 'mojave' });
+            $(`#${fileSelectorId}`).prop({ accept: '.pdf', name: 'mojave' });
             $(`#${fileSelectorId}`).trigger('click');
         } else {
             $(`#${fileSelectorId}`).val('');
@@ -145,9 +145,10 @@ const ProductCreationControllerWidget = (props: propsType, ref: any) => {
             loadingRef.current.showLoadingFunc({ show: true });
 
             const data = {
-                fileData: { id: fileData.current.id, productName: productName.current, customerId: customerId.current, customerDomain: customerDomain.current, filename: fileData.current.filename, htmlName: `${customerDomain.current}${generateIdFunc({ length: 12 })}` },
+                fileData: { id: fileData.current.id, productName: productName.current, customerId: customerId.current, customerDomain: customerDomain.current, filename: fileData.current.filename, pdfFileName: `${customerDomain.current}${generateIdFunc({ length: 12 })}` },
                 fileSource: fileData.current.file
             };
+
             const res = await requestControllerRef.current.createProductFunc({ data: data });
             if (res.status !== _success_) throw new Error(JSON.stringify({ status: _requestFailed_, data: res.data }));
 

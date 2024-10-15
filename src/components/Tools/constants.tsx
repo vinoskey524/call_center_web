@@ -32,24 +32,34 @@ export const _fullnameExists_ = 'fullnameExists';
 export const _usernameExists_ = 'usernameExists';
 
 export const _productNameExists_ = 'productNameExists';
+export const _complaintObjectExists_ = 'complaintObjectExists';
+export const _agencyExists_ = 'agencyExists';
+export const _dataNotExists_ = 'dataNotExists';
+export const _cannotInsertData_ = 'cannotInsertData';
 
 export const _noUserFound_ = 'no user found';
 export const _incorrectCredentials_ = 'incorrect credentials';
 
+/* - */
+export const _appEmitterType_ = { traduction: 'traduction' };
+
 /** - */
-export const _maxProductDescFileSize_ = 3000900; /* 3mb */
+export const _maxProductDescFileSize_ = 5000900; /* 5mb */
+
+export const _serverPort_ = _dev_ ? 3000 : 3000;
+export const _serverHostName_ = _dev_ ? 'localhost' : '';
 
 /** Server address */
-export const _serverAddress_ = 'localhost';
+export const _serverAddress_ = `http://${_serverHostName_}:${_serverPort_}`;
 // export const _serverAddress_ = '192.168.100.9';
 
 /** psql db url */
 export const _databasePort_ = 8811;
-export const _databaseAddress_ = `http://${_serverAddress_}:${_databasePort_}`;
+export const _databaseAddress_ = `http://${_serverHostName_}:${_databasePort_}`;
 
 /** ws url */
 export const _wsPort_ = 8812;
-export const _wsAddress_ = `ws://${_serverAddress_}:${_wsPort_}`;
+export const _wsAddress_ = `ws://${_serverHostName_}:${_wsPort_}`;
 
 /** Default language */
 export const _defaultLanguage_ = 'fr';

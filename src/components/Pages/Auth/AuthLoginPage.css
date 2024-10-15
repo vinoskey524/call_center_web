@@ -70,3 +70,227 @@
     color: white;
     background-color: #007aff;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------------- Auth setup ---------------------------------------- */
+
+#asw_scaffold {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    padding-left: 120px;
+}
+
+#asw_title {
+    width: auto;
+    height: auto;
+    color: #E8E8E8;
+    font-size: 20px;
+    margin-top: 80px;
+}
+
+#asw_sub_title {
+    width: 65%;
+    max-width: 65%;
+    height: auto;
+    color: #fff;
+    font-size: 30px;
+    margin-top: 80px;
+}
+
+/* table */
+
+#asw_table {
+    width: auto;
+    height: auto;
+    margin-top: 30px;
+    border-spacing: 20px 20px;
+    margin-left: 5px;
+}
+
+#asw_table th {
+    width: auto;
+    height: auto;
+    color: #007aff;
+    text-align: left;
+}
+
+#asw_table td {
+    width: auto;
+    height: auto;
+}
+
+.asw_table_input {
+    width: 300px;
+    height: 26px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #333A45;
+    border-radius: 7px;
+    margin-left: 30px;
+    color: white;
+    font-size: 13px;
+    padding-inline: 8px;
+}
+
+.asw_desc {
+    width: 300px;
+    height: auto;
+    color: grey;
+    font-size: 12px;
+    margin-left: 30px;
+}
+
+#asw_privacy {
+    width: 50%;
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    margin-top: 30px;
+    color: #9e9e9e;
+}
+
+#asw_submit_btn {
+    width: 130px;
+    height: 30px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: flex-start;
+    border-radius: 8px;
+    margin-right: 20px;
+    background-color: #007aff;
+    color: white;
+    font-size: 14px;
+}
+
+#asw_img {
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    position: absolute;
+    right: 120px;
+    bottom: 80px;
+    transform: scaleX(-1);
+    z-index: 10;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ----------------------------------- Splash screen ----------------------------------- */
+
+#ssw_scaffold {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    background-color: #23272F;
+}
+
+#ssw_container {
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: -10%;
+}
+
+#ssw_text {
+    width: auto;
+    height: auto;
+    color: white;
+}
